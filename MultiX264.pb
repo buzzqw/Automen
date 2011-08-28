@@ -576,13 +576,12 @@ Procedure mkfifomencoder()
     AddGadgetItem(#queue,-1,"rm "+Chr(34)+workpath.s+"multix264.fifo.yuv"+Chr(34))
   EndIf
   
-  
-EndProcedure
+  EndProcedure
 
 Procedure x264mencoderpipe()
   
   
-  workpath.s=GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s)))
+ workpath.s=GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s)))
   
   CreateDirectory(GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s))))
   
@@ -2856,10 +2855,9 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Linux - x86)
-; CursorPosition = 433
-; FirstLine = 433
+; CursorPosition = 583
+; FirstLine = 561
 ; Folding = ------
-; EnableUnicode
 ; EnableThread
 ; EnableXP
 ; EnableUser
@@ -2868,6 +2866,6 @@ End
 ; DisableDebugger
 ; CompileSourceDirectory
 ; Compiler = PureBasic 4.60 Beta 4 (Linux - x86)
-; EnableCompileCount = 1007
+; EnableCompileCount = 1008
 ; EnableBuildCount = 1593
 ; EnableExeConstant
