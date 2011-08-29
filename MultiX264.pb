@@ -8,7 +8,7 @@ Global messinfo.s,outputinfo.s,here.s,outputfile.s,pgcid.l
 Global queue.l, queuecount.l,passx.l,mplayer.s,mkvmerge.s,mp4box.s,pgc.s,start.l,mux.s,vcrop.s
 Global x264.s,mencoder.s,mkvmerge.s,mp4box.s,ffmpeg.s,encostring.s,filetoanalyze.s,eac3to.s,fileaudio.s,avs2yuv.s
 Global faad.s,oggenc.s,aften.s,lame.s,flac.s,faac.s,neroaacenc.s,mkvinfo.s
-
+Global linux,windows
 
 Procedure clean()
   
@@ -1480,9 +1480,7 @@ EndProcedure
 
 Procedure Dimb()
   
-  framecount.l=Val(GetGadgetText(#framecountf))
-  tsec.l=framecount.l/(Val(GetGadgetText(#frameratef))+1)
-  
+   
   Dimb.f=Val(GetGadgetText(#cds))*1024*1024
   bitrate1.f=((Dimb.f-framecount.l*24-Val(GetGadgetText(#audibit))*1000*tsec.l*0.128)/((tsec.l*0.128)/1024)/1000)/1024
   
@@ -2861,8 +2859,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 160
-; FirstLine = 145
+; CursorPosition = 1498
+; FirstLine = 1480
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2871,6 +2869,6 @@ End
 ; DisableDebugger
 ; CompileSourceDirectory
 ; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
-; EnableCompileCount = 1024
+; EnableCompileCount = 1027
 ; EnableBuildCount = 1593
 ; EnableExeConstant
