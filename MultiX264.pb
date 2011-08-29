@@ -9,6 +9,7 @@ Global queue.l, queuecount.l,passx.l,mplayer.s,mkvmerge.s,mp4box.s,pgc.s,start.l
 Global x264.s,mencoder.s,mkvmerge.s,mp4box.s,ffmpeg.s,encostring.s,filetoanalyze.s,eac3to.s,fileaudio.s,avs2yuv.s
 Global faad.s,oggenc.s,aften.s,lame.s,flac.s,faac.s,neroaacenc.s,mkvinfo.s
 
+
 Procedure clean()
   
   If GetGadgetState(#clean)=1
@@ -16,8 +17,8 @@ Procedure clean()
   EndIf
   
   If GetGadgetState(#shutdown)=1
-   If OSVersion()<=#PB_OS_Linux_Future:  AddGadgetItem(#queue,-1,"shutdown -h now") : EndIf
-    If OSVersion()<=#PB_OS_Windows_Future : AddGadgetItem(#queue,-1,"shutdown -s -t 30 -f") : EndIf
+    If linux=#True :  AddGadgetItem(#queue,-1,"shutdown -h now") : EndIf
+    If windows=#True : AddGadgetItem(#queue,-1,"shutdown -s -t 30 -f") : EndIf
   EndIf
   
 EndProcedure
@@ -145,8 +146,8 @@ Procedure audioffmpeg()
   CreateDirectory(GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s))))
   
   
- If OSVersion()<=#PB_OS_Linux_Future : workpath.s=workpath.s+"/" : EndIf
-  If OSVersion()<=#PB_OS_Windows_Future : workpath.s=workpath.s+"\" : EndIf
+  If linux=#True  : workpath.s=workpath.s+"/" : EndIf
+  If windows=#True : workpath.s=workpath.s+"\" : EndIf
   
   If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="ifo"
     dump.s=mplayer.s+" dvd://"+Str(pgcid.l)+" -dvd-device "+Chr(34)+Mid(GetPathPart(GetGadgetText(#inputstring)),0,Len(GetPathPart(GetGadgetText(#inputstring)))-1)+Chr(34)+" -dumpstream -dumpfile "+Chr(34)+workpath.s+"film.vob"+Chr(34)
@@ -185,11 +186,11 @@ Procedure audioffmpeg()
   
   If GetExtensionPart(inputfile.s)="mkv"
     
-    If OSVersion()<=#PB_OS_Windows_Future
+    If windows=#True
       encostring.s=Chr(34)+GetPathPart(mkvmerge.s)+"mkvextract.exe"+Chr(34)+" tracks "+Chr(34)+inputfile.s+Chr(34)+" "
     EndIf
     
-   If OSVersion()<=#PB_OS_Linux_Future
+    If linux=#True
       If mkvmerge.s<>""
         encostring.s="mkvextract tracks "+Chr(34)+inputfile.s+Chr(34)+" "
       EndIf
@@ -321,12 +322,12 @@ Procedure eac3toaudio()
     If GetGadgetState(#audionormalize)=1 : normalize.s=" -normalize " : EndIf
     
     aid.s=Trim(StringField(GetGadgetText(#audiotrack),1,":"))
-        
+    
     If GetFilePart(inputfile.s)="film.vob"
       aid.s=Str(Val(Trim(StringField(StringField(GetGadgetText(#audiotrack),1,"f"),2,":")))+2)
       inputfile.s=workpath.s+"film.vob"
     EndIf
-        
+    
     If GetGadgetText(#audiocodec)="MP3 Audio"
       down.s=" -down16 -down2 "
       If FindString(GetGadgetText(#audiotrack),"1.0",0) :   down.s=" " : EndIf
@@ -393,8 +394,8 @@ Procedure audioencoding()
   
   CreateDirectory(GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s))))
   
- If OSVersion()<=#PB_OS_Linux_Future : workpath.s=workpath.s+"/" : EndIf
- If OSVersion()<=#PB_OS_Windows_Future : workpath.s=workpath.s+"\" : EndIf
+  If linux=#True  : workpath.s=workpath.s+"/" : EndIf
+  If windows=#True : workpath.s=workpath.s+"\" : EndIf
   
   If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="ifo"
     dump.s=mplayer.s+" dvd://"+Str(pgcid.l)+" -dvd-device "+Chr(34)+Mid(GetPathPart(GetGadgetText(#inputstring)),0,Len(GetPathPart(GetGadgetText(#inputstring)))-1)+Chr(34)+" -dumpstream -dumpfile "+Chr(34)+workpath.s+"film.vob"+Chr(34)
@@ -410,11 +411,11 @@ Procedure audioencoding()
     ProcedureReturn 0
   EndIf
   
- If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True
     audioffmpeg()
   EndIf
-    
-  If OSVersion()<=#PB_OS_Windows_Future
+  
+  If windows=#True
     Select LCase(GetExtensionPart(inputfile.s))
     Case "mkv","evo","vob","mpeg","mpg","ts","m2t","m2ts"
       If eac3to.s<>""
@@ -427,7 +428,7 @@ Procedure audioencoding()
       audioffmpeg()
     EndSelect
   EndIf
-    
+  
 EndProcedure
 
 
@@ -437,8 +438,8 @@ Procedure x264ffmpegpipe()
   
   CreateDirectory(GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s))))
   
- If OSVersion()<=#PB_OS_Linux_Future : workpath.s=workpath.s+"/" : EndIf
-  If OSVersion()<=#PB_OS_Windows_Future : workpath.s=workpath.s+"\" : EndIf
+  If linux=#True  : workpath.s=workpath.s+"/" : EndIf
+  If windows=#True : workpath.s=workpath.s+"\" : EndIf
   
   outputfile.s=workpath.s+"multix264.h264"
   
@@ -496,7 +497,7 @@ Procedure x264ffmpegpipe()
   
   encostring.s=encostring.s+" --output "+Chr(34)+outputfile.s+Chr(34)+" - --input-res "+Str(width.l)+"x"+Str(height.l)
   
-  If OSVersion()<=#PB_OS_Windows_Future : encostring.s=encostring.s+ " 2>MultiX264.log" : EndIf
+  If windows=#True : encostring.s=encostring.s+ " 2>MultiX264.log" : EndIf
   
   AddGadgetItem(#queue,-1,encostring.s)
   
@@ -510,8 +511,8 @@ Procedure mkfifomencoder()
   
   CreateDirectory(GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s))))
   
- If OSVersion()<=#PB_OS_Linux_Future : workpath.s=workpath.s+"/" : EndIf
-  If OSVersion()<=#PB_OS_Windows_Future : workpath.s=workpath.s+"\" : EndIf
+  If linux=#True  : workpath.s=workpath.s+"/" : EndIf
+  If windows=#True : workpath.s=workpath.s+"\" : EndIf
   
   outputfile.s=workpath.s+"multix264.h264"
   
@@ -538,21 +539,21 @@ Procedure mkfifomencoder()
   If GetGadgetState(#allowresize)=1
     If leftcrop.l+topcrop.l+rightcrop.l+bottomcrop.l>0
       encostring.s=encostring.s+" "+Chr(34)+inputfile.s+Chr(34)+" -vf crop="+Str(twidth.l-Val(GetGadgetText(#leftcrop))-Val(GetGadgetText(#rightcrop)))+":"+Str(theight.l-Val(GetGadgetText(#topcrop))-Val(GetGadgetText(#bottomcrop)))+":"+GetGadgetText(#leftcrop)+":"+GetGadgetText(#topcrop)+","
-     If GetGadgetText(#denoise)<>"NONE" :  encostring.s=encostring.s+"hqdn3d="+Str(GetGadgetState(#denoise)*2)+"," : EndIf
-       encostring.s=encostring.s+"scale="+Str(width.l)+":"+Str(height.l)+",format=i420 2>&1 > /dev/null & "
+      If GetGadgetText(#denoise)<>"NONE" :  encostring.s=encostring.s+"hqdn3d="+Str(GetGadgetState(#denoise)*2)+"," : EndIf
+      encostring.s=encostring.s+"scale="+Str(width.l)+":"+Str(height.l)+",format=i420 2>&1 > /dev/null & "
     EndIf
     If leftcrop.l+topcrop.l+rightcrop.l+bottomcrop.l=0
-        If GetGadgetText(#denoise)<>"NONE" :  encostring.s=encostring.s+" "+Chr(34)+inputfile.s+Chr(34)+" -vf scale="+Str(width.l)+":"+Str(height.l)+",hqdn3d="+Str(GetGadgetState(#denoise)*2)+",format=i420 2>&1 > /dev/null & " : EndIf
-       If GetGadgetText(#denoise)="NONE": encostring.s=encostring.s+" "+Chr(34)+inputfile.s+Chr(34)+" -vf scale="+Str(width.l)+":"+Str(height.l)+",format=i420 2>&1 > /dev/null & " : EndIf
+      If GetGadgetText(#denoise)<>"NONE" :  encostring.s=encostring.s+" "+Chr(34)+inputfile.s+Chr(34)+" -vf scale="+Str(width.l)+":"+Str(height.l)+",hqdn3d="+Str(GetGadgetState(#denoise)*2)+",format=i420 2>&1 > /dev/null & " : EndIf
+      If GetGadgetText(#denoise)="NONE": encostring.s=encostring.s+" "+Chr(34)+inputfile.s+Chr(34)+" -vf scale="+Str(width.l)+":"+Str(height.l)+",format=i420 2>&1 > /dev/null & " : EndIf
     EndIf
   EndIf
   
   If GetGadgetState(#allowresize)=0
     width.l=twidth.l
     height.l=theight
-     If GetGadgetText(#denoise)<>"NONE" :  encostring.s=encostring.s+" "+Chr(34)+inputfile.s+Chr(34)+" -vf hqdn3d="+Str(GetGadgetState(#denoise)*2)+",format=i420 2>&1 > /dev/null & " : EndIf
-       If GetGadgetText(#denoise)="NONE": encostring.s=encostring.s+" "+Chr(34)+inputfile.s+Chr(34)+" -vf format=i420 2>&1 > /dev/null & " : EndIf
-    EndIf
+    If GetGadgetText(#denoise)<>"NONE" :  encostring.s=encostring.s+" "+Chr(34)+inputfile.s+Chr(34)+" -vf hqdn3d="+Str(GetGadgetState(#denoise)*2)+",format=i420 2>&1 > /dev/null & " : EndIf
+    If GetGadgetText(#denoise)="NONE": encostring.s=encostring.s+" "+Chr(34)+inputfile.s+Chr(34)+" -vf format=i420 2>&1 > /dev/null & " : EndIf
+  EndIf
   
   encostring.s=encostring.s+x264.s+"  "
   
@@ -576,17 +577,17 @@ Procedure mkfifomencoder()
     AddGadgetItem(#queue,-1,"rm "+Chr(34)+workpath.s+"multix264.fifo.yuv"+Chr(34))
   EndIf
   
-  EndProcedure
+EndProcedure
 
 Procedure x264mencoderpipe()
   
   
- workpath.s=GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s)))
+  workpath.s=GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s)))
   
   CreateDirectory(GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s))))
   
- If OSVersion()<=#PB_OS_Linux_Future : workpath.s=workpath.s+"/" : EndIf
-  If OSVersion()<=#PB_OS_Windows_Future : workpath.s=workpath.s+"\" : EndIf
+  If linux=#True  : workpath.s=workpath.s+"/" : EndIf
+  If windows=#True : workpath.s=workpath.s+"\" : EndIf
   
   outputfile.s=workpath.s+"multix264.h264"
   
@@ -645,7 +646,7 @@ Procedure x264mencoderpipe()
   
   encostring.s=encostring.s+" --output "+Chr(34)+outputfile.s+Chr(34)+" - --input-res "+Str(width.l)+"x"+Str(height.l)
   
-  If OSVersion()<=#PB_OS_Windows_Future : encostring.s=encostring.s+ " 2>MultiX264.log" : EndIf
+  If windows=#True : encostring.s=encostring.s+ " 2>MultiX264.log" : EndIf
   
   AddGadgetItem(#queue,-1,encostring.s)
   
@@ -658,8 +659,8 @@ Procedure x264lavf()
   
   CreateDirectory(GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s))))
   
- If OSVersion()<=#PB_OS_Linux_Future : workpath.s=workpath.s+"/" : EndIf
-  If OSVersion()<=#PB_OS_Windows_Future : workpath.s=workpath.s+"\" : EndIf
+  If linux=#True  : workpath.s=workpath.s+"/" : EndIf
+  If windows=#True : workpath.s=workpath.s+"\" : EndIf
   
   outputfile.s=workpath.s+"multix264.h264"
   
@@ -728,7 +729,7 @@ Procedure x264lavf()
   
   encostring.s=encostring.s+" --output "+Chr(34)+outputfile.s+Chr(34)+" "
   
-  If OSVersion()<=#PB_OS_Windows_Future : encostring.s=encostring.s+ "2>MultiX264.log" : EndIf
+  If windows=#True : encostring.s=encostring.s+ "2>MultiX264.log" : EndIf
   
   AddGadgetItem(#queue,-1,encostring.s)
   
@@ -740,8 +741,8 @@ Procedure x264dss()
   
   CreateDirectory(GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s))))
   
- If OSVersion()<=#PB_OS_Linux_Future : workpath.s=workpath.s+"/" : EndIf
-  If OSVersion()<=#PB_OS_Windows_Future : workpath.s=workpath.s+"\" : EndIf
+  If linux=#True : workpath.s=workpath.s+"/" : EndIf
+  If windows=#True : workpath.s=workpath.s+"\" : EndIf
   
   outputfile.s=workpath.s+"multix264.h264"
   
@@ -772,7 +773,7 @@ Procedure x264dss()
   
   encostring.s=encostring.s+" --output "+Chr(34)+outputfile.s+Chr(34)+" "
   
-  If OSVersion()<=#PB_OS_Windows_Future : encostring.s=encostring.s+ "2>MultiX264.log" : EndIf
+  If windows=#True : encostring.s=encostring.s+ "2>MultiX264.log" : EndIf
   
   AddGadgetItem(#queue,-1,encostring.s)
   
@@ -786,8 +787,8 @@ Procedure x264avs2yuvpipe()
   
   CreateDirectory(GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s))))
   
- If OSVersion()<=#PB_OS_Linux_Future : workpath.s=workpath.s+"/" : EndIf
-  If OSVersion()<=#PB_OS_Windows_Future : workpath.s=workpath.s+"\" : EndIf
+  If linux=#True  : workpath.s=workpath.s+"/" : EndIf
+  If windows=#True : workpath.s=workpath.s+"\" : EndIf
   
   outputfile.s=workpath.s+"multix264.h264"
   
@@ -950,7 +951,7 @@ Procedure x264avs2yuvpipe()
   
   encostring.s=encostring.s+" --output "+Chr(34)+outputfile.s+Chr(34)+" "
   
-  If OSVersion()<=#PB_OS_Windows_Future : encostring.s=encostring.s+ " 2>MultiX264.log" : EndIf
+  If windows=#True : encostring.s=encostring.s+ " 2>MultiX264.log" : EndIf
   
   AddGadgetItem(#queue,-1,encostring.s)
   
@@ -964,8 +965,8 @@ Procedure x264avs()
   
   CreateDirectory(GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s))))
   
- If OSVersion()<=#PB_OS_Linux_Future : workpath.s=workpath.s+"/" : EndIf
-  If OSVersion()<=#PB_OS_Windows_Future : workpath.s=workpath.s+"\" : EndIf
+  If linux=#True  : workpath.s=workpath.s+"/" : EndIf
+  If windows=#True : workpath.s=workpath.s+"\" : EndIf
   
   outputfile.s=workpath.s+"multix264.h264"
   
@@ -1144,7 +1145,7 @@ Procedure x264avs()
   
   encostring.s=encostring.s+" --output "+Chr(34)+outputfile.s+Chr(34)+" "
   
-  If OSVersion()<=#PB_OS_Windows_Future : encostring.s=encostring.s+ "2>MultiX264.log" : EndIf
+  If windows=#True : encostring.s=encostring.s+ "2>MultiX264.log" : EndIf
   
   AddGadgetItem(#queue,-1,encostring.s)
   
@@ -1465,12 +1466,13 @@ Procedure startqueue()
   WriteStringN(666,"")
   WriteStringN(666,GetGadgetText(#queue))
   CloseFile(666)
- If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True
     RunProgram("chmod","+x "+Chr(34)+workpath.s+"MultiX264.bat"+Chr(34),workpath.s,#PB_Program_Wait)
     RunProgram("xterm","-e "+Chr(34)+workpath.s+"MultiX264.bat"+Chr(34),workpath.s)
-  Else
-    RunProgram(workpath.s+"MultiX264.bat","",workpath.s)
   EndIf
+  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+    RunProgram(workpath.s+"MultiX264.bat","",workpath.s)
+  CompilerEndIf
   ClearGadgetItems(#queue)
   
 EndProcedure
@@ -1518,7 +1520,7 @@ Procedure preview()
   
   vcrop.s="crop="+Str(twidth.l-Val(GetGadgetText(#leftcrop))-Val(GetGadgetText(#rightcrop)))+":"+Str(theight.l-Val(GetGadgetText(#topcrop))-Val(GetGadgetText(#bottomcrop)))+":"+GetGadgetText(#leftcrop)+":"+GetGadgetText(#topcrop)
   
- If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True
     Select LCase(GetExtensionPart(inputfile.s))
     Case "mkv"
       aid.s="-aid "+StringField(GetGadgetText(#audiotrack),1,":")
@@ -1526,8 +1528,8 @@ Procedure preview()
       aid.s="-aid "+Str(GetGadgetState(#audiotrack))
     EndSelect
   EndIf
-    
-  If OSVersion()<=#PB_OS_Windows_Future
+  
+  If windows=#True
     Select LCase(GetExtensionPart(inputfile.s))
     Case "mkv","evo","vob","mpeg","mpg","ts","m2t","m2ts"
       aid.s="-aid "+StringField(GetGadgetText(#audiotrack),1,":")
@@ -1535,7 +1537,7 @@ Procedure preview()
       aid.s="-aid "+Str(GetGadgetState(#audiotrack))
     EndSelect
   EndIf
-    
+  
   CreateFile(987,here.s+"mplayerpreview.bat")   ; assuming lavf demuxer due to ffmpeg analysis
   WriteString(987,mplayer.s+" demuxer lavf "+aid.s+" -vf "+vcrop.s+",scale="+GetGadgetText(#width)+":"+GetGadgetText(#height)+" -aspect "+GetGadgetText(#arcombo)+" "+Chr(34)+inputfile.s+Chr(34))
   CloseFile(987)
@@ -1570,20 +1572,20 @@ Procedure autocrop()
   
   CreateFile(987,here.s+"mplayer_deep.bat")
   
- If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True
     WriteString(987,mplayer.s+" -speed 100 -vo null -vf cropdetect=24:2 -nosound -frames 2500 -identify "+Chr(34)+inputfile.s+Chr(34)+" > mplayer_deep.log")
   EndIf
   
-  If OSVersion()<=#PB_OS_Windows_Future
+  If windows=#True
     WriteString(987,mplayer.s+" -speed 100 -vo null -vf cropdetect=24:2 -nosound -frames 2500 -identify "+Chr(34)+inputfile.s+Chr(34)+" 1>mplayer_deep.log 2>MultiX264.log")
   EndIf
   
   CloseFile(987)
   
-  If OSVersion()<=#PB_OS_Windows_Future
+  If windows=#True
     RunProgram(here.s+"mplayer_deep.bat","",here.s,#PB_Program_Wait)
   EndIf
- If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True
     RunProgram("chmod","+x "+Chr(34)+here.s+"mplayer_deep.bat"+Chr(34),here.s,#PB_Program_Wait)
     RunProgram("xterm","-e "+Chr(34)+here.s+"mplayer_deep.bat"+Chr(34),here.s,#PB_Program_Wait)
   EndIf
@@ -1727,10 +1729,10 @@ Procedure checkifo()
   CreateFile(987,here.s+"mplayer.bat")
   WriteString(987,mplayer.s+" -vo null -identify -frames 1 "+Chr(34)+inputfile.s+Chr(34)+" > mplayer.log")
   CloseFile(987)
-  If OSVersion()<=#PB_OS_Windows_Future
+  If windows=#True
     RunProgram(here.s+"mplayer.bat","",here.s,#PB_Program_Wait)
   EndIf
- If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True
     RunProgram("chmod","+x "+Chr(34)+here.s+"mplayer.bat"+Chr(34),here.s,#PB_Program_Wait)
     RunProgram("xterm","-e "+Chr(34)+here.s+"mplayer.bat"+Chr(34),here.s,#PB_Program_Wait)
   EndIf
@@ -1768,10 +1770,10 @@ Procedure checkifo()
   CreateFile(987,here.s+"mplayer.bat")
   WriteString(987,mplayer.s+" -identify -frames 1 dvd://"+Str(pgcid.l)+" "+Chr(34)+inputfile.s+Chr(34)+" > mplayer.log")
   CloseFile(987)
-  If OSVersion()<=#PB_OS_Windows_Future
+  If windows=#True
     RunProgram(here.s+"mplayer.bat","",here.s,#PB_Program_Wait)
   EndIf
- If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True
     RunProgram("chmod","+x "+Chr(34)+here.s+"mplayer.bat"+Chr(34),here.s,#PB_Program_Wait)
     RunProgram("xterm","-e "+Chr(34)+here.s+"mplayer.bat"+Chr(34),here.s,#PB_Program_Wait)
   EndIf
@@ -1920,22 +1922,22 @@ Procedure mkvinfo()
   
   Global Dim mkv.media(999)
   aa.l=0
-  If OSVersion()<=#PB_OS_Windows_Future
+  If windows=#True
     WAIT=RunProgram(GetPathPart(mkvmerge.s)+"mkvinfo.exe",Chr(34)+inputfile.s+Chr(34),here.s,#PB_Program_Open|#PB_Program_Read|#PB_Program_Hide)
   EndIf
- If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True
     WAIT=RunProgram("mkvinfo",Chr(34)+inputfile.s+Chr(34),here.s,#PB_Program_Open|#PB_Program_Read|#PB_Program_Hide)
   EndIf
   
   CreateFile(999,here.s+"mkvinfo.bat")
-  If OSVersion()<=#PB_OS_Windows_Future : WriteString(999,Chr(34)+GetPathPart(mkvmerge.s)+"mkvinfo.exe"+Chr(34)+" "+Chr(34)+inputfile.s+Chr(34)+" > mkvinfo.log") : EndIf
- If OSVersion()<=#PB_OS_Linux_Future : WriteString(999,"mkvinfo " +Chr(34)+inputfile.s+Chr(34)+" > mkvinfo.log") : EndIf
+  If windows=#True : WriteString(999,Chr(34)+GetPathPart(mkvmerge.s)+"mkvinfo.exe"+Chr(34)+" "+Chr(34)+inputfile.s+Chr(34)+" > mkvinfo.log") : EndIf
+  If linux=#True  : WriteString(999,"mkvinfo " +Chr(34)+inputfile.s+Chr(34)+" > mkvinfo.log") : EndIf
   CloseFile(999)
   
-  If OSVersion()<=#PB_OS_Windows_Future
+  If windows=#True
     RunProgram(here.s+"mkvinfo.bat","",here.s,#PB_Program_Wait)
   EndIf
- If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True
     RunProgram("chmod","+x "+Chr(34)+here.s+"mkvinfo.bat"+Chr(34),here.s,#PB_Program_Wait)
     RunProgram("xterm","-e "+Chr(34)+here.s+"mkvinfo.bat"+Chr(34),here.s,#PB_Program_Wait)
   EndIf
@@ -2010,7 +2012,7 @@ Procedure ffmpeganalyzeaudio()
   CreateFile(987,here.s+"ffmpeganalysis.bat")
   WriteString(987,ffmpeg.s+" -i "+Chr(34)+inputfile.s+Chr(34)+" 2>"+Chr(34)+here.s+"ffmpeganalysis.txt"+Chr(34))
   CloseFile(987)
- If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True
     RunProgram("chmod","+x "+Chr(34)+here.s+"ffmpeganalysis.bat"+Chr(34),here.s,#PB_Program_Wait)
     RunProgram("xterm","-e "+Chr(34)+here.s+"ffmpeganalysis.bat"+Chr(34),here.s,#PB_Program_Wait)
   Else
@@ -2074,7 +2076,7 @@ Procedure checkmedia()
   
   CreateFile(987,here.s+"analyze.bat")
   
- If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True
     WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" -vf select='not(mod(n\,100))',cropdetect -an -y deleteme.avi 2>ffmpeg.log")
   Else
     WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" -vf select=not(mod(n\,100)),cropdetect -an -y deleteme.avi 2>ffmpeg.log")
@@ -2082,10 +2084,10 @@ Procedure checkmedia()
   
   CloseFile(987)
   
-  If OSVersion()<=#PB_OS_Windows_Future
+  If windows=#True
     RunProgram(here.s+"analyze.bat","",here.s,#PB_Program_Wait)
   EndIf
- If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True
     RunProgram("chmod","+x "+Chr(34)+here.s+"analyze.bat"+Chr(34),here.s,#PB_Program_Wait)
     RunProgram("xterm","-e "+Chr(34)+here.s+"analyze.bat"+Chr(34),here.s,#PB_Program_Wait)
   EndIf
@@ -2106,7 +2108,7 @@ Procedure checkmedia()
     EndIf
     If FindString(mess,"dvvideo",0)
       videocodec.s="dv"
-    EndIf    
+    EndIf
     If FindString(mess,"lagarith",0)
       videocodec.s="lagarith"
     EndIf
@@ -2116,7 +2118,7 @@ Procedure checkmedia()
     If FindString(mess,"DAR ",0)
       aa.l=FindString(mess.s,"DAR",0)
       ar.s=StrF(ValF(StringField(StringField(StringField(Mid(mess.s,aa,1000),1,","),2," "),1,":"))/ValF(StringField(StringField(StringField(Mid(mess.s,aa,1000),1,","),2," "),2,":")),4)
-    EndIf    
+    EndIf
     If FindString(mess,"DAR 16:9]",0)
       ar.s="1.7778"
     EndIf
@@ -2125,7 +2127,7 @@ Procedure checkmedia()
     EndIf
     If FindString(mess,"DAR 1:1]",0)
       ar.s="1"
-    EndIf    
+    EndIf
     If FindString(mess.s,"fps,",0)
       aa.l=FindString(mess.s,"fps,",0)
       framerate.f=ValF(StringField(StringField(Mid(mess.s,aa,1000),2,","),2," "))
@@ -2156,11 +2158,11 @@ Procedure checkmedia()
       theight.l=Val((StringField(StringField(StringField(mess.s,3,","),2,"x"),1," ")))
       twidth.l=Val((StringField(StringField(StringField(mess.s,3,","),1,"x"),2," ")))
     EndIf
-    If FindString(mess.s,"Stream",0) And FindString(mess.s,"Video:",0)  And FindString(mess.s,"720x576",0) 
+    If FindString(mess.s,"Stream",0) And FindString(mess.s,"Video:",0)  And FindString(mess.s,"720x576",0)
       theight.l=576
       twidth.l=720
     EndIf
-    If FindString(mess.s,"Stream",0) And FindString(mess.s,"Video:",0)  And FindString(mess.s,"1920x1080",0) 
+    If FindString(mess.s,"Stream",0) And FindString(mess.s,"Video:",0)  And FindString(mess.s,"1920x1080",0)
       theight.l=1080
       twidth.l=1920
     EndIf
@@ -2192,7 +2194,7 @@ Procedure checkmedia()
   
   ;audio check
   
- If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True
     Select LCase(GetExtensionPart(inputfile.s))
     Case "mkv"
       mkvinfo()
@@ -2200,7 +2202,7 @@ Procedure checkmedia()
   EndIf
   
   
-  If OSVersion()<=#PB_OS_Windows_Future
+  If windows=#True
     Select LCase(GetExtensionPart(inputfile.s))
     Case "evo","vob","mpeg","mpg","ts","m2t","m2ts"
       If eac3to.s<>""
@@ -2422,7 +2424,7 @@ Procedure openinputfile()
   
   Debug("last="+last.s)
   
- If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True
     
     StandardFile$ = "input.mkv"
     Pattern$ = "Supported files|*.avi;*.ogm;*.mkv;*.m2ts;*.vob;*.mpeg;*.pvr;*.mpg;*.ogm;*.ts;*.vro;*.divx;*.m2t|All files (*.*)|*.*"
@@ -2461,6 +2463,9 @@ EndProcedure
 Open_Window_0()
 here.s=GetCurrentDirectory()
 
+CompilerIf #PB_Compiler_OS = #PB_OS_Linux : linux=#True : CompilerEndIf
+CompilerIf #PB_Compiler_OS = #PB_OS_Windows : windows=#True : CompilerEndIf
+
 x264.s=""
 mplayer.s=""
 mencoder.s=""
@@ -2471,7 +2476,7 @@ avs2yuv.s=""
 
 SetGadgetState(#allowresize,1)
 
-If OSVersion()<=#PB_OS_Linux_Future
+If linux=#True
   
   If FileSize("/usr/bin/x264")<>-1  : x264.s="/usr/bin/x264" : EndIf
   If FileSize("/usr/local/bin/x264")<>-1 : x264.s="/usr/local/bin/x264" : EndIf
@@ -2522,11 +2527,11 @@ If OSVersion()<=#PB_OS_Linux_Future
   
   If FileSize("/usr/bin/neroAacEnc")<>-1  : neroAacEnc.s="/usr/bin/neroAacEnc" : EndIf
   If FileSize("/usr/local/bin/neroAacEnc")<>-1 : neroAacEnc.s="/usr/local/bin/neroAacEnc" : EndIf
-    
+  
 EndIf
 
 
-If OSVersion()<=#PB_OS_Windows_Future
+If windows=#True
   
   If FileSize(here.s+"x264.exe")<>-1 : x264.s=Chr(34)+here.s+"x264.exe"+Chr(34) : EndIf
   If FileSize(here.s+"mplayer.exe")<>-1 : mplayer.s=Chr(34)+here.s+"mplayer.exe"+Chr(34) : EndIf
@@ -2590,7 +2595,7 @@ If mplayer.s="" :  MessageRequester("Mplayer", "No Mplayer found on path. Please
 If mp4box.s="" :   MessageRequester("Muxer", "No MP4Box (gpac) found on path. Please install it otherwise will be impossibile to mux on MP4", #PB_MessageRequester_Ok) : EndIf
 If mkvmerge.s="" : MessageRequester("Muxer", "No MKVtoolnix found on path. Please install it. Quitting...", #PB_MessageRequester_Ok) : End : EndIf
 
-If OSVersion()<=#PB_OS_Windows_Future
+If windows=#True
   
   If x264.s<>"" :  AddGadgetItem(#encodewith,-1,"Automatic Avisynth decoder") : EndIf
   If x264.s<>"" :  AddGadgetItem(#encodewith,-1,"auto (need X264 with auto support)") : EndIf
@@ -2604,7 +2609,8 @@ If OSVersion()<=#PB_OS_Windows_Future
   
 EndIf
 
-If OSVersion()<=#PB_OS_Linux_Future
+
+If linux=#True
   
   If x264.s<>""
     CreateFile(987,here.s+".x264check")
@@ -2636,7 +2642,7 @@ If mencoder.s<>"" And x264.s<>"" : AddGadgetItem(#encodewith,-1,"Pipe X264 with 
 If avs2yuv.s<>"" And x264.s<>"" :  AddGadgetItem(#encodewith,-1,"Pipe X264 with avs2yuv") : EndIf
 
 
-If OSVersion()>#PB_OS_Linux And mencoder.s<>"" And x264.s<>"" : AddGadgetItem(#encodewith,-1,"mkfifo mencoder to X264") : EndIf
+If linux=#True And mencoder.s<>"" And x264.s<>"" : AddGadgetItem(#encodewith,-1,"mkfifo mencoder to X264") : EndIf
 
 SetGadgetState(#encodewith,0)
 handbrakeoff()
@@ -2854,18 +2860,17 @@ End
 ; EnableCompileCount = 1574
 ; EnableBuildCount = 174
 ; EnableExeConstant
-; IDE Options = PureBasic 4.60 Beta 4 (Linux - x86)
-; CursorPosition = 583
-; FirstLine = 561
+; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
+; CursorPosition = 160
+; FirstLine = 145
 ; Folding = ------
-; EnableThread
 ; EnableXP
 ; EnableUser
 ; UseIcon = ___logo.ico
 ; Executable = MultiX264.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; Compiler = PureBasic 4.60 Beta 4 (Linux - x86)
-; EnableCompileCount = 1008
+; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
+; EnableCompileCount = 1024
 ; EnableBuildCount = 1593
 ; EnableExeConstant
