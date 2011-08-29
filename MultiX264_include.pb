@@ -146,11 +146,8 @@ UsePNGImageDecoder()
 
 Global Image0,FontID1,comboheight.l
 
-If OSVersion()<=#PB_OS_Linux_Future
-  comboheight.l=25
-Else
-  comboheight.l=20
-EndIf
+CompilerIf #PB_Compiler_OS = #PB_OS_Linux :  comboheight.l=25 : CompilerEndIf
+CompilerIf #PB_Compiler_OS = #PB_OS_Windows : comboheight.l=20 : CompilerEndIf
 
 Image0 = CatchImage(#paypal, ?Image0)
 
@@ -555,9 +552,9 @@ EndProcedure
 ; EnableCompileCount = 61
 ; EnableBuildCount = 10
 ; EnableExeConstant
-; IDE Options = PureBasic 4.60 Beta 4 (Linux - x86)
-; CursorPosition = 148
-; FirstLine = 128
+; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
+; CursorPosition = 150
+; FirstLine = 134
 ; Folding = --
 ; DisableDebugger
 ; CompileSourceDirectory
