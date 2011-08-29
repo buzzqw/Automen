@@ -1479,8 +1479,7 @@ EndProcedure
 
 
 Procedure Dimb()
-  
-   
+     
   Dimb.f=Val(GetGadgetText(#cds))*1024*1024
   bitrate1.f=((Dimb.f-framecount.l*24-Val(GetGadgetText(#audibit))*1000*tsec.l*0.128)/((tsec.l*0.128)/1024)/1000)/1024
   
@@ -1547,8 +1546,7 @@ EndProcedure
 Procedure autocrop()
   
   DeleteFile(here.s+"mplayer_deep.bat")
-  DeleteFile(here.s+"mplayer_deep.log")
-  
+  DeleteFile(here.s+"mplayer_deep.log")  
   
   If inputfile.s=""
     MessageRequester("MultiX264","No input select!")
@@ -2859,8 +2857,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1498
-; FirstLine = 1480
+; CursorPosition = 1661
+; FirstLine = 1618
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2869,6 +2867,6 @@ End
 ; DisableDebugger
 ; CompileSourceDirectory
 ; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
-; EnableCompileCount = 1027
+; EnableCompileCount = 1028
 ; EnableBuildCount = 1593
 ; EnableExeConstant

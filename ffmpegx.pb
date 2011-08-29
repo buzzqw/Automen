@@ -6,7 +6,7 @@ Global inputfile.s,framecount.l,framerate.f,ar.s,twidth.l,mess.s,theight.l,tsec.
 Global acbottom.l,acleft.l,acright.l,actop.l,aspectinfo.f,encostring.s
 Global messinfo.s,outputinfo.s,here.s,ffmpegbat.s,audioffmpegbat.s,outputfile.s,resizeffmpegbat.s,countprofile.l
 Global hour.l, minute.l, second.l,here.s,videocodec.s,queue.l, queuecount.l,passx.l,ffmpeg.s,mplayer.s,x264.s
-
+Global linux,windows
 
 Procedure start()
   
@@ -14,7 +14,7 @@ Procedure start()
   
   ffmpegbat.s=""
   
-  If OSVersion()<=#PB_OS_Windows_Future
+  If windows=#True 
     thread.s=" -threads "+StrF(Val(GetEnvironmentVariable("NUMBER_OF_PROCESSORS"))*1.5,0)+" "
   EndIf
   
@@ -50,7 +50,7 @@ Procedure start()
   
   encostring.s=ReplaceString(encostring.s,"-threads 0",thread.s)
   
-  ffmpegbat.s=Chr(34)+ffmpeg.s+Chr(34)+" -i "+Chr(34)+inputfile.s+Chr(34)+" "
+  ffmpegbat.s=ffmpeg.s+" -i "+Chr(34)+inputfile.s+Chr(34)+" "
   
   ffmpegbat.s=ffmpegbat.s+encostring.s+" "
   
@@ -140,10 +140,10 @@ Procedure start()
   
   If FindString(LCase(GetGadgetText(#presetsummary)),"pipe",0)
        
-    ffmpegbat.s=Chr(34)+ffmpeg.s+Chr(34)+" -i "+Chr(34)+inputfile.s+Chr(34)+" -an -v 0 -pix_fmt yuv420p -f rawvideo "
+    ffmpegbat.s=ffmpeg.s+" -i "+Chr(34)+inputfile.s+Chr(34)+" -an -v 0 -pix_fmt yuv420p -f rawvideo "
     If GetGadgetText(#vframes)<>"" : ffmpegbat.s=ffmpegbat.s+" -vframes "+GetGadgetText(#vframes)+" " : EndIf
     If GetExtensionPart(outputfile.s)="avi" : outputfile.s=ReplaceString(outputfile.s,".avi",".mkv") : EndIf
-    ffmpegbat.s=ffmpegbat.s+resizeffmpegbat.s+" -f rawvideo - | "+Chr(34)+x264.s+Chr(34)+" -o "+Chr(34)+outputfile.s+Chr(34)+" "
+    ffmpegbat.s=ffmpegbat.s+resizeffmpegbat.s+" -f rawvideo - | "+x264.s+" -o "+Chr(34)+outputfile.s+Chr(34)+" "
     ffmpegbat.s=ffmpegbat.s+encostring.s+" "
     If passx.l=1 : ffmpegbat.s=ffmpegbat.s+"--bitrate "+GetGadgetText(#videokbits)+" ": EndIf
     If passx.l=2 : ffmpegbat.s=ffmpegbat.s+"--bitrate "+GetGadgetText(#videokbits)+" ": EndIf
@@ -178,10 +178,11 @@ Procedure start()
   CloseFile(777)
   
   If passx.l=1  Or passx.l=2 Or passx.l=4 Or passx.l=5 Or passx.l=6  Or passx.l=7
-    If OSVersion()<=#PB_OS_Linux_Future
+    If linux=#True 
       RunProgram("chmod","+x "+Chr(34)+here.s+"autoffmpeg.bat"+Chr(34),here.s,#PB_Program_Wait)
       RunProgram("xterm","-e "+Chr(34)+here.s+"autoffmpeg.bat"+Chr(34),here.s,#PB_Program_Wait)
-    Else
+    EndIf
+    If windows=#True    
       RunProgram(here.s+".autoffmpeg.bat","",here.s)
     EndIf
   EndIf
@@ -195,10 +196,11 @@ Procedure startqueue()
   WriteStringN(666,"")
   WriteStringN(666,GetGadgetText(#queue))
   CloseFile(666)
-  If OSVersion()<=#PB_OS_Linux_Future    
+  If linux=#True 
     RunProgram("chmod","+x "+Chr(34)+here.s+".ffmpegqueue.bat"+Chr(34),here.s,#PB_Program_Wait)
     RunProgram("xterm","-e "+Chr(34)+here.s+".ffmpegqueue.bat"+Chr(34),here.s)
-  Else
+  EndIf
+  If windows=#True
     RunProgram(here.s+".ffmpegqueue.bat","",here.s)
   EndIf
   
@@ -455,19 +457,19 @@ Procedure checkmedia2()
   DeleteFile(here.s+"ffmpeganalysis.txt")
   CreateFile(987,here.s+"ffmpeganalysis.bat")
   
-  If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True 
     WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" -vf select='not(mod(n\,100))',cropdetect -an -y deleteme.avi 2>ffmpeganalysis.txt")
   EndIf
-  If OSVersion()<=#PB_OS_Windows_Future
+  If windows=#True 
     WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" -vf select=not(mod(n\,100)),cropdetect -an -y deleteme.avi 2>ffmpeganalysis.txt")
   EndIf
   
   CloseFile(987)
   
-    If OSVersion()<=#PB_OS_Windows_Future
+    If windows=#True 
     RunProgram(here.s+"ffmpeganalysis.bat","",here.s,#PB_Program_Wait)
   EndIf
- If OSVersion()<=#PB_OS_Linux_Future
+ If linux=#True 
     RunProgram("chmod","+x "+Chr(34)+here.s+"ffmpeganalysis.bat"+Chr(34),here.s,#PB_Program_Wait)
     RunProgram("xterm","-e "+Chr(34)+here.s+"ffmpeganalysis.bat"+Chr(34),here.s,#PB_Program_Wait)
   EndIf
@@ -656,7 +658,7 @@ EndProcedure
 Procedure autocrop()
   
   
-  If OSVersion()<=#PB_OS_Windows_Future
+  If windows=#True 
     If FileSize(mplayer.s)=-1
       MessageRequester("AutoFFmpegGui","No mplayer found"+Chr(13)+Chr(13)+"Please download mplayer.exe and put in the same directory as AutoFFmpegGui")
       ProcedureReturn
@@ -721,9 +723,10 @@ EndProcedure
 Procedure openinputfile()
   
   
-  If OSVersion()<=#PB_OS_Linux_Future
+  If linux=#True 
     inputfile.s=OpenFileRequester("Open File to Encode", last.s, "Supported Movie File|*VOB;*.EVO;*.M2TS;*.TS;*.MTS;*.MKV;.OGM;*.MPG;*.MPEG;*.AVS;*.AVI;*.M2T;*.VRO;*.MOV;*vob;*.evo;*.m2ts;*.ts;*.mts;*.mkv;.ogm;*.mpg;*.mpeg;*.svi;*.m2t;*.vro;*.mov|All files|*.*",0)
-  Else
+  EndIf
+  If windows=#True
     inputfile.s=OpenFileRequester("Open File to Encode", last.s, "Supported Movie File|*VOB;*.EVO;*.M2TS;*.TS;*.MTS;*.MKV;.OGM;*.MPG;*.MPEG;*.AVS;*.AVI;*.M2T;*.VRO;*.D2V;*.DGA;*.AVS;*.GRF;*.MOV|All files|*.*",0)
   EndIf
   
@@ -754,8 +757,7 @@ EndProcedure
 
 Procedure allowresize()
   
-  If OSVersion()<=#PB_OS_Windows_Future
-    
+     
     If GetGadgetState(#allowresize)=#PB_Checkbox_Unchecked
       SetGadgetText(#width,Str(twidth.l))
       SetGadgetText(#height,Str(theight.l))
@@ -773,16 +775,40 @@ Procedure allowresize()
       DisableGadget(#width,0)
       DisableGadget(#height,0)
     EndIf
+   
     
-  EndIf
-  
 EndProcedure
 
 
 Open_Window_0()
 here.s=GetCurrentDirectory()
-If OSVersion()<=#PB_OS_Linux_Future : mplayer.s="mplayer" : ffmpeg.s="ffmpeg" :  x264.s="x264" :  EndIf
-If OSVersion()<=#PB_OS_Windows_Future : mplayer.s=here.s+"applications\mplayer.exe" : ffmpeg.s=here.s+"applications\ffmpeg.exe" : x264.s=here.s+"applications\x264.exe" : EndIf
+
+CompilerIf #PB_Compiler_OS = #PB_OS_Linux : linux=#True : CompilerEndIf
+CompilerIf #PB_Compiler_OS = #PB_OS_Windows : windows=#True : CompilerEndIf
+
+If linux=#True : mplayer.s="mplayer" : ffmpeg.s="ffmpeg" :  x264.s="x264" :  EndIf
+ 
+  
+If windows=#True
+  
+  If FileSize(here.s+"x264.exe")<>-1 : x264.s=Chr(34)+here.s+"x264.exe"+Chr(34) : EndIf
+  If FileSize(here.s+"mplayer.exe")<>-1 : mplayer.s=Chr(34)+here.s+"mplayer.exe"+Chr(34) : EndIf
+  If FileSize(here.s+"ffmpeg.exe")<>-1 : ffmpeg.s=Chr(34)+here.s+"ffmpeg.exe"+Chr(34) : EndIf
+
+  If FileSize(here.s+"applications\mplayer\mplayer.exe")<>-1 : mplayer.s=Chr(34)+here.s+"applications\mplayer\mplayer.exe"+Chr(34) : EndIf
+  If FileSize(here.s+"applications\ffmpeg\ffmpeg.exe")<>-1 : ffmpeg.s=Chr(34)+here.s+"applications\ffmpeg\ffmpeg.exe"+Chr(34) : EndIf
+  If FileSize(here.s+"applications\x264\x264.exe")<>-1 : x264.s=Chr(34)+here.s+"applications\x264\x264.exe"+Chr(34) : EndIf
+  
+  ; path using megui folders ->
+  
+  If FileSize(here.s+"tools\mencoder\mplayer.exe")<>-1 : mplayer.s=Chr(34)+here.s+"tools\mencoder\mplayer.exe"+Chr(34) : EndIf
+  If FileSize(here.s+"tools\ffmpeg\ffmpeg.exe")<>-1 : ffmpeg.s=Chr(34)+here.s+"tools\ffmpeg\ffmpeg.exe"+Chr(34) : EndIf
+  If FileSize(here.s+"tools\x264\x264.exe")<>-1 : x264.s=Chr(34)+here.s+"tools\x264tools.exe"+Chr(34) : EndIf
+  
+EndIf  
+  
+
+
 parseprofile_base()
 SetGadgetState(#presetsummary,0)
 parseprofile()
@@ -1008,16 +1034,16 @@ Until Event = #PB_Event_CloseWindow ; End of the event loop
 
 End
 ;
-; IDE Options = PureBasic 4.60 Beta 4 (Linux - x86)
-; CursorPosition = 199
-; FirstLine = 191
+; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
+; CursorPosition = 474
+; FirstLine = 457
 ; Folding = ---
 ; EnableXP
 ; EnableUser
-; UseIcon = ..\HDConvertTOXviD\icons\___logo.ico
+; UseIcon = ___logo.ico
 ; Executable = AutoFFmpegGui.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 591
+; EnableCompileCount = 599
 ; EnableBuildCount = 31
 ; EnableExeConstant

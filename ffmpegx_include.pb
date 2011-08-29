@@ -177,7 +177,7 @@ Procedure Open_Window_0()
       TextGadget(#PB_Any,420,173,20,20,"MB")
       
       
-      ImageGadget(#paypal, 20 , 175, 85, 25, Image0)
+      ImageGadget(#paypal, 16 , 168, 85, 25, Image0)
       
       ;- panel video
       AddGadgetItem(#Panel_0, -1, "Video")
@@ -415,9 +415,9 @@ Procedure Open_Window_0()
     ElseIf bool_roundup = #False : ProcedureReturn Round((base / factor),0) * factor
   EndIf
 EndProcedure
-; IDE Options = PureBasic 4.60 Beta 4 (Linux - x86)
-; CursorPosition = 294
-; FirstLine = 291
+; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
+; CursorPosition = 179
+; FirstLine = 176
 ; Folding = -
 ; DisableDebugger
 ; CompileSourceDirectory
