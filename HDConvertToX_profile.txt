@@ -1,0 +1,98 @@
+X264;1;UltraFast;--preset ultrafast
+X264;2;VeryFast;--preset veryfast
+X264;3;Faster;--preset faster
+X264;4;Fast;--preset fast
+X264;5;Balanced;--preset medium --direct auto --b-adapt 2 --partitions p8x8,b8x8,i8x8
+X264;6;Medium;--preset medium
+X264;7;Extreme Quality;--preset medium --trellis 0 --ref 4 --deblock -1,-1 --subme 9 --direct auto --me umh --b-adapt 2 --no-chroma-me
+X264;8;Slow;--preset slow
+X264;9;Slower;--preset slower
+X264;10;Placebo;--preset placebo
+X264;11;HDC Ultra Fast;--keyint 250 --bframes 1 --trellis 0 --ref 1 --deblock 0,0 --subme 2 --direct spatial --vbv-bufsize 14000 --vbv-maxrate 25000 --me hex --merange 8 --b-adapt 0 --no-chroma-me --aud --no-weightb --no-mixed-refs --no-8x8dct
+X264;12;HDC Very Fast;--keyint 250 --bframes 2 --trellis 0 --ref 2 --deblock 0,0 --subme 3 --direct spatial --vbv-bufsize 14000 --vbv-maxrate 25000 --me hex --merange 10 --b-adapt 0 --no-chroma-me --aud --no-weightb --no-mixed-refs --no-8x8dct
+X264;13;HDC Fast;--keyint 250 --bframes 3 --trellis 0 --ref 3 --deblock -1,-1 --subme 4 --direct auto --vbv-bufsize 14000 --vbv-maxrate 25000 --me hex --merange 12 --b-adapt 2 --partitions p8x8,i8x8 --aud --psy-rd 1.0:0.0 --no-mixed-refs --no-8x8dct
+X264;14;HDC High Performance;--keyint 250 --bframes 3 --trellis 0 --ref 3 --deblock -1,-1 --subme 5 --direct auto --vbv-bufsize 14000 --vbv-maxrate 25000 --me dia --merange 14 --b-adapt 2 --partitions p8x8,i8x8 --aud
+X264;15;HDC Balanced;--keyint 250 --bframes 3 --trellis 0 --ref 3 --deblock -1,-1 --subme 5 --direct auto --vbv-bufsize 14000 --vbv-maxrate 25000 --me dia --b-adapt 1 --partitions p8x8,b8x8,i8x8 --aud --aq-mode 1 --aq-strength 0.5
+X264;16;HDC Better Quality;--keyint 250 --bframes 5 --trellis 1 --ref 4 --deblock -1,-1 --subme 6 --direct auto --vbv-bufsize 14000 --vbv-maxrate 25000 --me umh --b-adapt 2 --partitions p8x8,b8x8,i8x8 --aud --psy-rd 1.0:0.1 --aq-mode 1
+X264;17;HDC Extreme Quality;--keyint 250 --bframes 4 --trellis 0 --ref 4 --deblock -1,-1 --subme 9 --direct auto --vbv-bufsize 14000 --vbv-maxrate 25000 --me umh --b-adapt 2 --no-chroma-me --aud --aq-mode 2
+X264;18;HDC Insane Quality;--keyint 250 --bframes 6 --trellis 2 --ref 6 --deblock -1,-1 --subme 8 --direct auto --vbv-bufsize 14000 --vbv-maxrate 25000 --me umh --merange 20 --b-adapt 2 --partitions p8x8,b8x8,i4x4,i8x8 --aud --psy-rd 1.0:0.3 --aq-mode 2
+X264;19;HDC Slug;--keyint 250 --bframes 8 --trellis 2 --ref 8 --deblock -2,-1 --subme 9 --direct auto --vbv-bufsize 14000 --vbv-maxrate 25000 --me esa --merange 24 --b-adapt 2 --partitions p8x8,b8x8,i4x4,i8x8,p4x4 --aud --psy-rd 1.0:0.4 --aq-mode 2
+X264;20;HDC Infinite Time;--keyint 250 --bframes 16 --trellis 2 --ref 16 --deblock -2,-1 --subme 10 --direct auto --vbv-bufsize 14000 --vbv-maxrate 25000 --me tesa --merange 32 --b-adapt 2 --partitions all --aud --psy-rd 1.0:0.5 --slow-firstpass --aq-mode 2
+X264;21;QuickTime7;--level 3.0 --ref 4 --bframes 1 --direct auto --no-cabac --trellis 1 --partitions p8x8,b8x8,i4x4 --me umh
+X264;22;QuickTime7 Optimized;--level 3.0 --vbv-bufsize 5000 --vbv-maxrate 12000 --deblock 0,0 --ref 5 --bframes 1 --b-adapt 1 --direct auto --subme 7 --partitions p8x8,b8x8,i4x4,p4x4, --me umh
+X264;23;High Variable;--keyint 250 --bframes 3 --trellis 0 --ref 3 --deblock -1,-1 --subme 7 --direct auto --me umh --b-adapt 2 --no-chroma-me --aud --qcomp 1
+X264;24;Anime;--ref 8 --bframes 16 --direct auto --deblock 1:1 --trellis 1 --partitions p8x8,b8x8,i4x4,i8x8 --me umh --merange 12 --aud
+X264;25;Archos605;--level 4 --ref 2 --no-cabac --partitions p8x8,b8x8,i4x4 --vbv-bufsize 5000 --vbv-maxrate 5000 --me umh
+X264;26;iPhone;--level 3 --no-cabac --partitions p8x8,b8x8,i4x4 --vbv-bufsize 10000 --vbv-maxrate 10000
+X264;27;Zune;--level 3 --nf --no-cabac --partitions p8x8,b8x8,i4x4 --qpmin 16 --vbv-bufsize 2500 --vbv-maxrate 2500 --me umh --merange 12
+X264;28;AppleTV;--level 3.1 --bframes 3 --direct none --no-cabac --partitions p8x8,b8x8,i4x4 --qpmin 16 --vbv-bufsize 1200 --vbv-maxrate 12000 --me umh --merange 12
+X264;29;PS3;--level 4.1 --ref 3 --bframes 3 --direct auto --trellis 1 --partitions p8x8,b8x8,i4x4,i8x8 --ipratio 1.1 --pbratio 1.1 --vbv-bufsize 9000 --vbv-maxrate 24000 --qcomp 0.5 --me umh --merange 12 --aud
+X264;30;BlueRay;--level 4.1 --keyint 24 --min-keyint 1 --ref 3 --mvrange 511 --bframes 3 --direct auto --partitions p8x8,b8x8,i4x4,i8x8 --ipratio 1.1 --pbratio 1.1 --vbv-bufsize 30000 --vbv-maxrate 38000 --qcomp 0.5 --me umh --mvrange 511 --aud --nal-hrd
+X264;31;Jult;--keyint 500 --min-keyint 50 --level 4.1 --no-cabac --partitions p8x8,b8x8,i4x4,i8x8 --8x8dct --filter -2,-1 --deblock -2:-2 --subme 9 --trellis 2 --no-dct-decimate --no-fast-pskip --nr 100 --ref 4 --bframes 3 --weightb --direct auto --me umh --merange 20 --rc-lookahead 60
+X264;32;HDC Sayth Opt HQS;--preset slower --bframes 5 --ref 5 --deblock -1,-1 --subme 8 --aq-mode 2 --level 4.1
+X264;33;HDC Sayth Opt HQM;--preset slow --bframes 3 --ref 4 --deblock -1,-1 --subme 7 --aq-mode 2 --level 4.1
+X264;34;HDC Sayth Opt HQF;--preset medium --bframes 3 --ref 3 --subme 6 --aq-mode 2 --level 4.1 --me umh
+X264;35;Rip Standard;--level 4.1 --keyint 240 --min-keyint 24 --ref 4 --mixed-refs --bframes 5 --b-adapt 2 --weightb --direct auto --deblock -1:-1 --subme 9 --trellis 2 --psy-rd 1.0:0 --partitions all --8x8dct --vbv-bufsize 50000 --vbv-maxrate 50000 --me umh --merange 24 --aq-strength 1.0 --no-dct-decimate --no-fast-pskip
+X264;36;Rip Extreme;--level 4.1 --keyint 240 --min-keyint 24 --ref 5 --mixed-refs --bframes 5 --b-adapt 2 --weightb --weightp 2 --direct auto --deblock -2:-1 --subme 9 --trellis 2 --psy-rd 1.0:0 --partitions all --8x8dct --vbv-bufsize 50000 --vbv-maxrate 50000 --me umh --merange 32 --aq-strength 1.0 --no-dct-decimate --rc-lookahead 50
+X264;37;Monte HQ;--preset medium --ref 4 --rc-lookahead 50 --b-pyramid strict --merange 24 --deblock -1,-1 --subme 9 --direct auto --me umh --b-adapt 2
+X264;38;CRF Bounded (8000);--preset medium --keyint 48 --rc-lookahead 50 --vbv-bufsize 40000 --vbv-maxrate 8000
+XVID;1;Ultra Fast;-max_bframes 0 -quality 4 -vhqmode 0 -max_key_interval 500 -notrellis -nochromame
+XVID;2;Very Fast;-max_bframes 0 -quality 5 -vhqmode 0 -max_key_interval 500 -notrellis -nochromame
+XVID;3;Fast;-max_bframes 1 -quality 4 -vhqmode 0 -max_key_interval 500 -notrellis -nochromame
+XVID;4;High Performance;-max_bframes 1 -quality 5 -bquant_ratio 100 -max_key_interval 250 -notrellis -nochromame
+XVID;5;Balanced;-max_bframes 1 -quality 6 -bquant_ratio 100 -max_key_interval 250 -notrellis -nochromame
+XVID;6;Better Quality;-max_bframes 1 -quality 6 -bquant_ratio 100 -max_key_interval 250 -nochromame
+XVID;7;Extreme Quality;-max_bframes 2 -vhqmode 1 -quality 6 -max_key_interval 125 -lumimasking -bquant_ratio 150
+XVID;8;Insane Quality;-max_bframes 2 -vhqmode 2 -quality 6 -max_key_interval 125 -lumimasking -bquant_ratio 150
+XVID;9;Slug;-max_bframes 2 -vhqmode 3 -quality 6 -max_key_interval 125 -lumimasking -bquant_ratio 150 -bvhq
+XVID;10;Infinite Time;-max_bframes 2 -vhqmode 4 -quality 6 -max_key_interval 125 -lumimasking -bquant_ratio 150 -bvhq -qpel -gmc
+XVID;11;Home Theater;-kboost 100 -chigh 30 -clow 15 -overhead 0 -turbo -max_key_interval 250 -closed_gop -lumimasking -imin 1 -pmin 1 -max_bframes 1 -bvhq -bquant_ratio 162 -bquant_offset 0 -bmin 1
+XVID;12;Home Theater2;-kboost 100 -ostrength 10 -oimprove 10 -odegrade 10 -chigh 30 -clow 15 -overhead 0 -vbvmax 4854000 -vbvsize 3145728 -vbvpeak 2359296 -max_key_interval 250 -vhqmode 4 -quality 6 -closed_gop -imin 0 -pmin 1 -max_bframes 1 -bvhq -bquant_ratio 162 -bquant_offset 0 -bmin 1 
+XVID;13;Balanced Altpass2;-max_bframes 1 -quality 6 -bquant_ratio 100 -max_key_interval 250 -notrellis -nochromame -altpass2
+DIVX;1;Ultra Fast;-pq 6950 -b 0
+DIVX;2;Very Fast;-pq 6950 -b 0
+DIVX;3;Fast;-pq 7110 -b 1
+DIVX;4;High Performance;-pq 7110 -b 1
+DIVX;5;Balanced;-pq 7670 -b 1
+DIVX;6;Better Quality;-pq 7670 -b 1
+DIVX;7;Extreme Quality;-pq 8100 -b 1 -g
+DIVX;8;Insane Quality;-pq 8100 -b 1 -g
+DIVX;9;Slug;-pq 8610 -b 2 -q -g
+DIVX;10;Infinite Time;-pq 8610 -b 2 -q -g
+WMV;1;Codec WMV7 fast
+WMV;2;Codec WMV8 fast
+WMV;3;Codec WMV8 good
+WMV;4;Codec WMV8 better
+WMV;5;Codec WMV9 fast
+WMV;6;Codec WMV9 good
+WMV;7;Codec WMV9 better
+WMV;8;Codec WVC1 fast
+WMV;9;Codec WVC1 good
+WMV;10;Codec WVC1 better
+WMV;11;Codec WVC1 best
+WMV;12;Codec WVC1 insane
+FFMPEG;1;Mpeg4 Fast;-vcodec mpeg4 -bf 0 -mbd 0 -g 300
+FFMPEG;2;Mpeg4 Medium;-vcodec mpeg4 -bf 1 -mbd 1 -g 300 -flags +4mv
+FFMPEG;3;Mpeg4 Good;-vcodec mpeg4 -bf 2 -mbd 1 -flags +4mv+aic -cmp 1 -g 250 -trellis 1
+FFMPEG;4;Mpeg4 High Quality;-vcodec mpeg4 -mbd 2 -flags +4mv+umv+aic -cmp 2 -subcmp 2 -g 150 -trellis 2
+FFMPEG;5;Mpeg4 SameQ;-vcodec mpeg4 -sameq -bf 1
+FFMPEG;6;H264 Fast;-vcodec libx264 -coder 0 -bf 1 -flags2 -wpred-dct8x8
+FFMPEG;7;H264 Medium;-vcodec libx264 -coder 1 -flags +loop -cmp +chroma -partitions +parti8x8+parti4x4+partp8x8+partb8x8 -me_method dia -subq 6 -me_range 16 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 1 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -directpred 1 -flags2 +fastpskip -bf 1
+FFMPEG;8;H264 Good;-vcodec libx264 -coder 1 -flags +loop -cmp +chroma -partitions +parti8x8+parti4x4+partp8x8+partb8x8 -me_method hex -subq 7 -me_range 16 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 1 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -directpred 1 -flags2 +fastpskip -bf 2
+FFMPEG;9;H264 HQ;-vcodec libx264 -coder 1 -flags +loop -cmp +chroma -partitions +parti8x8+parti4x4+partp8x8+partb8x8 -me_method umh -subq 8 -me_range 16 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 2 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -bf 4 -refs 4 -directpred 3 -trellis 1 -flags2 +bpyramid+wpred+mixed_refs+dct8x8+fastpskip
+FFMPEG;10;H264 SameQ;-vcodec libx264 -coder 1 -flags +loop -cmp +chroma -me_method umh -subq 7 -me_range 16 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 2 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -bf 3 -refs 3 -directpred 3 -trellis 1 -flags2 +wpred+mixed_refs+dct8x8+fastpskip
+MENCODER;1;Mpeg4 Fast;-ovc lavc -lavcopts vcodec=mpeg4:vbitrate:pass=2:vmax_b_frames=0:lumi_mask=0.1:dark_mask=0.1:tcplx_mask=0.1:scplx_mask=0.1:vme=4:mbd=1:v4mv:autoaspect:dia=1:vb_strategy=0:predia=1:last_pred=0
+MENCODER;2;Mpeg4 Balanced;-ovc lavc -lavcopts vcodec=mpeg4:vbitrate:pass=2:vmax_b_frames=2:lumi_mask=0.1:dark_mask=0.1:tcplx_mask=0.1:scplx_mask=0.1:vme=4:mbd=2:v4mv:autoaspect:dia=1:vb_strategy=1:turbo:predia=1:last_pred=2:vqcomp=0.6
+MENCODER;3;Mpeg4 Better;-ovc lavc -lavcopts vcodec=mpeg4:vbitrate:pass=2:vmax_b_frames=2:lumi_mask=0.1:dark_mask=0.1:tcplx_mask=0.1:scplx_mask=0.1:vme=4:mv0:mbd=2:v4mv:autoaspect:dia=-1:vb_strategy=1:turbo:predia=1:last_pred=2:vqcomp=0.6:cmp=3:subcmp=3:precmp=0
+MENCODER;4;Mpeg4 Slow;-ovc lavc -lavcopts vcodec=mpeg4:vbitrate:pass=2:vmax_b_frames=2:lumi_mask=0.1:dark_mask=0.1:tcplx_mask=0.1:scplx_mask=0.1:vme=4:mv0:mbd=2:v4mv:autoaspect:dia=-1:trell:vb_strategy=1:turbo:predia=1:last_pred=2:vqcomp=0.6:cmp=3:subcmp=3:precmp=0
+MENCODER;5;Mpeg4 Slowest;-ovc lavc -lavcopts vcodec=mpeg4:vbitrate:pass=2:vmax_b_frames=2:lumi_mask=0.1:dark_mask=0.1:tcplx_mask=0.1:scplx_mask=0.1:vme=4:mbd=2:v4mv:mv0:trell:cbp:autoaspect:dia=2:vb_strategy=1:turbo:predia=2:last_pred=3:vqcomp=0.6:cmp=3:subcmp=3:precmp=2:cmp=2:subcmp=2:preme=2:qns=2
+MENCODER;6;H264 Fast;-ovc x264 -x264encopts vbitrate:pass=2:threads=auto:frameref=1:bframes=1:nodeblock:nocabac:direct_pred=none:partitions=none:me=dia:me_range=8:subq=4:nochroma_me:nomixed_refs:trellis=0:nr=0
+MENCODER;7;H264 Balanced;-ovc x264 -x264encopts vbitrate:pass=2:threads=auto:frameref=3:bframes=3:deblock:direct_pred=auto:partitions=p8x8,b8x8:me=hex:me_range=12:subq=6:chroma_me:mixed_refs:trellis=1:weight_b:b_pyramid:nr=0
+MENCODER;8;H264 Better;-ovc x264 -x264encopts vbitrate:pass=2:threads=auto:frameref=5:bframes=4:deblock:direct_pred=auto:partitions=p8x8,b8x8:8x8dct:me=hex:me_range=16:subq=7:chroma_me:mixed_refs:trellis=1:weight_b:b_pyramid:nr=0
+MENCODER;9;H264 Slow;-ovc x264 -x264encopts vbitrate:pass=2:threads=auto:frameref=8:bframes=8:deblock:direct_pred=auto:partitions=p8x8,b8x8,i8x8:8x8dct:me=umh:me_range=24:subq=8:chroma_me:mixed_refs:trellis=2:weight_b:b_pyramid:nr=0
+MENCODER;10;H264 Slowest;-ovc x264 -x264encopts vbitrate:pass=2:threads=auto:frameref=16:bframes=16:deblock:direct_pred=auto:partitions=all:8x8dct:me=esa:me_range=32:subq=9:chroma_me:mixed_refs:trellis=2:weight_b:nr=0
+FFMPEG2THEORA;1;Theora Very Fast;--speedlevel 2 --keyint 250
+FFMPEG2THEORA;2;Theora Fast;--speedlevel 1 --keyint 200
+FFMPEG2THEORA;3;Theora Medium;--speedlevel 0 --keyint 150
+FFMPEG2THEORA;4;Theora Good;--speedlevel 0 --keyint 100
+FFMPEG2THEORA;5;Theora High;--speedlevel 0 --optimize --keyint 64 --optimize
