@@ -14,11 +14,11 @@ Procedure start()
   
   ffmpegbat.s=""
   
-  If windows=#True 
+  If windows=#True
     thread.s=" -threads "+StrF(Val(GetEnvironmentVariable("NUMBER_OF_PROCESSORS"))*1.5,0)+" "
   EndIf
   
- ;  If OSVersion()<=#PB_OS_Linux_Future : thread.s="-threads 0 " : EndIf
+  ;  If OSVersion()<=#PB_OS_Linux_Future : thread.s="-threads 0 " : EndIf
   
   If ReadFile(777,here.s+"profile.txt")
     While Eof(777) = #False
@@ -30,23 +30,6 @@ Procedure start()
     CloseFile(777)
   EndIf
   
-  If GetGadgetText(#presetsummary)="H264 ffpreset"
-    
-    If ExamineDirectory(0,here+"applications\presets","*.ffpreset")
-      countprofile.l=0
-      Repeat
-        type=NextDirectoryEntry(0)
-        If type=1 ; File
-          a$=LCase(DirectoryEntryName(0))
-          countprofile.l=countprofile.l+1
-          If countprofile.l=GetGadgetState(#speedbar)
-            encostring.s="-fpre "+Chr(34)+here.s+"applications\presets\"+a$+Chr(34)+" "
-          EndIf
-        EndIf
-      Until type=0
-    EndIf
-    
-  EndIf
   
   encostring.s=ReplaceString(encostring.s,"-threads 0",thread.s)
   
@@ -64,13 +47,13 @@ Procedure start()
   width.l=Val(GetGadgetText(#width))
   height.l=Val(GetGadgetText(#height))
   
-   If GetGadgetState(#allowresize)=1
+  If GetGadgetState(#allowresize)=1
     
     If leftcrop.l+topcrop.l+rightcrop.l+bottomcrop.l>0
       resizeffmpegbat.s=" -vf crop="+Str(twidth.l-acleft.l-acright.l)+":"+Str(theight.l-actop.l-acbottom.l)+":"+Str(acright.l)+":"+Str(acbottom.l)
       If width.l+height.l>0
         resizeffmpegbat.s=resizeffmpegbat.s+",scale="+Str(width.l)+":"+Str(height.l)+" "
-         resizeffmpegbat.s=resizeffmpegbat.s+"-aspect "+GetGadgetText(#dar)+" "
+        resizeffmpegbat.s=resizeffmpegbat.s+"-aspect "+GetGadgetText(#dar)+" "
       EndIf
     EndIf
     
@@ -81,7 +64,7 @@ Procedure start()
     EndIf
     
   EndIf
-    
+  
   If GetGadgetState(#deinterlace)=1 : ffmpegbat.s=ffmpegbat.s+"-deinterlace " : EndIf
   
   If GetGadgetText(#framerate)<>"automatic"
@@ -135,11 +118,15 @@ Procedure start()
     ffmpegbat.s=ffmpegbat.s+resizeffmpegbat.s+"-vcodec copy "+audioffmpegbat.s+"-y "+Chr(34)+outputfile.s+Chr(34)
   EndIf
   
+  If FindString(LCase(GetGadgetText(#presetsummary)),"LIBX264",0)
+    ffmpegbat.s=ReplaceString(ffmpegbat.s,GetGadgetText(#videokbits)+"k",GetGadgetText(#videokbits))
+  EndIf
+  
+  
   ;ffmpeg -i film.vob -an -vcodec rawvideo -pix_fmt yuv420p -cropleft 0 -cropright 0
   
-  
   If FindString(LCase(GetGadgetText(#presetsummary)),"pipe",0)
-       
+    
     ffmpegbat.s=ffmpeg.s+" -i "+Chr(34)+inputfile.s+Chr(34)+" -an -v 0 -pix_fmt yuv420p -f rawvideo "
     If GetGadgetText(#vframes)<>"" : ffmpegbat.s=ffmpegbat.s+" -vframes "+GetGadgetText(#vframes)+" " : EndIf
     If GetExtensionPart(outputfile.s)="avi" : outputfile.s=ReplaceString(outputfile.s,".avi",".mkv") : EndIf
@@ -151,7 +138,7 @@ Procedure start()
     If passx.l=4 : ffmpegbat.s=ffmpegbat.s+"--pass 2 --bitrate "+GetGadgetText(#videokbits)+" ": EndIf
     If passx.l=5 : ffmpegbat.s=ffmpegbat.s+"--crf "+GetGadgetText(#videokbits)+" ": EndIf
     ffmpegbat.s=ffmpegbat.s+"- --input-res "+GetGadgetText(#width)+"x"+GetGadgetText(#height)
-   EndIf
+  EndIf
   
   
   ffmpegbat.s=ReplaceString(ffmpegbat.s,"  "," ")
@@ -178,11 +165,11 @@ Procedure start()
   CloseFile(777)
   
   If passx.l=1  Or passx.l=2 Or passx.l=4 Or passx.l=5 Or passx.l=6  Or passx.l=7
-    If linux=#True 
+    If linux=#True
       RunProgram("chmod","+x "+Chr(34)+here.s+"autoffmpeg.bat"+Chr(34),here.s,#PB_Program_Wait)
       RunProgram("xterm","-e "+Chr(34)+here.s+"autoffmpeg.bat"+Chr(34),here.s,#PB_Program_Wait)
     EndIf
-    If windows=#True    
+    If windows=#True
       RunProgram(here.s+".autoffmpeg.bat","",here.s)
     EndIf
   EndIf
@@ -196,7 +183,7 @@ Procedure startqueue()
   WriteStringN(666,"")
   WriteStringN(666,GetGadgetText(#queue))
   CloseFile(666)
-  If linux=#True 
+  If linux=#True
     RunProgram("chmod","+x "+Chr(34)+here.s+".ffmpegqueue.bat"+Chr(34),here.s,#PB_Program_Wait)
     RunProgram("xterm","-e "+Chr(34)+here.s+".ffmpegqueue.bat"+Chr(34),here.s)
   EndIf
@@ -234,86 +221,35 @@ Procedure parseprofile_base()
   Next
   
   
-  If ExamineDirectory(0,here+"applications\presets","*.ffpreset")
-    countprofile.l=0
-    Repeat
-      type=NextDirectoryEntry(0)
-      If type=1 ; File
-        a$=LCase(DirectoryEntryName(0))
-        countprofile.l=countprofile.l+1
-      EndIf
-    Until type=0
-    If countprofile.l > 1 : AddGadgetItem(#presetsummary,-1,"H264 ffpreset") : EndIf
-  EndIf
-  
-  
 EndProcedure
 
 Procedure parseprofile()
   
-  countprofile.l=0
-  
-  If GetGadgetText(#presetsummary)<>"H264 ffpreset"
-    
-    If ReadFile(888,here.s+"profile.txt")
-      While Eof(888) = 0
-        line.s = LCase(ReadString(888))
-        If FindString(line.s,LCase(GetGadgetText(#presetsummary))+";",0)
-          countprofile.l=countprofile.l+1
-        EndIf
-      Wend
-      CloseFile(888)
-    EndIf
-    SetGadgetAttribute(#speedbar, #PB_TrackBar_Maximum ,countprofile.l)
-    
-    
-    
-    If ReadFile(888,here.s+"profile.txt")
-      While Eof(888) = 0
-        line.s = ReadString(888)
-        If FindString(line.s,";"+Str(GetGadgetState(#speedbar))+";",0) And FindString(line.s,GetGadgetText(#presetsummary),0)
-          SetGadgetText(#speedqualitytext,GetGadgetText(#presetsummary)+": "+StringField(line,3,";"))
-        EndIf
-      Wend
-      CloseFile(888)
-    EndIf
-    
+  If ReadFile(888,here.s+"profile.txt")
+    countprofile.l=0
+    While Eof(888) = 0
+      line.s = LCase(ReadString(888))
+      If FindString(line.s,LCase(GetGadgetText(#presetsummary))+";",0)
+        countprofile.l=countprofile.l+1
+      EndIf
+    Wend
+    CloseFile(888)
   EndIf
+  SetGadgetAttribute(#speedbar, #PB_TrackBar_Maximum ,countprofile.l)
   
-  If GetGadgetText(#presetsummary)="H264 ffpreset"
-    
-    If ExamineDirectory(0,here+"applications\presets","*.ffpreset")
-      Repeat
-        type=NextDirectoryEntry(0)
-        If type=1 ; File
-          a$=LCase(DirectoryEntryName(0))
-          countprofile.l=countprofile.l+1
-        EndIf
-      Until type=0
-      SetGadgetAttribute(#speedbar, #PB_TrackBar_Maximum ,countprofile.l)
-    EndIf
-    
-    
-    If ExamineDirectory(0,here+"applications\presets","*.ffpreset")
-      countprofile.l=0
-      Repeat
-        type=NextDirectoryEntry(0)
-        If type=1 ; File
-          a$=LCase(DirectoryEntryName(0))
-          countprofile.l=countprofile.l+1
-          If countprofile.l=GetGadgetState(#speedbar)
-            SetGadgetText(#speedqualitytext,a$)
-          EndIf
-        EndIf
-      Until type=0
-    EndIf
-    
-    
+  If ReadFile(888,here.s+"profile.txt")
+    While Eof(888) = 0
+      line.s = ReadString(888)
+      If FindString(line.s,";"+Str(GetGadgetState(#speedbar))+";",0) And FindString(line.s,GetGadgetText(#presetsummary),0)
+        Debug("state="+Str(GetGadgetState(#speedbar))+" preset="+GetGadgetText(#presetsummary))
+        SetGadgetText(#speedqualitytext,GetGadgetText(#presetsummary)+": "+StringField(line,3,";"))
+      EndIf
+    Wend
+    CloseFile(888)
   EndIf
   
   
 EndProcedure
-
 
 
 Procedure Dimb()
@@ -437,7 +373,7 @@ EndProcedure
 
 
 Procedure checkmedia2()
- 
+  
   ClearGadgetItems(#audiotrack)
   AddGadgetItem(#audiotrack,-1,"none")
   
@@ -457,19 +393,19 @@ Procedure checkmedia2()
   DeleteFile(here.s+"ffmpeganalysis.txt")
   CreateFile(987,here.s+"ffmpeganalysis.bat")
   
-  If linux=#True 
+  If linux=#True
     WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" -vf select='not(mod(n\,100))',cropdetect -an -y deleteme.avi 2>ffmpeganalysis.txt")
   EndIf
-  If windows=#True 
+  If windows=#True
     WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" -vf select=not(mod(n\,100)),cropdetect -an -y deleteme.avi 2>ffmpeganalysis.txt")
   EndIf
   
   CloseFile(987)
   
-    If windows=#True 
+  If windows=#True
     RunProgram(here.s+"ffmpeganalysis.bat","",here.s,#PB_Program_Wait)
   EndIf
- If linux=#True 
+  If linux=#True
     RunProgram("chmod","+x "+Chr(34)+here.s+"ffmpeganalysis.bat"+Chr(34),here.s,#PB_Program_Wait)
     RunProgram("xterm","-e "+Chr(34)+here.s+"ffmpeganalysis.bat"+Chr(34),here.s,#PB_Program_Wait)
   EndIf
@@ -477,7 +413,7 @@ Procedure checkmedia2()
   Delay(500)
   
   fh=ReadFile(#PB_Any,here.s+"ffmpeganalysis.txt")
-   While Eof(fh)=0
+  While Eof(fh)=0
     mess.s=ReadString(fh)
     
     If FindString(mess,"mpeg2video",0)
@@ -491,7 +427,7 @@ Procedure checkmedia2()
     EndIf
     If FindString(mess,"dvvideo",0)
       videocodec.s="dv"
-    EndIf    
+    EndIf
     If FindString(mess,"lagarith",0)
       videocodec.s="lagarith"
     EndIf
@@ -501,7 +437,7 @@ Procedure checkmedia2()
     If FindString(mess,"DAR ",0)
       aa.l=FindString(mess.s,"DAR",0)
       ar.s=StrF(ValF(StringField(StringField(StringField(Mid(mess.s,aa,1000),1,","),2," "),1,":"))/ValF(StringField(StringField(StringField(Mid(mess.s,aa,1000),1,","),2," "),2,":")),4)
-    EndIf    
+    EndIf
     If FindString(mess,"DAR 16:9]",0)
       ar.s="1.7778"
     EndIf
@@ -510,7 +446,7 @@ Procedure checkmedia2()
     EndIf
     If FindString(mess,"DAR 1:1]",0)
       ar.s="1"
-    EndIf    
+    EndIf
     If FindString(mess.s,"fps,",0)
       aa.l=FindString(mess.s,"fps,",0)
       framerate.f=ValF(StringField(StringField(Mid(mess.s,aa,1000),2,","),2," "))
@@ -541,11 +477,11 @@ Procedure checkmedia2()
       theight.l=Val((StringField(StringField(StringField(mess.s,3,","),2,"x"),1," ")))
       twidth.l=Val((StringField(StringField(StringField(mess.s,3,","),1,"x"),2," ")))
     EndIf
-    If FindString(mess.s,"Stream",0) And FindString(mess.s,"Video:",0)  And FindString(mess.s,"720x576",0) 
+    If FindString(mess.s,"Stream",0) And FindString(mess.s,"Video:",0)  And FindString(mess.s,"720x576",0)
       theight.l=576
       twidth.l=720
     EndIf
-    If FindString(mess.s,"Stream",0) And FindString(mess.s,"Video:",0)  And FindString(mess.s,"1920x1080",0) 
+    If FindString(mess.s,"Stream",0) And FindString(mess.s,"Video:",0)  And FindString(mess.s,"1920x1080",0)
       theight.l=1080
       twidth.l=1920
     EndIf
@@ -573,10 +509,10 @@ Procedure checkmedia2()
     
   Wend
   
-
+  
   CloseFile(fh)
   
-   If framerate.f=0 : framerate.f=tbr.f : EndIf
+  If framerate.f=0 : framerate.f=tbr.f : EndIf
   
   ;ffmpeg rounding error
   
@@ -597,7 +533,7 @@ Procedure checkmedia2()
   If CountGadgetItems(#audiotrack)>1 : SetGadgetState(#audiotrack,1) : EndIf
   If CountGadgetItems(#audiotrack)<=1 : SetGadgetState(#audiotrack,0) : EndIf
   If tsec.l > 1 : SetGadgetText(#videolenght,StrF(tsec.l/60,3)) : EndIf
-    
+  
   If GetGadgetText(#arcombo)="" : SetGadgetText(#arcombo,StrF(twidth.l/theight.l,4)) : EndIf
   
   Debug(" -cropleft "+Str(acleft.l)+" -croptop "+Str(actop.l)+" -cropright "+Str(acright.l)+" -cropbottom "+Str(acbottom.l)+" " )
@@ -632,7 +568,7 @@ Procedure checkmedia2()
   Debug("ar.s"=ar.s)
   If tsec.l<5 : tsec.l=framecount.l/framerate.f : EndIf
   
- 
+  
   messinfo.s="Input File: "+GetFilePart(inputfile.s)+Chr(10)
   messinfo.s=messinfo.s+"Video Codec: "+videocodec.s+Chr(10)
   messinfo.s=messinfo.s+"Width: "+Str(twidth.l)+"; "
@@ -658,7 +594,7 @@ EndProcedure
 Procedure autocrop()
   
   
-  If windows=#True 
+  If windows=#True
     If FileSize(mplayer.s)=-1
       MessageRequester("AutoFFmpegGui","No mplayer found"+Chr(13)+Chr(13)+"Please download mplayer.exe and put in the same directory as AutoFFmpegGui")
       ProcedureReturn
@@ -723,7 +659,7 @@ EndProcedure
 Procedure openinputfile()
   
   
-  If linux=#True 
+  If linux=#True
     inputfile.s=OpenFileRequester("Open File to Encode", last.s, "Supported Movie File|*VOB;*.EVO;*.M2TS;*.TS;*.MTS;*.MKV;.OGM;*.MPG;*.MPEG;*.AVS;*.AVI;*.M2T;*.VRO;*.MOV;*vob;*.evo;*.m2ts;*.ts;*.mts;*.mkv;.ogm;*.mpg;*.mpeg;*.svi;*.m2t;*.vro;*.mov|All files|*.*",0)
   EndIf
   If windows=#True
@@ -757,26 +693,26 @@ EndProcedure
 
 Procedure allowresize()
   
-     
-    If GetGadgetState(#allowresize)=#PB_Checkbox_Unchecked
-      SetGadgetText(#width,Str(twidth.l))
-      SetGadgetText(#height,Str(theight.l))
-      DisableGadget(#topcrop,1)
-      DisableGadget(#rightcrop,1)
-      DisableGadget(#bottomcrop,1)
-      DisableGadget(#leftcrop,1)
-      DisableGadget(#width,1)
-      DisableGadget(#height,1)
-    Else
-      DisableGadget(#topcrop,0)
-      DisableGadget(#rightcrop,0)
-      DisableGadget(#bottomcrop,0)
-      DisableGadget(#leftcrop,0)
-      DisableGadget(#width,0)
-      DisableGadget(#height,0)
-    EndIf
-   
-    
+  
+  If GetGadgetState(#allowresize)=#PB_Checkbox_Unchecked
+    SetGadgetText(#width,Str(twidth.l))
+    SetGadgetText(#height,Str(theight.l))
+    DisableGadget(#topcrop,1)
+    DisableGadget(#rightcrop,1)
+    DisableGadget(#bottomcrop,1)
+    DisableGadget(#leftcrop,1)
+    DisableGadget(#width,1)
+    DisableGadget(#height,1)
+  Else
+    DisableGadget(#topcrop,0)
+    DisableGadget(#rightcrop,0)
+    DisableGadget(#bottomcrop,0)
+    DisableGadget(#leftcrop,0)
+    DisableGadget(#width,0)
+    DisableGadget(#height,0)
+  EndIf
+  
+  
 EndProcedure
 
 
@@ -787,14 +723,14 @@ CompilerIf #PB_Compiler_OS = #PB_OS_Linux : linux=#True : CompilerEndIf
 CompilerIf #PB_Compiler_OS = #PB_OS_Windows : windows=#True : CompilerEndIf
 
 If linux=#True : mplayer.s="mplayer" : ffmpeg.s="ffmpeg" :  x264.s="x264" :  EndIf
- 
-  
+
+
 If windows=#True
   
   If FileSize(here.s+"x264.exe")<>-1 : x264.s=Chr(34)+here.s+"x264.exe"+Chr(34) : EndIf
   If FileSize(here.s+"mplayer.exe")<>-1 : mplayer.s=Chr(34)+here.s+"mplayer.exe"+Chr(34) : EndIf
   If FileSize(here.s+"ffmpeg.exe")<>-1 : ffmpeg.s=Chr(34)+here.s+"ffmpeg.exe"+Chr(34) : EndIf
-
+  
   If FileSize(here.s+"applications\mplayer\mplayer.exe")<>-1 : mplayer.s=Chr(34)+here.s+"applications\mplayer\mplayer.exe"+Chr(34) : EndIf
   If FileSize(here.s+"applications\ffmpeg\ffmpeg.exe")<>-1 : ffmpeg.s=Chr(34)+here.s+"applications\ffmpeg\ffmpeg.exe"+Chr(34) : EndIf
   If FileSize(here.s+"applications\x264\x264.exe")<>-1 : x264.s=Chr(34)+here.s+"applications\x264\x264.exe"+Chr(34) : EndIf
@@ -805,8 +741,8 @@ If windows=#True
   If FileSize(here.s+"tools\ffmpeg\ffmpeg.exe")<>-1 : ffmpeg.s=Chr(34)+here.s+"tools\ffmpeg\ffmpeg.exe"+Chr(34) : EndIf
   If FileSize(here.s+"tools\x264\x264.exe")<>-1 : x264.s=Chr(34)+here.s+"tools\x264tools.exe"+Chr(34) : EndIf
   
-EndIf  
-  
+EndIf
+
 
 
 parseprofile_base()
@@ -837,7 +773,7 @@ Repeat ; Start of the event loop
     If GadgetID = #open
       openinputfile()
       
-    ElseIf GadgetID = #save      
+    ElseIf GadgetID = #save
       mess.s=GetCurrentDirectory()
       If inputfile.s<>"" : mess.s=GetPathPart(inputfile.s) : EndIf
       outputfile.s=SaveFileRequester("Save output file",GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s)))+"_autoff","*.avi|*.avi*.mkv|*.mkv|*.mp4|*.mp4|*.h264|*.h264",0)
@@ -849,7 +785,7 @@ Repeat ; Start of the event loop
         If index=4 : outputfile.s=outputfile.s+".h264" : EndIf
         SetGadgetText(#outputstring,outputfile.s)
       EndIf
-            
+      
       
     ElseIf GadgetID = #preview
       preview()
@@ -863,28 +799,13 @@ Repeat ; Start of the event loop
     ElseIf GadgetID = #presetsummary
       parseprofile()
       
-      
-      Select GetGadgetText(#presetsummary)
-      Case "pipe to X264","H264 ffpreset"
-        ClearGadgetItems(#pass)
-        AddGadgetItem(#pass,-1,"1 pass")
-        AddGadgetItem(#pass,-1,"2 pass")
-        AddGadgetItem(#pass,-1,"CRF 1 pass")
-        SetGadgetState(#pass,0)
-      Case "WMV"
-        ClearGadgetItems(#pass)
-        AddGadgetItem(#pass,-1,"1 pass")
-        AddGadgetItem(#pass,-1,"2 pass")
-        SetGadgetState(#pass,0)
-      Default
-        ClearGadgetItems(#pass)
-        AddGadgetItem(#pass,-1,"1 pass")
-        AddGadgetItem(#pass,-1,"2 pass")
-        AddGadgetItem(#pass,-1,"CRF 1 pass")
-        AddGadgetItem(#pass,-1,"SameQ")
-        AddGadgetItem(#pass,-1,"Copy Video")
-        SetGadgetState(#pass,0)
-      EndSelect
+      ClearGadgetItems(#pass)
+      AddGadgetItem(#pass,-1,"1 pass")
+      AddGadgetItem(#pass,-1,"2 pass")
+      AddGadgetItem(#pass,-1,"CRF 1 pass")
+      AddGadgetItem(#pass,-1,"SameQ")
+      AddGadgetItem(#pass,-1,"Copy Video")
+      SetGadgetState(#pass,0)
       
     ElseIf GadgetID = #speedbar
       parseprofile()
@@ -901,11 +822,12 @@ Repeat ; Start of the event loop
     ElseIf GadgetID = #width
       silentscale()
       
-      ElseIf GadgetID = #allowresize
+    ElseIf GadgetID = #allowresize
       allowresize()
       
     ElseIf GadgetID = #modheight
       silentscale()
+      
     ElseIf GadgetID = #modwidth
       silentscale()
       
@@ -1035,8 +957,8 @@ Until Event = #PB_Event_CloseWindow ; End of the event loop
 End
 ;
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 474
-; FirstLine = 457
+; CursorPosition = 37
+; FirstLine = 10
 ; Folding = ---
 ; EnableXP
 ; EnableUser
@@ -1044,6 +966,6 @@ End
 ; Executable = AutoFFmpegGui.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 599
+; EnableCompileCount = 616
 ; EnableBuildCount = 31
 ; EnableExeConstant

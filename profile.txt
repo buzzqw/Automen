@@ -4,6 +4,8 @@ Mpeg4;3;Good;-vcodec mpeg4 -bf 2 -mbd 1 -flags +mv4+aic -cmp 1 -g 250 -trellis 1
 Mpeg4;4;High;-vcodec mpeg4 -mbd 2 -flags +mv4+umv+aic -cmp 2 -subcmp 2 -g 150 -trellis 2 -bf 1 -threads 0
 Mpeg4;5;Extreme;-vcodec mpeg4 -mbd rd -bf 2 -flags +mv4+umv+aic -cmp 2 -subcmp 2 -g 150 -trellis 2 -threads 0
 Mpeg4;6;Super;-vcodec mpeg4 -mbd rd -bf 2 -flags +mv4+umv+aic+mv0+qprd -cmp 2 -subcmp 2 -g 150 -trellis 2 -threads 0
+LIBVPX;1;Base;-vcodec libvpx -g 120 -rc_lookahead 16 -quality good -speed 0 -profile 1 -qmax 51 -qmin 11 -slices 4 -vb 2M -maxrate 24M -minrate 100k -arnr_max_frames 7 -arnr_strength 5 -arnr_type 3
+LIBX264;1;Base;-vcodec libx264 -coder 1 -flags loop+cgop -cmp chroma -partitions parti8x8+parti4x4+partp8x8+partp4x4-partb8x8 -me_method hex -subq 5 -me_range 16 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 1 -qcomp 0.6 -qmin 0 -qmax 69 -qdiff 4 -directpred 1 -flags2 +fastpskip -cqp 0 -wpredp 2
 pipe to X264;1;pipe UltraFast;--preset ultrafast
 pipe to X264;2;pipe SuperFast;--preset superfast
 pipe to X264;3;pipe VeryFast;--preset veryfast
@@ -19,8 +21,8 @@ XVID;1;Fast;-vcodec libxvid -bf 0 -g 250 -qmin 2 -qmax 31 -threads 0
 XVID;2;Balanced;-vcodec libxvid -bf 1 -g 250 -qmin 2 -qmax 31 -mbd 1 -flags +umv -threads 0
 XVID;3;Extra;-vcodec libxvid -bf 2 -g 125 -qmin 2 -qmax 31 -mbd 2 -flags +umv+aic -threads 0
 XVID;4;Extreme;-vcodec libxvid -mbd rd -bf 2 -flags +umv+aic -cmp 2 -subcmp 2 -g 150 -trellis 2 -threads 0
-MSMPG4;1;Fast;-vcodec msmpeg4v2 -bf 0 -g 200
-MSMPG4;2;Good;-vcodec msmpeg4v2 -bf 0 -mbd 2 -g 150 -mbd 1 -flags +4mv+aic
-MSMPG4;3;High-Quality;-vcodec msmpeg4v2 -mbd 2 -flags +4mv+umv+aic -cmp 2 -subcmp 2 -g 150 -trellis 2 -bf 0
+MSMPEG4V2;1;Fast;-vcodec msmpeg4v2 -bf 0 -g 200
+MSMPEG4V2;2;Good;-vcodec msmpeg4v2 -bf 0 -mbd 2 -g 150 -mbd 1 -flags +4mv+aic
+MSMPEG4V2;3;High-Quality;-vcodec msmpeg4v2 -mbd 2 -flags +4mv+umv+aic -cmp 2 -subcmp 2 -g 150 -trellis 2 -bf 0
 WMV;1;Fast;-vcodec wmv1
 WMV;2;Medium;-vcodec wmv2
