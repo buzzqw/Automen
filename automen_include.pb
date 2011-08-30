@@ -1,0 +1,571 @@
+
+; PureBasic Visual Designer v3.95 build 1485 (PB4Code)
+
+
+
+
+Global ver.s
+
+ver.s="v6.1";+Str(#pb_editor_buildcount)+"."+Str(#pb_editor_compilecount)
+;
+Enumeration
+  #Window_0
+EndEnumeration
+
+
+;
+Enumeration
+  #open
+  #speedqualitytext
+  #save
+  #ffmpeg
+  #multithread
+  #resizer
+  #inputstring
+  #outputstring
+  #analyzewithhandbrake 
+  #preview
+  #play
+  #Panel_0
+  #container
+  #extsub
+  #basicfile
+  #videocodec
+  #videokbits
+  #videolenght
+  #cds
+  #vframes
+  #trackwidth
+  #height
+  #width
+  #topcrop
+  #bottomcrop
+  #rightcrop
+  #leftcrop
+  #arcombo
+  #autocrop
+  #audibit
+  #sampling
+  #shutdown
+  #channel
+  #audiotrack
+  #audionormalize
+  
+  #denoise
+  #allowresize
+  #audiocodec
+  #pass
+  #Panel_2
+  #encode
+  #muxvideotrackbtt
+  #muxvideotrack
+  #muxaudiotrackbtt
+  #muxaudiotrack1
+  #muxaudiotrack2btt
+  #muxaudiotrack2
+  #framerate
+  #anamorphic
+  #dar
+  #demuxinputbutton
+  #demuxinputfile
+  #demuxpathbutton
+  #demuxpathtext
+  #whatdemux
+  #startdemux
+  #muxtype
+  #fixbutton
+  #filetofix
+  #outputbuttonfix
+  #filefixed
+  #startfix
+  #addtoqueue
+  #removequeuejob
+  #modheight
+  #itu
+  #mdeint
+  #modwidth
+  #startqueue
+  #arerror
+  #queue
+  #startmux
+  #speedquality
+  #mp3mode
+  #Text_32
+  #Text_33
+  #paypal
+  #noodml
+  #nosubs
+  #ffourcc
+  #buttontomencoder
+  #ffmpegpipe
+  #buttontomkvmerge
+  #buttontomp4box
+  #buttontomplayer
+  #pathtomencoder
+  #pathtomkvmerge
+  #widthf
+  #heightf
+  #handbrake
+  #framecountf
+  #frameratef
+  #pathtomp4box
+  #addedtoqueue
+  #encodewith
+  #pathtomplayer
+  #Window_1
+  #subs
+  #pgcaccept
+  #buttonffmpeg
+  #pathtoffmpeg
+  #Text_122
+  #pgc
+  #savesetting
+  #text50
+  #text51
+  #pathtohandbrakecli
+  #buttonthandbrakecli
+  #makereport
+  #buttonaddtoqueue
+  #statusbar
+EndEnumeration
+
+
+
+#PROCESS32LIB = 9999
+#PSAPI = 9998
+
+Enumeration
+  #StatusBar_0
+EndEnumeration
+
+UsePNGImageDecoder()
+
+Global Image0,FontID1,comboheight.l
+
+If OSVersion()=1200
+  comboheight.l=25
+Else
+  comboheight.l=20
+EndIf
+
+Image0 = CatchImage(#paypal, ?Image0)
+
+If LoadFont(1,GetCurrentDirectory()+"DejaVuSansMono.ttf", 8)
+  SetGadgetFont(#PB_Default,FontID(1))
+Else
+  LoadFont(1,"Arial", 8)
+  SetGadgetFont(#PB_Default,FontID(1))
+EndIf
+
+
+DataSection
+  Image0: IncludeBinary "_paypal_logo.png"
+EndDataSection
+
+
+Procedure Open_Window_1()
+  If OpenWindow(#Window_1, 216, 0, 507, 85, "Select PGC and click Accept PGC",  #PB_Window_SystemMenu | PB_Window_TitleBar )
+    
+    ButtonGadget(#pgcaccept,380,10,120,20,"Accept PGC")
+    ComboBoxGadget(#pgc, 100, 10, 270, 20)
+    TextGadget(#Text_122, 10, 10, 80, 20, "Select PGC", #PB_Text_Center | #PB_Text_Border)
+    
+    
+  EndIf
+EndProcedure
+
+
+Procedure Open_Window_0()
+  If OpenWindow(#Window_0, 336, 289, 520, 430, "AutoMen "+ver.s,  #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_TitleBar|#PB_Window_ScreenCentered)
+        
+    CreateStatusBar(#statusbar,WindowID(#Window_0))
+    AddStatusBarField(#PB_Ignore)
+    
+    ButtonGadget(#open, 20, 40, 70, comboheight, "Open ...")
+    ButtonGadget(#save, 20, 70, 70, comboheight, "Save ...")
+    StringGadget(#inputstring, 100, 40, 300, comboheight, "")
+    StringGadget(#outputstring, 100, 70, 300, comboheight, "")
+    
+    Frame3DGadget(#PB_Any, 20, 100, 480, 270, "")
+    TextGadget(#PB_Any, 20, 10, 340, 20, " 1. Open File, 2. Select Encoding Mode , 3. Encode")
+    
+    ButtonGadget(#play, 410, 10, 90, comboheight, "Play")
+    ButtonGadget(#encode, 410, 40, 90, comboheight, "Encode")
+    ButtonGadget(#preview, 410, 70, 90, comboheight, "Preview")
+    ImageGadget(#paypal, 20, 378, 85, 25, Image0)
+    TextGadget(#PB_Any,125,380,375,20,"Buzzqw's Mencoder GUI",#PB_Text_Border|#PB_Text_Center)
+    
+    
+    ;- main panel
+    PanelGadget(#Panel_0, 30, 120, 460, 240)
+      AddGadgetItem(#Panel_0, -1, "Summary")
+      
+      Frame3DGadget(#PB_Any, 8, 3, 215, 205, "Source Format")
+      TextGadget(#PB_Any,20,28,90,20,"Width/Height") : StringGadget(#widthf,110,25,50,20,"") :  StringGadget(#heightf,165,25,50,20,"")
+      TextGadget(#PB_Any,20,53,85,20,"FPS/Num Frames") : StringGadget(#frameratef,110,50,50,20,"") : StringGadget(#framecountf,165,50,50,20,"")
+      
+      EditorGadget(#basicfile, 20,80, 195,120)
+      
+      
+      Frame3DGadget(#PB_Any, 233, 3, 218, 123, "Target Format")
+      TextGadget(#PB_Any,245,28,80,25,"Encode with")
+      ComboBoxGadget(#videocodec, 315, 25,65,comboheight )
+      AddGadgetItem(#videocodec,-1,"XviD")
+      AddGadgetItem(#videocodec,-1,"Mpeg4")
+      AddGadgetItem(#videocodec,-1,"X264")      
+      SetGadgetState(#videocodec,0)
+      
+      
+      ComboBoxGadget(#container,385,25,60,comboheight.l)
+      AddGadgetItem(#container,-1,"AVI")
+      AddGadgetItem(#container,-1,"MP4")
+      AddGadgetItem(#container,-1,"MKV")
+      SetGadgetState(#container,0)
+      
+      
+      
+      TextGadget(#PB_Any,245,53,60,20,"Pass to do")
+      ComboBoxGadget(#pass, 315, 50,130,comboheight )
+      AddGadgetItem(#pass,-1,"1 pass")
+      AddGadgetItem(#pass,-1,"2 pass")
+      AddGadgetItem(#pass,-1,"CRF 1 pass")
+      AddGadgetItem(#pass,-1,"Copy Video")
+      SetGadgetState(#pass,0)
+      
+      TextGadget(#PB_Any,245,81,60,20,"Preset")
+      TrackBarGadget(#speedquality,308,75,140,17,1,10,#PB_TrackBar_Ticks)
+      StringGadget(#speedqualitytext,245,95,200,20,"",#PB_String_ReadOnly|#PB_Text_Center)
+      
+      Frame3DGadget(#PB_Any, 233, 127, 218, 80, "Video Options")
+      TextGadget(#Text_32, 245, 145, 70, 20, "Video Bitrate:")
+      StringGadget(#videokbits, 320, 145, 60, 20, "")
+      TextGadget(#Text_33, 385,149, 40, 20, "kbit/s")
+      
+      StringGadget(#videolenght, 245, 170, 40, 20, "",#PB_String_ReadOnly)
+      TextGadget(#PB_Any, 290, 173, 80, 20, "minutes keep in:")
+      StringGadget(#cds,375,170,40,20,"700",#PB_String_Numeric)
+      TextGadget(#PB_Any,420,173,20,20,"MB")
+      
+      
+      
+      
+      ;-panel video
+      AddGadgetItem(#Panel_0, -1, "Video")
+      
+      
+      Frame3DGadget(#PB_Any, 8, 8, 440, 200, "Resizing Options")
+      
+      CheckBoxGadget(#allowresize, 18, 25, 95, 20, "Allow Resize")
+      SetGadgetState(#allowresize,1)
+      
+      TextGadget(#PB_Any, 163, 25, 60, 20, " DAR:" ,#PB_Text_Center)
+      StringGadget(#dar, 223, 25, 60, 20, "",#PB_String_ReadOnly)
+      
+      
+      ButtonGadget(#autocrop, 318, 25, 120, comboheight, " Do AutoCrop",#PB_Button_Left)
+      
+      TextGadget(#PB_Any, 242,50, 67, 20, "Frame Pattern")
+      ComboBoxGadget(#mdeint, 318, 50 ,120, comboheight)
+      AddGadgetItem(#mdeint,-1,"Progressive")
+      AddGadgetItem(#mdeint,-1,"FILM NTSC (29.97->23.976)")
+      AddGadgetItem(#mdeint,-1,"Interlaced")
+      AddGadgetItem(#mdeint,-1,"Telecine")
+      AddGadgetItem(#mdeint,-1,"Mixed Prog/Telecine")
+      AddGadgetItem(#mdeint,-1,"Mixed Prog/Interlaced")
+      AddGadgetItem(#mdeint,-1,"Change FPS to 23.976")
+      AddGadgetItem(#mdeint,-1,"Change FPS to 25")
+      AddGadgetItem(#mdeint,-1,"Change FPS to 29.97")
+      SetGadgetState(#mdeint,0)
+      
+      
+      TextGadget(#PB_Any, 242,75, 85, 20, "Aspect Ratio")
+      ComboBoxGadget(#arcombo, 318, 75, 120, comboheight,#PB_ComboBox_Editable)
+      AddGadgetItem(#arcombo,-1,"1")
+      AddGadgetItem(#arcombo,-1,"1.3334")
+      AddGadgetItem(#arcombo,-1,"1.7778")
+      AddGadgetItem(#arcombo,-1,"1.85")
+      AddGadgetItem(#arcombo,-1,"2.35")
+      
+      CheckBoxGadget(#anamorphic, 318, 100,115,20,"Anamorphic Resiz.")
+      CheckBoxGadget(#itu, 318, 120,120,20,"Follow ITU Resizing")
+      SetGadgetState(#itu,0)
+      
+      
+      
+      TextGadget(#PB_Any, 18, 53, 75, 20, "Top Crop ---->")
+      StringGadget(#topcrop, 95, 53, 60, 20, "")
+      StringGadget(#leftcrop, 18, 78, 60, 20, "")
+      TextGadget(#PB_Any, 90, 82, 73, 20, "<-Left | Right->")
+      StringGadget(#rightcrop, 173, 78, 60, 20, "")
+      TextGadget(#PB_Any, 18, 103, 90, 20, "Bottom Crop ->")
+      StringGadget(#bottomcrop, 95, 103, 60, 20, "")
+      TextGadget(#PB_Any, 163, 108, 60, 20, " AR Error:" ,#PB_Text_Center)
+      StringGadget(#arerror, 223, 103, 60, 20, "",#PB_String_ReadOnly)
+      
+      TrackBarGadget(#trackwidth, 13,130,275, 17, 0, 360)
+      
+      TextGadget(#PB_Any,18,153,145,20,"Manually Set Width x Height:")
+      StringGadget(#width, 160, 150,50, 20, "")
+      TextGadget(#PB_Any, 223, 153, 10, 20, "x")
+      StringGadget(#height, 238, 150, 50, 20, "")
+      
+      TextGadget(#PB_Any,18,183,155,20,"Set MOD block Width x Height:")
+      ComboBoxGadget(#modwidth,168,180,50,comboheight)
+      AddGadgetItem(#modwidth,-1,"16")
+      AddGadgetItem(#modwidth,-1,"8")
+      AddGadgetItem(#modwidth,-1,"4")
+      SetGadgetText(#modwidth,"4")
+      TextGadget(#PB_Any, 223, 183, 10, 20, "x")
+      ComboBoxGadget(#modheight,238,180,50,comboheight)
+      AddGadgetItem(#modheight,-1,"16")
+      AddGadgetItem(#modheight,-1,"8")
+      AddGadgetItem(#modheight,-1,"4")
+      SetGadgetText(#modheight,"16")
+      
+      ;-audio panel
+      AddGadgetItem(#Panel_0, -1, "Audio")
+      Frame3DGadget(#PB_Any, 8, 35, 220, 140, "Audio Parameters")
+      Frame3DGadget(#PB_Any, 238,10, 210,50, "Audio Options")
+      Frame3DGadget(#PB_Any, 238,70, 210,50, "Subtitle Track")
+      ComboBoxGadget(#subs, 247, 90, 175,comboheight)
+      ButtonGadget(#extsub,425,90,20,20,"...")
+      
+      
+      TextGadget(#text50, 18, 58, 70, 20, "Audio Bitrate:")
+      ComboBoxGadget(#audibit, 98, 55, 70, comboheight,#PB_ComboBox_Editable)
+      AddGadgetItem(#audibit,-1,"320")
+      AddGadgetItem(#audibit,-1,"288")
+      AddGadgetItem(#audibit,-1,"256")
+      AddGadgetItem(#audibit,-1,"224")
+      AddGadgetItem(#audibit,-1,"192")
+      AddGadgetItem(#audibit,-1,"160")
+      AddGadgetItem(#audibit,-1,"128")
+      AddGadgetItem(#audibit,-1,"96")
+      AddGadgetItem(#audibit,-1,"64")
+      SetGadgetState(#audibit,6)
+      TextGadget(#text51, 178, 55, 40, 20, "kbit/s")
+      TextGadget(#PB_Any, 18, 88, 70, 20, "Sampling:")
+      ComboBoxGadget(#sampling, 98, 85, 70, comboheight,#PB_ComboBox_Editable)
+      AddGadgetItem(#sampling,-1,"AUTO")
+      AddGadgetItem(#sampling,-1,"48000")
+      AddGadgetItem(#sampling,-1,"44100")
+      AddGadgetItem(#sampling,-1,"22050")
+      SetGadgetState(#sampling,0)
+      TextGadget(#PB_Any, 178, 85, 40, 20, "hz")
+      TextGadget(#PB_Any, 178, 143, 45, 20, "for MP3")
+      TextGadget(#PB_Any, 18, 113, 70, 20, "Channels")
+      ComboBoxGadget(#channel, 98, 110, 70, comboheight)
+      AddGadgetItem(#channel,-1,"Original")
+      AddGadgetItem(#channel,-1,"2")
+      AddGadgetItem(#channel,-1,"1")
+      SetGadgetState(#channel,1)
+      
+      TextGadget(#PB_Any, 18, 143, 70, 20, "Bitrate Mode")
+      ComboBoxGadget(#mp3mode,98,140,70,comboheight)
+      AddGadgetItem(#mp3mode,-1,"cbr")
+      AddGadgetItem(#mp3mode,-1,"abr")
+      SetGadgetState(#mp3mode,0)
+      
+      
+      CheckBoxGadget(#audionormalize, 248, 33, 150, 20, "Normalize Audio Track")
+      SetGadgetState(#audionormalize,1)
+      
+      
+      TextGadget(#PB_Any, 15, 188, 70, 20, "Audio track:")
+      ComboBoxGadget(#audiotrack, 85, 183, 363, comboheight)
+      AddGadgetItem(#audiotrack,-1,"none")
+      SetGadgetState(#audiotrack,0)
+      
+      TextGadget(#PB_Any, 10, 18, 80, 20, "Audio Codec:")
+      
+      ComboBoxGadget(#audiocodec, 98, 15,130,comboheight )
+      AddGadgetItem(#audiocodec,-1,"MP3 Audio")
+      AddGadgetItem(#audiocodec,-1,"AAC Audio")
+      AddGadgetItem(#audiocodec,-1,"AC3 Audio")
+      AddGadgetItem(#audiocodec,-1,"OGG Audio")
+      AddGadgetItem(#audiocodec,-1,"Copy Audio")
+      AddGadgetItem(#audiocodec,-1,"No Audio")
+      SetGadgetText(#audiocodec,"MP3 Audio")
+      SetGadgetState(#audiocodec,0)
+      
+      ;-filters panel
+      AddGadgetItem(#Panel_0, -1, "Filters")
+      TextGadget(#PB_Any,18, 20, 80, 20, "Denoise Level")
+      ComboBoxGadget(#denoise, 105,18,110,comboheight)
+      AddGadgetItem(#denoise,-1,"NONE")
+      AddGadgetItem(#denoise,-1,"Super Light")
+      AddGadgetItem(#denoise,-1,"Light")
+      AddGadgetItem(#denoise,-1,"Normal")
+      AddGadgetItem(#denoise,-1,"Severe")
+      SetGadgetState(#denoise,1)
+      
+      
+      TextGadget(#PB_Any,280, 20, 80, 20, "Select Encoder")
+      ComboBoxGadget(#encodewith,220,48,210,comboheight)    
+      SetGadgetState(#encodewith,0)
+      
+      
+      TextGadget(#PB_Any,18, 50, 80, 20, "Select Resizer")
+      ComboBoxGadget(#resizer, 105,48,110,comboheight)
+      AddGadgetItem(#resizer,-1,"0 bilinear")
+      AddGadgetItem(#resizer,-1,"1 bilinear")
+      AddGadgetItem(#resizer,-1,"2 bicubic")
+      AddGadgetItem(#resizer,-1,"3 experimental")
+      AddGadgetItem(#resizer,-1,"4 point")
+      AddGadgetItem(#resizer,-1,"5 area")
+      AddGadgetItem(#resizer,-1,"6 bicublin")
+      AddGadgetItem(#resizer,-1,"7 gauss")
+      AddGadgetItem(#resizer,-1,"8 sinc")
+      AddGadgetItem(#resizer,-1,"9 lanczos")
+      AddGadgetItem(#resizer,-1,"10 spline")
+      SetGadgetState(#resizer,2)
+      
+      
+      CheckBoxGadget(#shutdown,18,80,195,20,"Shutdown at end of encoding")
+      CheckBoxGadget(#noodml,18,105,185,20,"Don't use ODML")
+      CheckBoxGadget(#ffourcc,18,130,195,20,"FourCC DIVX for XviD encoding")      
+      CheckBoxGadget(#analyzewithhandbrake,18,155,260,20,"Analyze and encode file with HandBrakeCLI")
+      CheckBoxGadget(#multithread,18,180,195,20,"Disable Multithread Encoding")
+      
+      
+            
+      ;-path panel
+      AddGadgetItem(#Panel_0, -1, "Program path")
+      
+      ButtonGadget(#buttontomencoder, 10, 15, 95, comboheight, "Mencoder...")
+      ButtonGadget(#buttontomplayer, 10, 45, 95, comboheight, "Mplayer...")
+      ButtonGadget(#buttontomp4box, 10, 75, 95,comboheight, "Mp4Box...")
+      ButtonGadget(#buttontomkvmerge, 10, 105, 95, comboheight, "MKVMerge...")
+      ButtonGadget(#buttonthandbrakecli, 10, 135, 95, comboheight, "HandBrakeCLI...")
+      ButtonGadget(#buttonffmpeg, 10, 165, 95, comboheight, "FFmpeg...")
+      
+      StringGadget(#pathtomencoder, 115, 15, 330, 20, "")
+      StringGadget(#pathtomplayer, 115, 45,330, 20, "")
+      StringGadget(#pathtomp4box, 115, 75, 330, 20, "")
+      StringGadget(#pathtomkvmerge, 115, 105, 330, 20, "")      
+      StringGadget(#pathtohandbrakecli, 115, 135, 330, 20, "")
+      StringGadget(#pathtoffmpeg, 115, 165, 330, 20, "")
+      
+      ButtonGadget(#savesetting,10,190,130,comboheight,"Save Path/Settings")
+      
+      ButtonGadget(#makereport,357,190,90,comboheight,"Make Report")
+      
+      
+      ;-queue
+      AddGadgetItem(#Panel_0, -1, "Queue")
+      Frame3DGadget(#PB_Any, 8,5, 440, 200, "Queue")
+      EditorGadget(#queue,18,28,415,140)
+      ButtonGadget(#addtoqueue,18,180,90,comboheight,"Add to Queue")
+      ButtonGadget(#removequeuejob,125,180,110,comboheight,"Remove job line")
+      ButtonGadget(#startqueue,255,180,80,comboheight,"Start Queue")
+      ButtonGadget(#buttonaddtoqueue,340,180,40,20,"add ...")
+      ComboBoxGadget(#addedtoqueue,385,180,65,20,#PB_ComboBox_Editable)
+      AddGadgetItem(#addedtoqueue,-1,"pause")
+      AddGadgetItem(#addedtoqueue,-1,"shutdown")
+      AddGadgetItem(#addedtoqueue,-1,"Edit Me...")
+      SetGadgetState(#addedtoqueue,0)
+      
+      
+    CloseGadgetList()
+    
+    
+    
+    ;GadgetToolTip(#play,"Press this button for playing input file")
+     
+    
+    GadgetToolTip(#extsub,"Browse for external subtitle. This subs will be hardcodec in video. Option avaiable only for mencoder and avisynth x264")
+    GadgetToolTip(#addedtoqueue,"Select what add as last command in queue. You can edit this list")
+    GadgetToolTip(#buttonaddtoqueue,"Click here for adding to queue, as bottom line, the command written at right")        
+    GadgetToolTip(#multithread,"Check this button for disabling multithread encoding. Useful when mencoder crash unexpectly (only for mencoder)")
+    GadgetToolTip(#subs,"This subs will be burnt in video. Option avaiable only when encoding with Mencoder")
+    GadgetToolTip(#speedquality,"Select the quality/speed trade-off. Left for faster encoding. Right for slower encoding")
+    GadgetToolTip(#analyzewithhandbrake,"This check will force AutoMen to reanalyse the input file and use HandBrakeCLI as encoder")
+    GadgetToolTip(#framecountf,"This is the number of frames detected by Mplayer. Feel free to change it if wrong")
+    GadgetToolTip(#frameratef,"This is the frame rate (fps) detected by Mplayer. Feel free To change it If wrong")
+    GadgetToolTip(#widthf,"This is the WIDTH detected by Mplayer. Feel free To change it If wrong")
+    GadgetToolTip(#heightf,"This is the HEIGHT detected by Mplayer. Feel free To change it If wrong")
+    GadgetToolTip(#play,"Press this button for playing input file")
+    GadgetToolTip(#encode,"Click here for start encoding!")
+    GadgetToolTip(#preview,"Click here for a preview resized")
+    GadgetToolTip(#open,"Click here for selecting input file")
+    GadgetToolTip(#outputstring,"Select output file")
+    GadgetToolTip(#save,"Click here for selecting output file name")
+    GadgetToolTip(#videocodec,"Select video codec to use")
+    GadgetToolTip(#container,"Select container to use. For MP4 or MKV you need installed MP4Box and MKVToolnix")
+    GadgetToolTip(#pass,"Select number of pass/type of encoding")
+    GadgetToolTip(#videokbits,"This is the bitrate video. You can manually edit it. AutoMen will use this value")
+    GadgetToolTip(#cds,"Write here the final size in MB")
+    GadgetToolTip(#allowresize,"Check this for allow resize. Otherwise no resize or crop is applyed")
+    GadgetToolTip(#dar,"This is the final dar of movie")
+    GadgetToolTip(#topcrop,"How many pixel to crop from top")
+    GadgetToolTip(#rightcrop,"How many pixel to crop from right")
+    GadgetToolTip(#bottomcrop,"How many pixel to crop from bottom")
+    GadgetToolTip(#leftcrop,"How many pixel to crop from left")
+    GadgetToolTip(#arerror,"This is the distortion caused by crop and resize")
+    GadgetToolTip(#trackwidth,"Move this slider for selecting resolution")
+    GadgetToolTip(#modwidth,"This is modulo width must obey")
+    GadgetToolTip(#modheight,"This is modulo height must obey")
+    GadgetToolTip(#width,"This is the final width of encoding")
+    GadgetToolTip(#height,"This is the final height of encoding")
+    GadgetToolTip(#autocrop,"Click here for a more deeply (and slower) automatic crop of movie. You need mplayer")
+    GadgetToolTip(#arcombo,"Aspect Ratio of movie")
+    GadgetToolTip(#mdeint,"Set if input is interlaced")
+    GadgetToolTip(#anamorphic,"Apply anamorphic resizing")
+    GadgetToolTip(#itu,"Follow ITU resizing rule")
+    GadgetToolTip(#mp3mode,"Set kind of LAME encoding. Constant BitRate or Average BitRate")
+    GadgetToolTip(#denoise,"Set denoise level")
+    GadgetToolTip(#resizer,"Set resizer to use")
+    GadgetToolTip(#shutdown,"Force shutdown of pc at end of encoding")    
+    GadgetToolTip(#noodml,"Force no use of Open DML AVI type")
+    GadgetToolTip(#ffourcc,"Force DIVX CC")
+    GadgetToolTip(#audiocodec,"This is the codec audio to apply")
+    GadgetToolTip(#audibit,"Bitrate of audio")
+    GadgetToolTip(#sampling,"Sampling of audio. Do attention")
+    GadgetToolTip(#channel,"Number of channels to output")
+    GadgetToolTip(#audiotrack,"Select the audio track")
+    GadgetToolTip(#audionormalize,"Normalize the volume")    
+    GadgetToolTip(#addtoqueue,"Add the current work to queue")
+    GadgetToolTip(#removequeuejob,"Remove the first line from queue")
+    GadgetToolTip(#startqueue,"Start all queued jobs")
+    
+    
+  EndIf
+EndProcedure
+
+Procedure.f RoundByClosest(base.f, factor.l)
+  round = Int((base / factor)+0.5) * factor
+  ProcedureReturn round
+EndProcedure
+
+Procedure.f RoundUpBy(base.f, factor.l)
+  round = Int((base / factor)+1) * factor
+  ProcedureReturn round
+EndProcedure
+
+Procedure.f RoundDownBy(base.f, factor.l)
+  round = Int(base / factor) * factor
+  ProcedureReturn round
+EndProcedure
+
+Procedure.l RoundByX(base.f, factor.l, bool_roundup.l)
+  If bool_roundup = #True  : ProcedureReturn Round((base / factor),1) * factor
+  ElseIf bool_roundup = #False : ProcedureReturn Round((base / factor),0) * factor
+EndIf
+EndProcedure
+; IDE Options = PureBasic 4.41 (Windows - x86)
+; CursorPosition = 4
+; FirstLine = 4
+; Folding = --
+; EnableXP
+; EnableUser
+; DisableDebugger
+; EnableCompileCount = 61
+; EnableBuildCount = 10
+; EnableExeConstant
+; IDE Options = PureBasic 4.51 (Windows - x86)
+; CursorPosition = 419
+; FirstLine = 375
+; Folding = --
+; EnableCompileCount = 0
+; EnableBuildCount = 0
+; EnableExeConstant

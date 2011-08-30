@@ -1630,7 +1630,6 @@ EndProcedure
 
 Procedure silentscale()
   
-  Delay(1)
   acbottom.l=Val(GetGadgetText(#bottomcrop))
   acleft.l=Val(GetGadgetText(#leftcrop))
   acright.l=Val(GetGadgetText(#rightcrop))
@@ -2857,7 +2856,7 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1661
+; CursorPosition = 1632
 ; FirstLine = 1618
 ; Folding = ------
 ; EnableXP

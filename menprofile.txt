@@ -1,0 +1,71 @@
+Mencoder-XviD;1;UltraFast;-ovc xvid -xvidencopts bitrate:max_bframes=0:vhq=0:me_quality=3:nochroma_me:nochroma_opt:nohq_ac:notrellis:nolumi_mask:autoaspect:bvhq=0
+Mencoder-XviD;2;VeryFast;-ovc xvid -xvidencopts bitrate:max_bframes=0:vhq=0:me_quality=4:nochroma_me:nochroma_opt:nohq_ac:notrellis:nolumi_mask:autoaspect:bvhq=0
+Mencoder-XviD;3;Faster;-ovc xvid -xvidencopts bitrate:max_bframes=0:vhq=0:me_quality=5:nochroma_me:nochroma_opt:nohq_ac:notrellis:nolumi_mask:autoaspect:bvhq=0
+Mencoder-XviD;4;Fast;-ovc xvid -xvidencopts bitrate:max_bframes=1:bquant_ratio=162:bquant_offset=100:vhq=1:me_quality=5:nohq_ac:nochroma_me:nochroma_opt:notrellis:nolumi_mask:autoaspect:bvhq=0
+Mencoder-XviD;5;Medium;-ovc xvid -xvidencopts bitrate:max_bframes=2:bquant_ratio=162:bquant_offset=100:vhq=1:me_quality=6:chroma_me:chroma_opt:hq_ac:trellis:lumi_mask:autoaspect:bvhq=1
+Mencoder-XviD;6;Balanced;-ovc xvid -xvidencopts bitrate:max_bframes=2:bquant_ratio=162:bquant_offset=100:vhq=2:me_quality=6:chroma_me:chroma_opt:hq_ac:trellis:lumi_mask:autoaspect:bvhq=1
+Mencoder-XviD;7;Slow;-ovc xvid -xvidencopts bitrate:max_bframes=2:bquant_ratio=162:bquant_offset=100:vhq=3:me_quality=6:chroma_me:chroma_opt:hq_ac:trellis:lumi_mask:autoaspect:bvhq=1
+Mencoder-XviD;8;Slower;-ovc xvid -xvidencopts bitrate:max_bframes=2:bquant_ratio=162:bquant_offset=100:vhq=4:me_quality=6:chroma_me:chroma_opt:hq_ac:trellis:lumi_mask:autoaspect:bvhq=1
+Mencoder-Mpeg4;1;UltraFast;-ovc lavc -lavcopts vcodec=mpeg4:vbitrate:vmax_b_frames=0:vme=4:mbd=1:autoaspect:dia=1:vb_strategy=0:predia=1:last_pred=0
+Mencoder-Mpeg4;2;VeryFast;-ovc lavc -lavcopts vcodec=mpeg4:vbitrate:vmax_b_frames=0:vme=4:mbd=1:v4mv:autoaspect:dia=1:vb_strategy=0:predia=1:last_pred=0
+Mencoder-Mpeg4;3;Faster;-ovc lavc -lavcopts vcodec=mpeg4:vbitrate:vmax_b_frames=1:vme=4:mbd=2:v4mv:autoaspect:dia=1:vb_strategy=0:predia=1:last_pred=0
+Mencoder-Mpeg4;4;Medium;-ovc lavc -lavcopts vcodec=mpeg4:vbitrate:vmax_b_frames=2:lumi_mask=0.1:dark_mask=0.1:tcplx_mask=0.1:scplx_mask=0.1:vme=4:mbd=2:v4mv:autoaspect:dia=1:vb_strategy=1:turbo:predia=1:last_pred=2:vqcomp=0.6
+Mencoder-Mpeg4;5;Slow;-ovc lavc -lavcopts vcodec=mpeg4:vbitrate:vmax_b_frames=2:lumi_mask=0.1:dark_mask=0.1:tcplx_mask=0.1:scplx_mask=0.1:vme=4:mv0:mbd=2:v4mv:autoaspect:dia=-1:vb_strategy=1:turbo:predia=1:last_pred=2:vqcomp=0.6:cmp=3:subcmp=3:precmp=0
+Mencoder-Mpeg4;6;Slower;-ovc lavc -lavcopts vcodec=mpeg4:vbitrate:vmax_b_frames=2:lumi_mask=0.1:dark_mask=0.1:tcplx_mask=0.1:scplx_mask=0.1:vme=4:mv0:mbd=2:v4mv:autoaspect:dia=-1:trell:vb_strategy=1:turbo:predia=1:last_pred=2:vqcomp=0.6:cmp=3:subcmp=3:precmp=0
+Mencoder-Mpeg4;7;VerySlow;-ovc lavc -lavcopts vcodec=mpeg4:vbitrate:vmax_b_frames=2:lumi_mask=0.1:dark_mask=0.1:tcplx_mask=0.1:scplx_mask=0.1:vme=4:mbd=2:v4mv:mv0:trell:cbp:autoaspect:dia=2:vb_strategy=1:turbo:predia=2:last_pred=3:vqcomp=0.6:cmp=3:subcmp=3:precmp=2:cmp=2:subcmp=2:preme=2:qns=2
+Mencoder-X264;1;UltraFast;-ovc x264 -x264encopts bitrate:threads=auto:preset=ultrafast
+Mencoder-X264;2;SuperFast;-ovc x264 -x264encopts bitrate:threads=auto:preset=superfast
+Mencoder-X264;3;VeryFast;-ovc x264 -x264encopts bitrate:threads=auto:preset=veryfast
+Mencoder-X264;4;Faster;-ovc x264 -x264encopts bitrate:threads=auto:preset=faster
+Mencoder-X264;5;Fast;-ovc x264 -x264encopts bitrate:threads=auto:preset=fast
+Mencoder-X264;6;Medium;-ovc x264 -x264encopts bitrate:threads=auto:preset=medium
+Mencoder-X264;7;Balanced;-ovc x264 -x264encopts bitrate:threads=auto:frameref=4:bframes=3:deblock:direct_pred=auto:partitions=p8x8,b8x8:me=hex:me_range=16:subq=6:chroma_me:mixed_refs:trellis=1:weight_b:nr=0
+Mencoder-X264;8;Slow;-ovc x264 -x264encopts bitrate:threads=auto:preset=slow
+Mencoder-X264;9;Slower;-ovc x264 -x264encopts bitrate:threads=auto:preset=slower
+Mencoder-X264;10;VerySlow;-ovc x264 -x264encopts bitrate:threads=auto:preset=veryslow
+Mencoder-X264;11;Placebo;-ovc x264 -x264encopts bitrate:threads=auto:preset=placebo
+HandBrake-X264;1;UltraFast;ref=1:scenecut=0:no-deblock:no-cabac:bframes=0:partitions=none:no-8x8dct:me=dia:subme=0:aq-mode=0:no-mixed-refs:trellis=0:b-adapt=0:no-mbtree
+HandBrake-X264;2;VeryFast;no-mbtree:me=dia:no-mixed-refs:partitions=i8x8,i4x4:ref=1:subme=1:trellis=0:weightp=0
+HandBrake-X264;3;Faster;no-mbtree:no-mixed-refs:ref=2:subme=4:weightp=1
+HandBrake-X264;4;Fast;rc-lookahead=30:ref=3:subme=6
+HandBrake-X264;5;Medium;
+HandBrake-X264;6;Extreme Quality;trellis=0:ref=4:subme=9:direct=auto:me=umh:b-adapt=2
+HandBrake-X264;7;Slow;b-adapt=2:direct=auto:me=umh:rc-lookahead=50:ref=5:subme=8
+HandBrake-X264;8;Slower;b-adapt=2:direct=auto:me=umh:partitions=all:rc-lookahead=60:ref=8:subme=9:trellis=2
+HandBrake-X264;9;VerySlow;b-adapt=2:bframes=8:direct=auto:me=umh:merange=24:partitions=all:ref=16:subme=10:trellis=2:rc-lookahead=60
+HandBrake-X264;10;Placebo;bframes=16:b-adapt=2:direct=auto:slow-firstpass:no-fast-pskip:me=tesa:merange=24:partitions=all:rc-lookahead=60:ref=16:subme=10:trellis=2
+HandBrake-ffmpeg4;1;Standard;
+AviSynth-X264;1;UltraFast;--preset ultrafast
+AviSynth-X264;2;SuperFast;--preset superfast
+AviSynth-X264;3;VeryFast;--preset veryfast
+AviSynth-X264;4;Faster;--preset faster
+AviSynth-X264;5;Fast;--preset fast
+AviSynth-X264;6;Medium;--preset medium
+AviSynth-X264;7;Extreme Quality;--preset medium --trellis 0 --ref 4 --subme 9 --direct auto --me umh --b-adapt 2 --no-chroma-me
+AviSynth-X264;8;Slow;--preset slow
+AviSynth-X264;9;Slower;--preset slower
+AviSynth-X264;10;VerySlow;--preset veryslow
+AviSynth-X264;11;Placebo;--preset placebo
+AviSynth-X264;12;Rip;--level 4.1 --keyint 240 --min-keyint 24 --ref 5 --mixed-refs --bframes 5 --b-adapt 2 --weightb --weightp 2 --direct auto --deblock -2:-1 --subme 9 --trellis 2 --psy-rd 1.0:0 --partitions all --8x8dct --vbv-bufsize 50000 --vbv-maxrate 50000 --me umh --merange 32 --threads auto --thread-input --aq-strength 1.0 --no-dct-decimate --rc-lookahead 50
+FFmpeg-mpeg4;1;Fast;-vcodec mpeg4 -bf 0 -mbd 0 -g 300
+FFmpeg-mpeg4;2;Balanced;-vcodec mpeg4 -bf 1 -mbd 1 -g 300 -flags +mv4
+FFmpeg-mpeg4;3;Good;-vcodec mpeg4 -bf 2 -mbd 1 -flags +mv4+aic -cmp 1 -g 250 -trellis 1
+FFmpeg-mpeg4;4;High-Quality;-vcodec mpeg4 -mbd 2 -flags +mv4+umv+aic -cmp 2 -subcmp 2 -g 150 -trellis 2 -bf 1
+FFmpeg-mpeg4;5;Extreme Quality;-vcodec mpeg4 -mbd rd -bf 2 -flags +mv4+umv+aic -cmp 2 -subcmp 2 -g 150 -trellis 2
+FFmpeg-mpeg4;6;Super Quality;-vcodec mpeg4 -mbd rd -bf 2 -flags +mv4+umv+aic+mv0+qprd -cmp 2 -subcmp 2 -g 150 -trellis 2
+FFmpeg-X264;1;UltraFast;-vcodec libx264 -coder 0 -flags -loop -cmp +chroma -partitions -parti8x8-parti4x4-partp8x8-partb8x8 -me_method dia -subq 0 -me_range 16 -g 250 -keyint_min 25 -sc_threshold 0 -i_qfactor 0.71 -b_strategy 0 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -bf 0 -refs 1 -directpred 1 -trellis 0 -flags2 -bpyramid-mixed_refs-wpred-dct8x8+fastpskip-mbtree -wpredp 0
+FFmpeg-X264;2;VeryFast;-vcodec libx264 -coder 1 -flags +loop -cmp +chroma -partitions +parti8x8+parti4x4-partp8x8-partb8x8 -me_method dia -subq 1 -me_range 16 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 1 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -bf 3 -refs 1 -directpred 1 -trellis 0 -flags2 +bpyramid-mixed_refs+wpred+dct8x8+fastpskip-mbtree -wpredp 0
+FFmpeg-X264;3;Faster;-vcodec libx264 -coder 1 -flags +loop -cmp +chroma -partitions +parti8x8+parti4x4+partp8x8+partb8x8 -me_method hex -subq 4 -me_range 16 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 1 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -bf 3 -refs 2 -directpred 1 -trellis 1 -flags2 +bpyramid-mixed_refs+wpred+dct8x8+fastpskip-mbtree -wpredp 1
+FFmpeg-X264;4;Fast;-vcodec libx264 -coder 1 -flags +loop -cmp +chroma -partitions +parti8x8+parti4x4+partp8x8+partb8x8 -me_method hex -subq 6 -me_range 16 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 1 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -bf 3 -refs 2 -directpred 1 -trellis 1 -flags2 +bpyramid+mixed_refs+wpred+dct8x8+fastpskip+mbtree -wpredp 2 
+FFmpeg-X264;5;Medium;-vcodec libx264 -coder 1 -flags +loop -cmp +chroma -partitions +parti8x8+parti4x4+partp8x8+partb8x8 -me_method hex -subq 7 -me_range 16 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 1 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -bf 3 -refs 3 -directpred 1 -trellis 1 -flags2 +bpyramid+mixed_refs+wpred+dct8x8+fastpskip+mbtree -wpredp 2
+FFmpeg-X264;6;Extreme;-vcodec libx264 -coder 1 -flags +loop -cmp +chroma -partitions +parti8x8+parti4x4+partp8x8+partb8x8 -me_method umh -subq 8 -me_range 16 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 2 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -bf 3 -refs 4 -directpred 3 -trellis 1 -flags2 +wpred+mixed_refs+dct8x8+fastpskip+mbtree -wpredp 2
+FFmpeg-X264;7;Slow;-vcodec libx264 -coder 1 -flags +loop -cmp +chroma -partitions +parti8x8+parti4x4+partp8x8+partb8x8 -me_method umh -subq 8 -me_range 16 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 2 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -bf 3 -refs 5 -directpred 3 -trellis 1 -flags2 +bpyramid+mixed_refs+wpred+dct8x8+fastpskip+mbtree -wpredp 2
+FFmpeg-X264;8;Slower;-vcodec libx264 -coder 1 -flags +loop -cmp +chroma -partitions +parti8x8+parti4x4+partp8x8+partp4x4+partb8x8 -me_method umh -subq 9 -me_range 16 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 2 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -bf 3 -refs 8 -directpred 3 -trellis 2 -flags2 +bpyramid+mixed_refs+wpred+dct8x8+fastpskip+mbtree -wpredp 2
+FFmpeg-X264;9;VerySlow;-vcodec libx264 -coder 1 -flags +loop -cmp +chroma -partitions +parti8x8+parti4x4+partp8x8+partp4x4+partb8x8 -me_method umh -subq 10 -me_range 24 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 2 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -bf 8 -refs 16 -directpred 3 -trellis 2 -flags2 +bpyramid+mixed_refs+wpred+dct8x8+fastpskip+mbtree -wpredp 2
+FFmpeg-X264;10;Placebo;-vcodec libx264 -coder 1 -flags +loop -cmp +chroma -partitions +parti8x8+parti4x4+partp8x8+partp4x4+partb8x8 -me_method tesa -subq 10 -me_range 24 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 2 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -bf 16 -refs 16 -directpred 3 -trellis 2 -flags2 +bpyramid+mixed_refs+wpred+dct8x8-fastpskip+mbtree -wpredp 2
+FFmpeg-XVID;1;Fast;-vcodec libxvid -bf 0 -g 250 -qmin 2 -qmax 31
+FFmpeg-XVID;2;Balanced;-vcodec libxvid -bf 1 -g 250 -qmin 2 -qmax 31 -mbd 1 -flags +mv4
+FFmpeg-XVID;3;Extra Quality;-vcodec libxvid -bf 2 -g 125 -qmin 2 -qmax 31 -mbd 2 -flags +mv4+umv+aic
+FFmpeg-XVID;4;Extreme Quality;-vcodec libxvid -mbd rd -bf 2 -flags +mv4+umv+aic -cmp 2 -subcmp 2 -g 150 -trellis 2
+FFmpeg-WMV;1;Fast;-vcodec wmv1
+FFmpeg-WMV;2;Medium;-vcodec wmv2
