@@ -378,11 +378,16 @@ Procedure mencoder()
       inputfile.s=Mid(inputfile1.s,3,Len(inputfile1.s)-3)
     EndIf
   EndIf
-  
+    
+  If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="ifo"
+    dump.s=mplayer.s+" dvd://"+Str(pgcid.l)+" -dvd-device "+Chr(34)+Mid(GetPathPart(GetGadgetText(#inputstring)),0,Len(GetPathPart(GetGadgetText(#inputstring)))-1)+Chr(34)+" -dumpstream -dumpfile "+Chr(34)+workpath.s+"film.vob"+Chr(34)
+     AddGadgetItem(#queue,0,dump.s)
+    inputfile.s=workpath.s+"film.vob"
+  EndIf
+   
   mencoderbat.s=""
-  
-  
-  If linux=#True : mencoderbat.s=Chr(34)+mencoder.s+Chr(34)+" " : EndIf
+    
+  If linux=#True : mencoderbat.s=mencoder.s+" " : EndIf
   If windows=#True : mencoderbat.s=Chr(34)+mencoder.s+Chr(34)+" " : EndIf
   
   If GetGadgetText(#bottomcrop)<>"" Or GetGadgetText(#topcrop)<>"" Or GetGadgetText(#leftcrop)<>"" Or GetGadgetText(#rightcrop)<>""
@@ -947,6 +952,13 @@ Procedure x264demuxer()
   
   mux.s=""
   
+  If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="ifo"
+    dump.s=mplayer.s+" dvd://"+Str(pgcid.l)+" -dvd-device "+Chr(34)+Mid(GetPathPart(GetGadgetText(#inputstring)),0,Len(GetPathPart(GetGadgetText(#inputstring)))-1)+Chr(34)+" -dumpstream -dumpfile "+Chr(34)+workpath.s+"film.vob"+Chr(34)
+    
+    AddGadgetItem(#queue,0,dump.s)
+    inputfile.s=workpath.s+"film.vob"
+  EndIf
+  
   If linux=#True : mencoderbat.s="x264 "+Chr(34)+inputfile.s+Chr(34)+" " : EndIf
   If windows=#True : mencoderbat.s=Chr(34)+here.s+"applications\x264.exe"+Chr(34)+" "+Chr(34)+inputfile.s+Chr(34)+" " : EndIf
   
@@ -1138,6 +1150,14 @@ Procedure  x264avs()
   workpath.s=GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s)))
   CreateDirectory(GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s))))
   
+  If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="ifo"
+    dump.s=mplayer.s+" dvd://"+Str(pgcid.l)+" -dvd-device "+Chr(34)+Mid(GetPathPart(GetGadgetText(#inputstring)),0,Len(GetPathPart(GetGadgetText(#inputstring)))-1)+Chr(34)+" -dumpstream -dumpfile "+Chr(34)+workpath.s+"film.vob"+Chr(34)
+    
+    AddGadgetItem(#queue,0,dump.s)
+    inputfile.s=workpath.s+"film.vob"
+  EndIf
+  
+  
   If linux=#True : workpath.s=workpath.s+"/" : EndIf
   If windows=#True : workpath.s=workpath.s+"\" : EndIf
   
@@ -1170,24 +1190,41 @@ Procedure  x264avs()
     Until type=0
   EndIf
   
-  Select LCase(GetExtensionPart(inputfile.s))
-    
-  Case "vob","avi","mpeg","m2v","mpg","ogm","vro"
-    WriteStringN(987,"FFVideoSource("+Chr(34)+inputfile.s+Chr(34)+")")
-  Case "evo","m2ts","ts","mts","mkv","grf","m2t","mov","mp4"
-    WriteStringN(987,"DirectShowSource("+Chr(34)+inputfile.s+Chr(34)+",audio=false)")
-  Case "avs"
-    WriteStringN(987,"Import("+Chr(34)+inputfile.s+Chr(34)+")")
-  Case "d2v"
-    WriteStringN(987,"Mpeg2Source("+Chr(34)+inputfile.s+Chr(34)+")")
-  Case "dgm","dgv","dgi"
-    WriteStringN(987,"DGSource("+Chr(34)+inputfile.s+Chr(34)+")")
-  Case "dga"
-    WriteStringN(987,"AVCSource("+Chr(34)+inputfile.s+Chr(34)+")")
-  Default
-    WriteStringN(987,"DirectShowSource("+Chr(34)+inputfile.s+Chr(34)+",audio=false)")
-    
-  EndSelect
+ Select LCase(GetExtensionPart(inputfile.s))
+      
+    Case "vob","avi","mpeg","m2v","mpg","ogm","vro","mkv"
+      WriteStringN(987,"Try {")
+      WriteStringN(987,"FFVideoSource("+Chr(34)+inputfile.s+Chr(34)+", track = -1, cache = false, seekmode = 0)")
+      WriteStringN(987,"}")
+      WriteStringN(987,"Catch(Err_Msg) {")
+      WriteStringN(987,"DirectShowSource("+Chr(34)+inputfile.s+Chr(34)+",audio=false)")
+      WriteStringN(987,"}")
+    Case "evo","ts","grf","m2t","mov","mp4","m2ts"
+      WriteStringN(987,"Try {")
+      WriteStringN(987,"DirectShowSource("+Chr(34)+inputfile.s+Chr(34)+",audio=false)")
+      WriteStringN(987,"}")
+      WriteStringN(987,"Catch(Err_Msg) {")
+      WriteStringN(987,"FFVideoSource("+Chr(34)+inputfile.s+Chr(34)+", track = -1, cache = false, seekmode = 0)")
+      WriteStringN(987,"}")
+    Case "avs"
+      WriteStringN(987,"Import("+Chr(34)+inputfile.s+Chr(34)+")")
+    Case "d2v"
+      WriteStringN(987,"Mpeg2Source("+Chr(34)+inputfile.s+Chr(34)+")")
+    Case "dgm","dgv"
+      WriteStringN(987,"DGSource("+Chr(34)+inputfile.s+Chr(34)+")")
+    Case "dga"
+      WriteStringN(987,"AVCSource("+Chr(34)+inputfile.s+Chr(34)+")")
+    Case "dgi"
+      WriteStringN(987,"DGSource("+Chr(34)+inputfile.s+Chr(34)+")")
+    Default
+      WriteStringN(987,"Try {")
+      WriteStringN(987,"DirectShowSource("+Chr(34)+inputfile.s+Chr(34)+",audio=false)")
+      WriteStringN(987,"}")
+      WriteStringN(987,"Catch(Err_Msg) {")
+      WriteStringN(987,"FFVideoSource("+Chr(34)+inputfile.s+Chr(34)+", track = -1, cache = false, seekmode = 0)")
+      WriteStringN(987,"}")
+      
+    EndSelect
   
   Select GetGadgetText(#mdeint)
   Case "FILM NTSC (29.97->23.976)","Telecine","Mixed Prog/Telecine"
@@ -1476,9 +1513,6 @@ Procedure startqueue()
   ClearGadgetItems(#queue)
   
 EndProcedure
-
-
-
 
 
 Procedure parseprofile()
@@ -3162,14 +3196,14 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 2414
-; FirstLine = 2373
+; CursorPosition = 1516
+; FirstLine = 1485
 ; Folding = -----
 ; EnableXP
 ; EnableUser
 ; UseIcon = ___logo.ico
 ; Executable = AutoMen_beta.exe
 ; DisableDebugger
-; EnableCompileCount = 416
+; EnableCompileCount = 417
 ; EnableBuildCount = 1572
 ; EnableExeConstant
