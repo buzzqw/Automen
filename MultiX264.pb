@@ -2856,7 +2856,7 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1632
+; CursorPosition = 1628
 ; FirstLine = 1618
 ; Folding = ------
 ; EnableXP
@@ -2866,6 +2866,6 @@ End
 ; DisableDebugger
 ; CompileSourceDirectory
 ; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
-; EnableCompileCount = 1028
+; EnableCompileCount = 1029
 ; EnableBuildCount = 1593
 ; EnableExeConstant

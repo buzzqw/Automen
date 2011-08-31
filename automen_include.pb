@@ -127,6 +127,8 @@ Enumeration
   #makereport
   #buttonaddtoqueue
   #statusbar
+  
+  #clean
 EndEnumeration
 
 
@@ -426,31 +428,11 @@ Procedure Open_Window_0()
       CheckBoxGadget(#ffourcc,18,130,195,20,"FourCC DIVX for XviD encoding")      
       CheckBoxGadget(#analyzewithhandbrake,18,155,260,20,"Analyze and encode file with HandBrakeCLI")
       CheckBoxGadget(#multithread,18,180,195,20,"Disable Multithread Encoding")
+      CheckBoxGadget(#clean,218,180,225,20,"Clean temp file at end of encoding")
       
+      ButtonGadget(#makereport,318,150,90,comboheight,"Make Report")
       
             
-      ;-path panel
-      AddGadgetItem(#Panel_0, -1, "Program path")
-      
-      ButtonGadget(#buttontomencoder, 10, 15, 95, comboheight, "Mencoder...")
-      ButtonGadget(#buttontomplayer, 10, 45, 95, comboheight, "Mplayer...")
-      ButtonGadget(#buttontomp4box, 10, 75, 95,comboheight, "Mp4Box...")
-      ButtonGadget(#buttontomkvmerge, 10, 105, 95, comboheight, "MKVMerge...")
-      ButtonGadget(#buttonthandbrakecli, 10, 135, 95, comboheight, "HandBrakeCLI...")
-      ButtonGadget(#buttonffmpeg, 10, 165, 95, comboheight, "FFmpeg...")
-      
-      StringGadget(#pathtomencoder, 115, 15, 330, 20, "")
-      StringGadget(#pathtomplayer, 115, 45,330, 20, "")
-      StringGadget(#pathtomp4box, 115, 75, 330, 20, "")
-      StringGadget(#pathtomkvmerge, 115, 105, 330, 20, "")      
-      StringGadget(#pathtohandbrakecli, 115, 135, 330, 20, "")
-      StringGadget(#pathtoffmpeg, 115, 165, 330, 20, "")
-      
-      ButtonGadget(#savesetting,10,190,130,comboheight,"Save Path/Settings")
-      
-      ButtonGadget(#makereport,357,190,90,comboheight,"Make Report")
-      
-      
       ;-queue
       AddGadgetItem(#Panel_0, -1, "Queue")
       Frame3DGadget(#PB_Any, 8,5, 440, 200, "Queue")
@@ -562,9 +544,9 @@ EndProcedure
 ; EnableCompileCount = 61
 ; EnableBuildCount = 10
 ; EnableExeConstant
-; IDE Options = PureBasic 4.51 (Windows - x86)
-; CursorPosition = 419
-; FirstLine = 375
+; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
+; CursorPosition = 432
+; FirstLine = 429
 ; Folding = --
 ; EnableCompileCount = 0
 ; EnableBuildCount = 0
