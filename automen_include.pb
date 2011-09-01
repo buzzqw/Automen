@@ -6,7 +6,7 @@
 
 Global ver.s
 
-ver.s="v6.1";+Str(#pb_editor_buildcount)+"."+Str(#pb_editor_compilecount)
+ver.s="v7.0";+Str(#pb_editor_buildcount)+"."+Str(#pb_editor_compilecount)
 ;
 Enumeration
   #Window_0
@@ -384,12 +384,6 @@ Procedure Open_Window_0()
       AddGadgetItem(#denoise,-1,"Severe")
       SetGadgetState(#denoise,1)
       
-      
-      TextGadget(#PB_Any,280, 20, 80, 20, "Select Encoder")
-      ComboBoxGadget(#encodewith,220,48,210,comboheight)
-      SetGadgetState(#encodewith,0)
-      
-      
       TextGadget(#PB_Any,18, 50, 80, 20, "Select Resizer")
       ComboBoxGadget(#resizer, 105,48,110,comboheight)
       AddGadgetItem(#resizer,-1,"0 bilinear")
@@ -405,14 +399,18 @@ Procedure Open_Window_0()
       AddGadgetItem(#resizer,-1,"10 spline")
       SetGadgetState(#resizer,2)
       
+      TextGadget(#PB_Any,18, 80, 80, 20, "Select Encoder")
+      ComboBoxGadget(#encodewith,105,78,210,comboheight)
+      SetGadgetState(#encodewith,0)
       
-      CheckBoxGadget(#shutdown,18,80,195,20,"Shutdown at end of encoding")
-      CheckBoxGadget(#noodml,18,105,185,20,"Don't use ODML")
-      CheckBoxGadget(#ffourcc,18,130,195,20,"FourCC DIVX for XviD encoding")
-      CheckBoxGadget(#multithread,18,180,195,20,"Disable Multithread Encoding")
-      CheckBoxGadget(#clean,218,180,225,20,"Clean temp file at end of encoding")
       
-      ButtonGadget(#makereport,318,150,90,comboheight,"Make Report")
+      CheckBoxGadget(#noodml,18,130,185,20,"Don't use ODML")
+            
+      CheckBoxGadget(#clean,18,155,225,20,"Clean temp file at end of encoding")
+      CheckBoxGadget(#ffourcc,248,155,185,20,"FourCC DIVX for XviD encoding")      
+      
+      CheckBoxGadget(#shutdown,18,180,185,20,"Shutdown at end of encoding")
+      ButtonGadget(#makereport,248,180,185,comboheight,"Make Report (needed for support)")
       
       
       ;-queue
@@ -526,8 +524,7 @@ EndProcedure
 ; EnableBuildCount = 10
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 220
-; FirstLine = 214
+; CursorPosition = 8
 ; Folding = --
 ; DisableDebugger
 ; CompileSourceDirectory

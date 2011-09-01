@@ -2988,8 +2988,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 2722
-; FirstLine = 2708
+; CursorPosition = 2705
+; FirstLine = 2696
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2997,6 +2997,6 @@ End
 ; Executable = AutoMen_beta.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 500
+; EnableCompileCount = 511
 ; EnableBuildCount = 1572
 ; EnableExeConstant
