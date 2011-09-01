@@ -2764,7 +2764,7 @@ Repeat ; Start of the event loop
       
       queuecount.l=queuecount.l+1
       queue.l=1
-      If GetGadgetText(#pass)="1 pass" : passx.l=1 : audioffmpeg() : start() : clean() : mux() : EndIf
+      If GetGadgetText(#pass)="1 pass" : passx.l=1 : audioffmpeg() : start() : mux() : clean() : EndIf
       If GetGadgetText(#pass)="2 pass"
         audioffmpeg()
         passx.l=2 : start()
@@ -2819,7 +2819,7 @@ End
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
 ; CursorPosition = 2766
-; FirstLine = 2723
+; FirstLine = 2729
 ; Folding = ------
 ; EnableXP
 ; EnableUser
