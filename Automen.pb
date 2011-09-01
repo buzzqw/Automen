@@ -2764,7 +2764,7 @@ Repeat ; Start of the event loop
       
       queuecount.l=queuecount.l+1
       queue.l=1
-      If GetGadgetText(#pass)="1 pass" : passx.l=1 : audioffmpeg() : start() :  mux() : EndIf
+      If GetGadgetText(#pass)="1 pass" : passx.l=1 : audioffmpeg() : start() : clean() : mux() : EndIf
       If GetGadgetText(#pass)="2 pass"
         audioffmpeg()
         passx.l=2 : start()
@@ -2818,8 +2818,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1285
-; FirstLine = 1284
+; CursorPosition = 2766
+; FirstLine = 2723
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2827,6 +2827,6 @@ End
 ; Executable = AutoMen_beta.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 546
+; EnableCompileCount = 547
 ; EnableBuildCount = 1573
 ; EnableExeConstant
