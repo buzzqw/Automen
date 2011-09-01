@@ -1283,12 +1283,12 @@ Procedure muxmkv()
 EndProcedure
 
 Procedure clean()
-  
-  If GetGadgetState(#clean)=1
+   
+  If GetGadgetState(#clean)=1    
     AddGadgetItem(#queue,-1,"del /q "+Chr(34)+workpath.s+"automen*.*"+Chr(34))
   EndIf
   
-  If GetGadgetState(#shutdown)=1
+  If GetGadgetState(#shutdown)=1    
     If linux=#True :  AddGadgetItem(#queue,-1,"shutdown -h now") : EndIf
     If windows=#True : AddGadgetItem(#queue,-1,"shutdown -s -t 30 -f") : EndIf
   EndIf
@@ -1361,8 +1361,7 @@ Procedure mux()
   
    If GetExtensionPart(GetGadgetText(#outputstring))="avi"
     muxavi()
-  EndIf
-  
+  EndIf  
   
   
 EndProcedure
@@ -2388,8 +2387,7 @@ Procedure openinputfile()
     silentresize()
   EndIf
   
-  
-  
+    
 EndProcedure
 
 
@@ -2658,8 +2656,7 @@ Repeat ; Start of the event loop
       checkextension()
       parseprofile()
       If FindString(GetGadgetText(#pass),"CRF",0) :  SetGadgetText(#Text_33,"Quant") :  DisableGadget(#cds,1) : SetGadgetText(#Text_32,"Quality") : EndIf
-      If FindString(GetGadgetText(#pass),"CRF",0)=0 : SetGadgetText(#Text_33,"kbp/s") : DisableGadget(#cds,0) : SetGadgetText(#Text_32,"Video Bitrate") : EndIf
-      
+      If FindString(GetGadgetText(#pass),"CRF",0)=0 : SetGadgetText(#Text_33,"kbp/s") : DisableGadget(#cds,0) : SetGadgetText(#Text_32,"Video Bitrate") : EndIf      
       
     ElseIf GadgetID = #container
       checkextension()
@@ -2748,7 +2745,7 @@ Repeat ; Start of the event loop
       
       queuecount.l=0
       queue.l=0
-      If GetGadgetText(#pass)="1 pass" : passx.l=1 : audioffmpeg() : start() :  mux() : startqueue() : EndIf
+      If GetGadgetText(#pass)="1 pass" : passx.l=1 : audioffmpeg() : start() :  mux() : clean() : startqueue() : EndIf
       If GetGadgetText(#pass)="2 pass"
         audioffmpeg()
         passx.l=2 : start()
@@ -2761,10 +2758,8 @@ Repeat ; Start of the event loop
       If GetGadgetText(#pass)="CRF 1 pass" : passx.l=4 : audioffmpeg() : start() : mux() : clean() : startqueue() : EndIf
       If GetGadgetText(#pass)="QP 1 pass" : passx.l=8 : audioffmpeg() : start()  : mux() : clean() : startqueue() : EndIf
       If GetGadgetText(#pass)="Copy Video" : passx.l=7 : audioffmpeg() : start() : mux() : clean() : startqueue() : EndIf
-      If GetGadgetText(#pass)="Same Quality" : passx.l=11 : audioffmpeg() : start() : mux() : clean() : startqueue() : EndIf
-      
-      
-      
+      If GetGadgetText(#pass)="Same Quality" : passx.l=11 : audioffmpeg() : start() : mux() : clean() : startqueue() : EndIf      
+            
     ElseIf GadgetID = #addtoqueue
       
       queuecount.l=queuecount.l+1
@@ -2823,8 +2818,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 2395
-; FirstLine = 2354
+; CursorPosition = 1285
+; FirstLine = 1284
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2832,6 +2827,6 @@ End
 ; Executable = AutoMen_beta.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 542
+; EnableCompileCount = 546
 ; EnableBuildCount = 1573
 ; EnableExeConstant
