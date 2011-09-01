@@ -13,7 +13,7 @@ Global fileaudio.s
 Declare start()
 
 Procedure checkencoder()
-    
+  
   If GetGadgetText(#encodewith)="Mencoder for Encoding" Or GetGadgetText(#encodewith)="Use ffmpeg as encoder"
     ClearGadgetItems(#videocodec)
     ClearGadgetItems(#pass)
@@ -355,12 +355,6 @@ Procedure x264mencoderpipe()
   
   If GetGadgetText(#videocodec)="X264" : outputfile.s=workpath.s+"automen.h264" : EndIf
   
-  If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="ifo"
-    dump.s=mplayer.s+" dvd://"+Str(pgcid.l)+" -dvd-device "+Chr(34)+Mid(GetPathPart(GetGadgetText(#inputstring)),0,Len(GetPathPart(GetGadgetText(#inputstring)))-1)+Chr(34)+" -dumpstream -dumpfile "+Chr(34)+workpath.s+"film.vob"+Chr(34)
-    inputfile.s=workpath.s+"film.vob"
-    AddGadgetItem(#queue,0,dump.s)
-  EndIf
-  
   leftcrop.l=Val(GetGadgetText(#leftcrop))
   topcrop.l=Val(GetGadgetText(#topcrop))
   rightcrop.l=Val(GetGadgetText(#rightcrop))
@@ -434,16 +428,21 @@ Procedure x264mencoderpipe()
     sub.s=sub.s+" -subfont-autoscale 3 -subfont-text-scale 5 "
   EndIf
   
-  If GetGadgetText(#subs)<>"none" And GetGadgetText(#subs)<>"" And LCase(GetExtensionPart(GetGadgetText(#inputstring)))="ifo"
-    sub.s=" -sid "+Trim(StringField(StringField(GetGadgetText(#subs),2,":"),1,"language"))+" "
-    sub.s=sub.s+" -subfont-autoscale 3 -subfont-text-scale 5 "
+  If LCase(GetExtensionPart(GetGadgetText(#inputstring)))="ifo"
+    If GetGadgetText(#subs)<>"" And GetGadgetText(#subs)<>"none"
+      sub.s=" -sid "+Trim(StringField(StringField(GetGadgetText(#subs),2,":"),1,"language"))+" "
+      sub.s=sub.s+" -subfont-autoscale 3 -subfont-text-scale 5 "
+    EndIf
+    If GetGadgetText(#subs)="" Or GetGadgetText(#subs)="none"
+      subs.s=" -sid 9999 "
+    EndIf
   EndIf
   
   If FindString(GetGadgetText(#subs),"/",0) Or FindString(GetGadgetText(#subs),"\",0)
     sub.s=" -sub "+Chr(34)+GetGadgetText(#subs)+Chr(34)+" "
   EndIf
   
-  If sub.s<>"" : mencoderbat.s=mencoderbat.s+sub.s : EndIf
+  If subs.s<>"" : mencoderbat.s=mencoderbat.s+subs.s : EndIf
   
   mencoderbat.s=mencoderbat.s+" "+Chr(34)+inputfile.s+Chr(34)+" -really-quiet -of rawvideo -ovc raw  -nosound -o - | "+x264.s+" "
   
@@ -495,12 +494,6 @@ Procedure mencoder()
   If GetGadgetText(#videocodec)="XviD" : outputfile.s=workpath.s+"automen.avi" : EndIf
   If GetGadgetText(#videocodec)="X264" : outputfile.s=workpath.s+"automen.h264" : EndIf
   If GetGadgetText(#videocodec)="Mpeg4" : outputfile.s=workpath.s+"automen.avi" : EndIf
-  
-  If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="ifo"
-    dump.s=mplayer.s+" dvd://"+Str(pgcid.l)+" -dvd-device "+Chr(34)+Mid(GetPathPart(GetGadgetText(#inputstring)),0,Len(GetPathPart(GetGadgetText(#inputstring)))-1)+Chr(34)+" -dumpstream -dumpfile "+Chr(34)+workpath.s+"film.vob"+Chr(34)
-    inputfile.s=workpath.s+"film.vob"
-    AddGadgetItem(#queue,0,dump.s)
-  EndIf
   
   leftcrop.l=Val(GetGadgetText(#leftcrop))
   topcrop.l=Val(GetGadgetText(#topcrop))
@@ -561,7 +554,6 @@ Procedure mencoder()
     mencoderbat.s=mencoder.s+" "
   EndIf
   
-  
   If GetGadgetText(#mdeint)="FILM NTSC (29.97->23.976)"  Or GetGadgetText(#mdeint)="Telecine" Or GetGadgetText(#mdeint)="Mixed Prog/Telecine"
     mencoderbat.s=mencoderbat.s+" -ofps 24000/1001 "
   EndIf
@@ -572,21 +564,26 @@ Procedure mencoder()
   
   sub.s=""
   
-  If GetGadgetText(#subs)<>"none" And GetGadgetText(#subs)<>"" And LCase(GetExtensionPart(GetGadgetText(#inputstring)))<>"ifo"
+  If GetGadgetText(#subs)<>"" And LCase(GetExtensionPart(GetGadgetText(#inputstring)))<>"ifo"
     sub.s=" -sid "+StringField(StringField(StringField(GetGadgetText(#subs),2,"-sid"),1,","),2," ")+" "
     sub.s=sub.s+" -subfont-autoscale 3 -subfont-text-scale 5 "
   EndIf
   
-  If GetGadgetText(#subs)<>"none" And GetGadgetText(#subs)<>"" And LCase(GetExtensionPart(GetGadgetText(#inputstring)))="ifo"
-    sub.s=" -sid "+Trim(StringField(StringField(GetGadgetText(#subs),2,":"),1,"language"))+" "
-    sub.s=sub.s+" -subfont-autoscale 3 -subfont-text-scale 5 "
+  If LCase(GetExtensionPart(GetGadgetText(#inputstring)))="ifo"
+    If GetGadgetText(#subs)<>"" And GetGadgetText(#subs)<>"none"
+      sub.s=" -sid "+Trim(StringField(StringField(GetGadgetText(#subs),2,":"),1,"language"))+" "
+      sub.s=sub.s+" -subfont-autoscale 3 -subfont-text-scale 5 "
+    EndIf
+    If GetGadgetText(#subs)="" Or GetGadgetText(#subs)="none"      
+      subs.s=" -sid 9999 "
+    EndIf
   EndIf
   
   If FindString(GetGadgetText(#subs),"/",0) Or FindString(GetGadgetText(#subs),"\",0)
     sub.s=" -sub "+Chr(34)+GetGadgetText(#subs)+Chr(34)+" "
   EndIf
-  
-  If sub.s<>"" : mencoderbat.s=mencoderbat.s+sub.s : EndIf
+    
+  If subs.s<>"" : mencoderbat.s=mencoderbat.s+subs.s : EndIf
   
   If GetGadgetState(#ffourcc)=1 : fourcc.s=" -ffourcc DIVX "  : EndIf
   
@@ -761,10 +758,6 @@ Procedure x264lavf()
   
   outputfile.s=workpath.s+"automen.h264"
   
-  If LCase(GetExtensionPart(inputfile.s))="ifo"
-    AddGadgetItem(#queue,0,mplayer.s+" dvd://"+Str(pgcid.l)+" -dumpstream -dumpfile "+Chr(34)+workpath.s+"film.vob"+Chr(34))
-  EndIf
-  
   mencoderbat.s=x264.s+" "+Chr(34)+inputfile.s+Chr(34)+" "
   
   leftcrop.l=Val(GetGadgetText(#leftcrop))
@@ -844,13 +837,6 @@ Procedure  x264avs()
   
   workpath.s=GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s)))
   CreateDirectory(GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s))))
-  
-  If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="ifo"
-    dump.s=mplayer.s+" dvd://"+Str(pgcid.l)+" -dvd-device "+Chr(34)+Mid(GetPathPart(GetGadgetText(#inputstring)),0,Len(GetPathPart(GetGadgetText(#inputstring)))-1)+Chr(34)+" -dumpstream -dumpfile "+Chr(34)+workpath.s+"film.vob"+Chr(34)
-    AddGadgetItem(#queue,0,dump.s)
-    inputfile.s=workpath.s+"film.vob"
-  EndIf
-  
   
   If linux=#True : workpath.s=workpath.s+"/" : EndIf
   If windows=#True : workpath.s=workpath.s+"\" : EndIf
@@ -1539,7 +1525,6 @@ Procedure audioffmpeg()
   
   If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="ifo"
     dump.s=mplayer.s+" dvd://"+Str(pgcid.l)+" -dvd-device "+Chr(34)+Mid(GetPathPart(GetGadgetText(#inputstring)),0,Len(GetPathPart(GetGadgetText(#inputstring)))-1)+Chr(34)+" -dumpstream -dumpfile "+Chr(34)+workpath.s+"film.vob"+Chr(34)
-    
     AddGadgetItem(#queue,0,dump.s)
     inputfile.s=workpath.s+"film.vob"
   EndIf
@@ -1561,6 +1546,8 @@ Procedure audioffmpeg()
     aid.s=StringField(aid.s,2,".")
     If FindString(aid.s,"[",0) : aid.s=StringField(aid.s,1,"[") : EndIf
     If FindString(aid.s,"(",0) : aid.s=StringField(aid.s,1,"(") : EndIf
+    If FindString(GetGadgetText(#audiotrack),"audio stream",0) :  aid.s = Str(GetGadgetState(#audiotrack)) : EndIf
+    
     encostring.s=encostring.s+" -map ["+aid.s+":0] "
     
     If FindString(GetGadgetText(#audiotrack),"ac3",0) : filetoanalyze.s=workpath.s+"automen_audio.ac3" : encostring.s=encostring.s+"-y "+Chr(34)+workpath.s+"automen_audio.ac3"+Chr(34) : EndIf
@@ -1642,6 +1629,7 @@ Procedure audioffmpeg()
         aid.s=StringField(aid.s,2,".")
         If FindString(aid.s,"[",0) : aid.s=StringField(aid.s,1,"[") : EndIf
         If FindString(aid.s,"(",0) : aid.s=StringField(aid.s,1,"(") : EndIf
+        If FindString(GetGadgetText(#audiotrack),"audio stream",0) :  aid.s = Str(GetGadgetState(#audiotrack)) : EndIf
         encostring.s=encostring.s+" -map ["+aid.s+":0]"
       EndIf
     EndSelect
@@ -2988,8 +2976,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 2705
-; FirstLine = 2696
+; CursorPosition = 436
+; FirstLine = 412
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2997,6 +2985,6 @@ End
 ; Executable = AutoMen_beta.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 511
+; EnableCompileCount = 524
 ; EnableBuildCount = 1572
 ; EnableExeConstant
