@@ -23,7 +23,6 @@ Enumeration
   #resizer
   #inputstring
   #outputstring
-  #analyzewithhandbrake 
   #preview
   #play
   #Panel_0
@@ -105,7 +104,6 @@ Enumeration
   #pathtomkvmerge
   #widthf
   #heightf
-  #handbrake
   #framecountf
   #frameratef
   #pathtomp4box
@@ -122,8 +120,6 @@ Enumeration
   #savesetting
   #text50
   #text51
-  #pathtohandbrakecli
-  #buttonthandbrakecli
   #makereport
   #buttonaddtoqueue
   #statusbar
@@ -144,11 +140,9 @@ UsePNGImageDecoder()
 
 Global Image0,FontID1,comboheight.l
 
-If OSVersion()=1200
-  comboheight.l=25
-Else
-  comboheight.l=20
-EndIf
+CompilerIf #PB_Compiler_OS = #PB_OS_Linux :  comboheight.l=25 : CompilerEndIf
+CompilerIf #PB_Compiler_OS = #PB_OS_Windows : comboheight.l=20 : CompilerEndIf
+
 
 Image0 = CatchImage(#paypal, ?Image0)
 
@@ -231,22 +225,23 @@ Procedure Open_Window_0()
       AddGadgetItem(#pass,-1,"1 pass")
       AddGadgetItem(#pass,-1,"2 pass")
       AddGadgetItem(#pass,-1,"CRF 1 pass")
+       AddGadgetItem(#pass,-1,"Same Quality")
       AddGadgetItem(#pass,-1,"Copy Video")
       SetGadgetState(#pass,0)
       
       TextGadget(#PB_Any,245,81,60,20,"Preset")
       TrackBarGadget(#speedquality,308,75,140,17,1,10,#PB_TrackBar_Ticks)
-      StringGadget(#speedqualitytext,245,95,200,20,"",#PB_String_ReadOnly|#PB_Text_Center)
+      StringGadget(#speedqualitytext,245,95,200,comboheight,"",#PB_String_ReadOnly|#PB_Text_Center)
       
       Frame3DGadget(#PB_Any, 233, 127, 218, 80, "Video Options")
       TextGadget(#Text_32, 245, 145, 70, 20, "Video Bitrate:")
-      StringGadget(#videokbits, 320, 145, 60, 20, "")
-      TextGadget(#Text_33, 385,149, 40, 20, "kbit/s")
+      StringGadget(#videokbits, 320, 145, 60, comboheight, "")
+      TextGadget(#Text_33, 385,149, 40, comboheight, "kbit/s")
       
-      StringGadget(#videolenght, 245, 170, 40, 20, "",#PB_String_ReadOnly)
-      TextGadget(#PB_Any, 290, 173, 80, 20, "minutes keep in:")
-      StringGadget(#cds,375,170,40,20,"700",#PB_String_Numeric)
-      TextGadget(#PB_Any,420,173,20,20,"MB")
+      StringGadget(#videolenght, 245, 170, 40, comboheight, "",#PB_String_ReadOnly)
+      TextGadget(#PB_Any, 290, 173, 80, comboheight, "minutes keep in:")
+      StringGadget(#cds,375,170,40,comboheight,"700",#PB_String_Numeric)
+      TextGadget(#PB_Any,420,173,20,comboheight,"MB")
       
       
       
@@ -261,7 +256,7 @@ Procedure Open_Window_0()
       SetGadgetState(#allowresize,1)
       
       TextGadget(#PB_Any, 163, 25, 60, 20, " DAR:" ,#PB_Text_Center)
-      StringGadget(#dar, 223, 25, 60, 20, "",#PB_String_ReadOnly)
+      StringGadget(#dar, 223, 25, 60, comboheight ,"",#PB_String_ReadOnly)
       
       
       ButtonGadget(#autocrop, 318, 25, 120, comboheight, " Do AutoCrop",#PB_Button_Left)
@@ -295,21 +290,21 @@ Procedure Open_Window_0()
       
       
       TextGadget(#PB_Any, 18, 53, 75, 20, "Top Crop ---->")
-      StringGadget(#topcrop, 95, 53, 60, 20, "")
-      StringGadget(#leftcrop, 18, 78, 60, 20, "")
+      StringGadget(#topcrop, 95, 53, 60, comboheight, "")
+      StringGadget(#leftcrop, 18, 78, 60, comboheight, "")
       TextGadget(#PB_Any, 90, 82, 73, 20, "<-Left | Right->")
-      StringGadget(#rightcrop, 173, 78, 60, 20, "")
+      StringGadget(#rightcrop, 173, 78, 60, comboheight, "")
       TextGadget(#PB_Any, 18, 103, 90, 20, "Bottom Crop ->")
-      StringGadget(#bottomcrop, 95, 103, 60, 20, "")
+      StringGadget(#bottomcrop, 95, 103, 60, comboheight, "")
       TextGadget(#PB_Any, 163, 108, 60, 20, " AR Error:" ,#PB_Text_Center)
-      StringGadget(#arerror, 223, 103, 60, 20, "",#PB_String_ReadOnly)
+      StringGadget(#arerror, 223, 103, 60, comboheight, "",#PB_String_ReadOnly)
       
       TrackBarGadget(#trackwidth, 13,130,275, 17, 0, 360)
       
       TextGadget(#PB_Any,18,153,145,20,"Manually Set Width x Height:")
-      StringGadget(#width, 160, 150,50, 20, "")
+      StringGadget(#width, 160, 150,50, comboheight, "")
       TextGadget(#PB_Any, 223, 153, 10, 20, "x")
-      StringGadget(#height, 238, 150, 50, 20, "")
+      StringGadget(#height, 238, 150, 50, comboheight, "")
       
       TextGadget(#PB_Any,18,183,155,20,"Set MOD block Width x Height:")
       ComboBoxGadget(#modwidth,168,180,50,comboheight)
@@ -378,13 +373,14 @@ Procedure Open_Window_0()
       AddGadgetItem(#audiotrack,-1,"none")
       SetGadgetState(#audiotrack,0)
       
-      TextGadget(#PB_Any, 10, 18, 80, 20, "Audio Codec:")
+      TextGadget(#PB_Any, 10, 13, 80, 20, "Audio Codec:")
       
-      ComboBoxGadget(#audiocodec, 98, 15,130,comboheight )
+      ComboBoxGadget(#audiocodec, 98, 12,130,comboheight )
       AddGadgetItem(#audiocodec,-1,"MP3 Audio")
       AddGadgetItem(#audiocodec,-1,"AAC Audio")
       AddGadgetItem(#audiocodec,-1,"AC3 Audio")
       AddGadgetItem(#audiocodec,-1,"OGG Audio")
+      AddGadgetItem(#audiocodec,-1,"FLAC Audio")
       AddGadgetItem(#audiocodec,-1,"Copy Audio")
       AddGadgetItem(#audiocodec,-1,"No Audio")
       SetGadgetText(#audiocodec,"MP3 Audio")
@@ -426,7 +422,6 @@ Procedure Open_Window_0()
       CheckBoxGadget(#shutdown,18,80,195,20,"Shutdown at end of encoding")
       CheckBoxGadget(#noodml,18,105,185,20,"Don't use ODML")
       CheckBoxGadget(#ffourcc,18,130,195,20,"FourCC DIVX for XviD encoding")      
-      CheckBoxGadget(#analyzewithhandbrake,18,155,260,20,"Analyze and encode file with HandBrakeCLI")
       CheckBoxGadget(#multithread,18,180,195,20,"Disable Multithread Encoding")
       CheckBoxGadget(#clean,218,180,225,20,"Clean temp file at end of encoding")
       
@@ -440,8 +435,8 @@ Procedure Open_Window_0()
       ButtonGadget(#addtoqueue,18,180,90,comboheight,"Add to Queue")
       ButtonGadget(#removequeuejob,125,180,110,comboheight,"Remove job line")
       ButtonGadget(#startqueue,255,180,80,comboheight,"Start Queue")
-      ButtonGadget(#buttonaddtoqueue,340,180,40,20,"add ...")
-      ComboBoxGadget(#addedtoqueue,385,180,65,20,#PB_ComboBox_Editable)
+      ButtonGadget(#buttonaddtoqueue,340,180,40,comboheight,"add ...")
+      ComboBoxGadget(#addedtoqueue,385,180,65,comboheight,#PB_ComboBox_Editable)
       AddGadgetItem(#addedtoqueue,-1,"pause")
       AddGadgetItem(#addedtoqueue,-1,"shutdown")
       AddGadgetItem(#addedtoqueue,-1,"Edit Me...")
@@ -461,7 +456,6 @@ Procedure Open_Window_0()
     GadgetToolTip(#multithread,"Check this button for disabling multithread encoding. Useful when mencoder crash unexpectly (only for mencoder)")
     GadgetToolTip(#subs,"This subs will be burnt in video. Option avaiable only when encoding with Mencoder")
     GadgetToolTip(#speedquality,"Select the quality/speed trade-off. Left for faster encoding. Right for slower encoding")
-    GadgetToolTip(#analyzewithhandbrake,"This check will force AutoMen to reanalyse the input file and use HandBrakeCLI as encoder")
     GadgetToolTip(#framecountf,"This is the number of frames detected by Mplayer. Feel free to change it if wrong")
     GadgetToolTip(#frameratef,"This is the frame rate (fps) detected by Mplayer. Feel free To change it If wrong")
     GadgetToolTip(#widthf,"This is the WIDTH detected by Mplayer. Feel free To change it If wrong")
@@ -544,10 +538,12 @@ EndProcedure
 ; EnableCompileCount = 61
 ; EnableBuildCount = 10
 ; EnableExeConstant
-; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 432
-; FirstLine = 429
+; IDE Options = PureBasic 4.60 Beta 4 (Linux - x86)
+; CursorPosition = 258
+; FirstLine = 256
 ; Folding = --
+; DisableDebugger
+; CompileSourceDirectory
 ; EnableCompileCount = 0
 ; EnableBuildCount = 0
 ; EnableExeConstant

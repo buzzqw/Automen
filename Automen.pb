@@ -15,26 +15,8 @@ Declare start()
 Procedure handbrakeoff()
   
   StatusBarText(#statusbar, 0, "Resetting video and audio codec!")
-  
-  If GetGadgetText(#encodewith)="Use HandBrakeCLI for Encoding" Or GetGadgetText(#encodewith)="Mencoder for Encoding" Or GetGadgetText(#encodewith)="Use AviSynth (only for X264)" Or GetGadgetText(#encodewith)="Use X264 as demuxer and encoder" Or GetGadgetText(#encodewith)="Use ffmpeg as encoder"
-    
-    ClearGadgetItems(#audiocodec)
-    AddGadgetItem(#audiocodec,-1,"MP3 Audio")
-    AddGadgetItem(#audiocodec,-1,"AAC Audio")
-    AddGadgetItem(#audiocodec,-1,"OGG Audio")
-    AddGadgetItem(#audiocodec,-1,"Copy Audio")
-    AddGadgetItem(#audiocodec,-1,"No Audio")
-    
-    If GetGadgetText(#encodewith)="Mencoder for Encoding" Or GetGadgetText(#encodewith)="Use AviSynth (only for X264)" Or GetGadgetText(#encodewith)="Use X264 as demuxer and encoder" Or GetGadgetText(#encodewith)="Use ffmpeg as encoder"
-      AddGadgetItem(#audiocodec,-1,"AC3 Audio")
-    EndIf
-    
-    If GetGadgetText(#encodewith)="Use ffmpeg as encoder"
-      AddGadgetItem(#audiocodec,-1,"FLAC Audio")
-      AddGadgetItem(#audiocodec,-1,"WMA Audio")
-    EndIf
-    
-    SetGadgetText(#audiocodec,"MP3 Audio")
+ 
+  If GetGadgetText(#audiocodec)="MP3 Audio"
     
     ClearGadgetItems(#audibit)
     AddGadgetItem(#audibit,-1,"320")
@@ -48,63 +30,148 @@ Procedure handbrakeoff()
     AddGadgetItem(#audibit,-1,"64")
     SetGadgetState(#audibit,6)
     
-  EndIf
-  
-  If GetGadgetText(#encodewith)="Use AviSynth (only for X264)"  Or GetGadgetText(#encodewith)="Use X264 as demuxer and encoder"
-    StatusBarText(#statusbar, 0, "Resetting video And audio codec! Forcing video codec to X264")
-  EndIf
-  
-  
-  ClearGadgetItems(#pass)
-  AddGadgetItem(#pass,-1,"1 pass")
-  AddGadgetItem(#pass,-1,"2 pass")
-  AddGadgetItem(#pass,-1,"CRF 1 pass")
-  
-  If GetGadgetText(#encodewith)="Use ffmpeg as encoder"
-    AddGadgetItem(#pass,-1,"Copy Video")
-    AddGadgetItem(#pass,-1,"Same Quality")
-  EndIf
-  
-  If GetGadgetText(#encodewith)="Use AviSynth (only for X264)"  Or GetGadgetText(#encodewith)="Use X264 as demuxer and encoder"
-    AddGadgetItem(#pass,-1,"1 pass + CRF Mode")
-  EndIf
-  
-  If GetGadgetText(#encodewith)="Use X264 as demuxer and encoder"
-    GadgetToolTip(#width,"You cannot change resolution while using X264 as demuxer and encoder")
-  Else
-    GadgetToolTip(#width,"This is the WIDTH detected by Mplayer. Feel free To change it If wrong")
-  EndIf
-  
-  
-  SetGadgetState(#pass,0)
-  
-  If GetGadgetText(#encodewith)="Mencoder for Encoding" Or GetGadgetText(#encodewith)="Use AviSynth (only for X264)"  Or GetGadgetText(#encodewith)="Use X264 as demuxer and encoder" Or GetGadgetText(#encodewith)="Use ffmpeg as encoder"
     ClearGadgetItems(#channel)
     AddGadgetItem(#channel,-1,"Original")
     AddGadgetItem(#channel,-1,"2")
     AddGadgetItem(#channel,-1,"1")
+    
+    SetGadgetText(#text50,"Audio Bitrate:")
+    SetGadgetText(#text51,"kbit/s")
+    SetGadgetState(#channel,1)
+    DisableGadget(#mp3mode,0)
+    DisableGadget(#audibit,0)
+    GadgetToolTip(#audibit,"Bitrate of audio")
+    
   EndIf
   
-  If GetGadgetText(#encodewith)="Use HandBrakeCLI for Encoding"
-    ClearGadgetItems(#channel)
-    AddGadgetItem(#channel,-1,"mono")
-    AddGadgetItem(#channel,-1,"stereo")
-    AddGadgetItem(#channel,-1,"dpl1")
-    AddGadgetItem(#channel,-1,"dpl2")
-    AddGadgetItem(#channel,-1,"6ch")
+  If neroaacenc.s=""
+    If GetGadgetText(#audiocodec)="AAC Audio"
+      ClearGadgetItems(#audibit)
+      AddGadgetItem(#audibit,-1,"320")
+      AddGadgetItem(#audibit,-1,"288")
+      AddGadgetItem(#audibit,-1,"256")
+      AddGadgetItem(#audibit,-1,"224")
+      AddGadgetItem(#audibit,-1,"192")
+      AddGadgetItem(#audibit,-1,"160")
+      AddGadgetItem(#audibit,-1,"128")
+      AddGadgetItem(#audibit,-1,"96")
+      AddGadgetItem(#audibit,-1,"64")
+      SetGadgetState(#audibit,6)
+      DisableGadget(#mp3mode,1)
+      DisableGadget(#audibit,0)
+      SetGadgetText(#text50,"Audio Bitrate:")
+      SetGadgetText(#text51,"kbit/s")
+      GadgetToolTip(#audibit,"Bitrate of audio")
+    EndIf
   EndIf
-  SetGadgetState(#channel,1)
   
-  If GetGadgetText(#encodewith)="Mencoder for Encoding" Or GetGadgetText(#encodewith)="Use AviSynth (only for X264)" Or GetGadgetText(#encodewith)="Use X264 as demuxer and encoder" Or GetGadgetText(#encodewith)="Use HandBrakeCLI for Encoding" Or GetGadgetText(#encodewith)="Use ffmpeg as encoder"
-    ClearGadgetItems(#sampling)
-    AddGadgetItem(#sampling,-1,"AUTO")
-    AddGadgetItem(#sampling,-1,"48000")
-    AddGadgetItem(#sampling,-1,"44100")
-    AddGadgetItem(#sampling,-1,"32000")
-    AddGadgetItem(#sampling,-1,"24000")
-    AddGadgetItem(#sampling,-1,"22050")
+  If neroaacenc.s<>""
+    If GetGadgetText(#audiocodec)="AAC Audio"
+      ClearGadgetItems(#audibit)
+      AddGadgetItem(#audibit,-1,"1")
+      AddGadgetItem(#audibit,-1,"0.9")
+      AddGadgetItem(#audibit,-1,"0.8")
+      AddGadgetItem(#audibit,-1,"0.7")
+      AddGadgetItem(#audibit,-1,"0.6")
+      AddGadgetItem(#audibit,-1,"0.5")
+      AddGadgetItem(#audibit,-1,"0.4")
+      AddGadgetItem(#audibit,-1,"0.3")
+      AddGadgetItem(#audibit,-1,"0.2")
+      AddGadgetItem(#audibit,-1,"0.1")
+      SetGadgetState(#audibit,6)
+      SetGadgetText(#text50,"Audio Quality")
+      DisableGadget(#mp3mode,1)
+      DisableGadget(#audibit,0)
+      GadgetToolTip(#audibit,"Use higher values for better quality")
+    EndIf
   EndIf
   
+  
+  If GetGadgetText(#audiocodec)="AC3 Audio"
+    ClearGadgetItems(#audibit)
+    AddGadgetItem(#audibit,-1,"320")
+    AddGadgetItem(#audibit,-1,"288")
+    AddGadgetItem(#audibit,-1,"256")
+    AddGadgetItem(#audibit,-1,"224")
+    AddGadgetItem(#audibit,-1,"192")
+    AddGadgetItem(#audibit,-1,"160")
+    AddGadgetItem(#audibit,-1,"128")
+    AddGadgetItem(#audibit,-1,"96")
+    AddGadgetItem(#audibit,-1,"64")
+    SetGadgetState(#audibit,6)
+    
+    DisableGadget(#mp3mode,1)
+    DisableGadget(#audibit,0)
+    SetGadgetText(#text50,"Audio Bitrate:")
+    SetGadgetText(#text51,"kbit/s")
+    GadgetToolTip(#audibit,"Bitrate of audio")
+    
+  EndIf
+  
+  If GetGadgetText(#audiocodec)="FLAC Audio"
+    ClearGadgetItems(#audibit)
+    AddGadgetItem(#audibit,-1,"320")
+    AddGadgetItem(#audibit,-1,"288")
+    AddGadgetItem(#audibit,-1,"256")
+    AddGadgetItem(#audibit,-1,"224")
+    AddGadgetItem(#audibit,-1,"192")
+    AddGadgetItem(#audibit,-1,"160")
+    AddGadgetItem(#audibit,-1,"128")
+    AddGadgetItem(#audibit,-1,"96")
+    AddGadgetItem(#audibit,-1,"64")
+    SetGadgetState(#audibit,6)
+    
+    DisableGadget(#mp3mode,1)
+    DisableGadget(#audibit,1)
+    SetGadgetText(#text50,"Audio Bitrate:")
+    SetGadgetText(#text51,"kbit/s")
+    GadgetToolTip(#audibit,"Useless for FLAC")
+    
+  EndIf
+  
+  If GetGadgetText(#audiocodec)="Copy Audio"
+    ClearGadgetItems(#audibit)
+    AddGadgetItem(#audibit,-1,"320")
+    AddGadgetItem(#audibit,-1,"288")
+    AddGadgetItem(#audibit,-1,"256")
+    AddGadgetItem(#audibit,-1,"224")
+    AddGadgetItem(#audibit,-1,"192")
+    AddGadgetItem(#audibit,-1,"160")
+    AddGadgetItem(#audibit,-1,"128")
+    AddGadgetItem(#audibit,-1,"96")
+    AddGadgetItem(#audibit,-1,"64")
+    SetGadgetState(#audibit,2)
+    DisableGadget(#mp3mode,1)
+    DisableGadget(#audibit,1)
+  EndIf
+  
+  
+  
+  If GetGadgetText(#audiocodec)="OGG Audio"
+    
+       DisableGadget(#mp3mode,1)
+    DisableGadget(#audibit,0)
+    SetGadgetText(#text50,"Audio Quality")
+    SetGadgetText(#text51,"")
+    
+    ClearGadgetItems(#audibit)
+    AddGadgetItem(#audibit,-1,"10")
+    AddGadgetItem(#audibit,-1,"9")
+    AddGadgetItem(#audibit,-1,"8")
+    AddGadgetItem(#audibit,-1,"7")
+    AddGadgetItem(#audibit,-1,"6")
+    AddGadgetItem(#audibit,-1,"5")
+    AddGadgetItem(#audibit,-1,"4")
+    AddGadgetItem(#audibit,-1,"3")
+    AddGadgetItem(#audibit,-1,"2")
+    AddGadgetItem(#audibit,-1,"1")
+    AddGadgetItem(#audibit,-1,"0")
+    SetGadgetState(#audibit,6)
+    GadgetToolTip(#audibit,"Use higher values for better quality")
+
+    
+  EndIf
+    
   
   If GetGadgetText(#encodewith)="Mencoder for Encoding" Or GetGadgetText(#encodewith)="Use ffmpeg as encoder"
     ClearGadgetItems(#videocodec)
@@ -140,31 +207,8 @@ Procedure handbrakeoff()
     GadgetToolTip(#audibit,"Bitrate of audio")
     
   EndIf
-  
-  If GetGadgetText(#encodewith)="Use HandBrakeCLI for Encoding"
-    ClearGadgetItems(#videocodec)
-    AddGadgetItem(#videocodec,-1,"Mpeg4")
-    AddGadgetItem(#videocodec,-1,"X264")
     
-    ClearGadgetItems(#container)
-    AddGadgetItem(#container,-1,"MP4")
-    AddGadgetItem(#container,-1,"MKV")
-    
-    DisableGadget(#mp3mode,1)
-    DisableGadget(#resizer,1)
-    DisableGadget(#noodml,1)
-    DisableGadget(#ffourcc,1)
-    DisableGadget(#audionormalize,0)
-    DisableGadget(#multithread,1)
-    
-    GadgetToolTip(#audibit,"Bitrate of audio")
-    
-    SetGadgetText(#text50,"Audio Bitrate:")
-    SetGadgetText(#text51,"kbit/s")
-    
-  EndIf
-  
-  If GetGadgetText(#encodewith)="Use AviSynth (only for X264)"  Or GetGadgetText(#encodewith)="Use X264 as demuxer and encoder"
+  If GetGadgetText(#encodewith)="Use AviSynth (only for X264)"  Or GetGadgetText(#encodewith)="Use X264 as demuxer and encoder" Or GetGadgetText(#encodewith)="Pipe X264 with mencoder"
     ClearGadgetItems(#videocodec)
     StatusBarText(#statusbar, 0, "Resetting video And audio codec! Forcing video codec to X264")
     AddGadgetItem(#videocodec,-1,"X264")
@@ -181,11 +225,6 @@ Procedure handbrakeoff()
     DisableGadget(#ffourcc,1)
     DisableGadget(#audionormalize,0)
     DisableGadget(#multithread,1)
-    
-    SetGadgetText(#text50,"Audio Bitrate:")
-    SetGadgetText(#text51,"kbit/s")
-    
-    GadgetToolTip(#audibit,"Bitrate of audio")
     
   EndIf
   
@@ -206,7 +245,6 @@ Procedure makereport()
       ProcedureReturn
     EndIf
     
-    If GetGadgetText(#encodewith)<>"Use HandBrakeCLI for Encoding"
       queuecount.l=queuecount.l+1
       queue.l=1
       If GetGadgetText(#pass)="1 pass" : passx.l=2 : start() : EndIf
@@ -223,14 +261,7 @@ Procedure makereport()
         start()
       EndIf
     EndIf
-    If GetGadgetText(#encodewith)="Use HandBrakeCLI for Encoding"
-      queuecount.l=queuecount.l+1
-      queue.l=1
-      start()
-    EndIf
-    
-  EndIf
-  
+   
   
   CreateFile(147,here.s+"Post_This_File.txt")
   
@@ -310,6 +341,146 @@ Procedure sanitycheck()
 EndProcedure
 
 
+
+Procedure x264mencoderpipe()
+    
+  workpath.s=GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s)))
+  
+  CreateDirectory(GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s))))
+  
+  If linux=#True  : workpath.s=workpath.s+"/" : EndIf
+  If windows=#True : workpath.s=workpath.s+"\" : EndIf
+    
+  If GetGadgetText(#videocodec)="X264" : outputfile.s=workpath.s+"automen.h264" : EndIf
+  
+  If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="ifo"
+    dump.s=mplayer.s+" dvd://"+Str(pgcid.l)+" -dvd-device "+Chr(34)+Mid(GetPathPart(GetGadgetText(#inputstring)),0,Len(GetPathPart(GetGadgetText(#inputstring)))-1)+Chr(34)+" -dumpstream -dumpfile "+Chr(34)+workpath.s+"film.vob"+Chr(34)
+    inputfile.s=workpath.s+"film.vob"
+    AddGadgetItem(#queue,0,dump.s)
+  EndIf
+  
+  leftcrop.l=Val(GetGadgetText(#leftcrop))
+  topcrop.l=Val(GetGadgetText(#topcrop))
+  rightcrop.l=Val(GetGadgetText(#rightcrop))
+  bottomcrop.l=Val(GetGadgetText(#bottomcrop))
+  
+  If GetGadgetState(#allowresize)=1
+    width.l=Val(GetGadgetText(#width))
+    height.l=Val(GetGadgetText(#height))
+  EndIf
+  
+  If GetGadgetText(#width)=""
+    MessageRequester("AutoMen", "Attention!"+Chr(10)+"Analyze file First!")
+    ProcedureReturn
+  EndIf
+  
+  mencoderbat.s=mencoder.s+" "
+  
+  If GetGadgetState(#allowresize)=1
+    
+    If GetGadgetText(#mdeint)="FILM NTSC (29.97->23.976)" : mencoderbat=mencoderbat.s+" -vf pullup,softskip," : framer.s="23.976 " : EndIf
+    If GetGadgetText(#mdeint)="Interlaced" : mencoderbat.s=mencoderbat.s+" -vf yadif," :  EndIf
+    If GetGadgetText(#mdeint)="Telecine" : mencoderbat.s=mencoderbat.s+" -vf filmdint," :  framer.s="23.976 " : EndIf
+    If GetGadgetText(#mdeint)="Mixed Prog/Telecine" : mencoderbat.s=mencoderbat.s+" -vf filmdint," :  framer.s="23.976 " : EndIf
+    If GetGadgetText(#mdeint)="Mixed Prog/Interlaced" : mencoderbat.s=mencoderbat.s+" -vf yadif," :  EndIf
+    If GetGadgetText(#mdeint)="Change FPS to 25" : mencoderbat.s=mencoderbat.s+" -ofps 25000/1000 -vf " :  framer.s="25 " : EndIf
+    If GetGadgetText(#mdeint)="Change FPS to 23.976" : mencoderbat.s=mencoderbat.s+" -ofps 24000/1001 -vf " :  framer.s="23.976 " : EndIf
+    If GetGadgetText(#mdeint)="Change FPS to 29.97" : mencoderbat.s=mencoderbat.s+" -ofps 30000/1001 -vf " :  framer.s="29.97 " : EndIf
+    If GetGadgetText(#mdeint)="Progressive"  : mencoderbat.s=mencoderbat.s+"-vf " :  EndIf
+    
+    mencoderbat.s=mencoderbat.s+"crop="+Str(twidth.l-Val(GetGadgetText(#leftcrop))-Val(GetGadgetText(#rightcrop)))+":"+Str(theight.l-Val(GetGadgetText(#topcrop))-Val(GetGadgetText(#bottomcrop)))+":"+GetGadgetText(#leftcrop)+":"+GetGadgetText(#topcrop)+","
+    mencoderbat.s=mencoderbat.s+"scale="+Str(width.l)+":"+Str(height.l)
+    
+  EndIf
+  
+  If GetGadgetState(#allowresize)=0
+    
+    If GetGadgetText(#mdeint)="FILM NTSC (29.97->23.976)" : mencoderbat=mencoderbat.s+" -vf pullup,softskip," : framer.s="23.976 " : EndIf
+    If GetGadgetText(#mdeint)="Interlaced" : mencoderbat.s=mencoderbat.s+" -vf yadif," :  EndIf
+    If GetGadgetText(#mdeint)="Telecine" : mencoderbat.s=mencoderbat.s+" -vf filmdint," :  framer.s="23.976 " : EndIf
+    If GetGadgetText(#mdeint)="Mixed Prog/Telecine" : mencoderbat.s=mencoderbat.s+" -vf filmdint," :  framer.s="23.976 " : EndIf
+    If GetGadgetText(#mdeint)="Mixed Prog/Interlaced" : mencoderbat.s=mencoderbat.s+" -vf yadif," :  EndIf
+    If GetGadgetText(#mdeint)="Change FPS to 25" : mencoderbat.s=mencoderbat.s+" -ofps 25000/1000 -vf " :  framer.s="25 " : EndIf
+    If GetGadgetText(#mdeint)="Change FPS to 23.976" : mencoderbat.s=mencoderbat.s+" -ofps 24000/1001 -vf " :  framer.s="23.976 " : EndIf
+    If GetGadgetText(#mdeint)="Change FPS to 29.97" : mencoderbat.s=mencoderbat.s+" -ofps 30000/1001 -vf " :  framer.s="29.97 " : EndIf
+    If GetGadgetText(#mdeint)="Progressive"  : mencoderbat.s=mencoderbat.s+"-vf " :  EndIf
+    
+  EndIf
+  
+  
+  If GetGadgetText(#denoise)<>"NONE"  And GetGadgetState(#allowresize)=1 : mencoderbat.s=mencoderbat.s+"," : EndIf
+  If GetGadgetText(#denoise)="Super Light" : mencoderbat.s=mencoderbat.s+"hqdn3d=1" : EndIf
+  If GetGadgetText(#denoise)="Light" : mencoderbat.s=mencoderbat.s+"hqdn3d=2" : EndIf
+  If GetGadgetText(#denoise)="Normal" : mencoderbat.s=mencoderbat.s+"hqdn3d=4" : EndIf
+  If GetGadgetText(#denoise)="Severe" : mencoderbat.s=mencoderbat.s+"hqdn3d=6" : EndIf
+  
+  If GetGadgetText(#mdeint)="Progressive" And GetGadgetText(#denoise)="NONE" And GetGadgetState(#allowresize)=0
+    mencoderbat.s=mencoder.s+" "
+  EndIf
+  
+  
+  If GetGadgetText(#mdeint)="FILM NTSC (29.97->23.976)"  Or GetGadgetText(#mdeint)="Telecine" Or GetGadgetText(#mdeint)="Mixed Prog/Telecine"
+    mencoderbat.s=mencoderbat.s+" -ofps 24000/1001 "
+  EndIf
+  
+  If GetGadgetText(#resizer)<>"2 bicubic" : mencoderbat.s=mencoderbat.s+"-sws "+Str(GetGadgetState(#resizer))+" " : EndIf
+   
+  sub.s=""
+  
+  If GetGadgetText(#subs)<>"none" And GetGadgetText(#subs)<>"" And LCase(GetExtensionPart(GetGadgetText(#inputstring)))<>"ifo"
+    sub.s=" -sid "+StringField(StringField(StringField(GetGadgetText(#subs),2,"-sid"),1,","),2," ")+" "
+    sub.s=sub.s+" -subfont-autoscale 3 -subfont-text-scale 5 "
+  EndIf
+  
+  If GetGadgetText(#subs)<>"none" And GetGadgetText(#subs)<>"" And LCase(GetExtensionPart(GetGadgetText(#inputstring)))="ifo"
+    sub.s=" -sid "+Trim(StringField(StringField(GetGadgetText(#subs),2,":"),1,"language"))+" "
+    sub.s=sub.s+" -subfont-autoscale 3 -subfont-text-scale 5 "
+  EndIf
+  
+  If FindString(GetGadgetText(#subs),"/",0) Or FindString(GetGadgetText(#subs),"\",0)
+    sub.s=" -sub "+Chr(34)+GetGadgetText(#subs)+Chr(34)+" "
+  EndIf
+  
+  If sub.s<>"" : mencoderbat.s=mencoderbat.s+sub.s : EndIf
+  
+  mencoderbat.s=mencoderbat.s+" "+Chr(34)+inputfile.s+Chr(34)+" -really-quiet -of rawvideo -ovc raw  -nosound -o - | "+x264.s+" "
+  
+   bitrate.s=GetGadgetText(#videokbits)
+  
+  If ReadFile(777,here.s+"menprofile.txt")
+    While Eof(777) = #False
+      line.s = LCase(ReadString(777))
+      If FindString(line.s,"avisynth-x264",0) And FindString(line.s,";"+Str(GetGadgetState(#speedquality))+";",0)
+        mencoderbat.s=mencoderbat.s+StringField(line.s,4,";")
+      EndIf
+    Wend
+    CloseFile(777)
+  EndIf
+  
+  If passx.l=1 : mencoderbat.s=mencoderbat.s+" --bitrate "+bitrate.s+" " : EndIf
+  If passx.l=2 : mencoderbat.s=mencoderbat.s+" --pass 1 --bitrate "+bitrate.s+" --stats "+Chr(34)+here.s+"multix264.stats"+Chr(34)+" " : EndIf
+  If passx.l=3 : mencoderbat.s=mencoderbat.s+" --pass 2 --bitrate "+bitrate.s+" --stats "+Chr(34)+here.s+"multix264.stats"+Chr(34)+" " : EndIf
+  If passx.l=4 : mencoderbat.s=mencoderbat.s+" --crf "+bitrate.s+" " : EndIf
+  If passx.l=8 : mencoderbat.s=mencoderbat.s+" --qp "+bitrate.s+" " : EndIf
+  
+  If passx.l=7: mencoderbat.s=mencoderbat.s+" --crf 21" : EndIf ;missing copy from x264, but 21 should be similar
+  If passx.l=11 : mencoderbat.s=mencoderbat.s+" --crf 21 " : EndIf ;missing samecrf , but 21 should be similar
+  
+  If GetGadgetText(#mdeint)="Progressive" : mencoderbat.s=mencoderbat.s+" --no-interlaced ": EndIf
+  If GetGadgetText(#mdeint)="Interlaced" : mencoderbat.s=mencoderbat.s+" --no-interlaced ": EndIf
+  
+  If GetGadgetState(#allowresize)=1
+    mencoderbat.s=mencoderbat.s+" - --input-res "+Str(width.l)+"x"+Str(height.l)
+  EndIf
+    
+  mencoderbat.s=mencoderbat.s+" --output "+Chr(34)+outputfile.s+Chr(34)+" "
+  
+  AddGadgetItem(#queue,-1,mencoderbat.s)
+  
+  
+EndProcedure
+
+
 Procedure mencoder()
   
   workpath.s=GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s)))
@@ -359,6 +530,7 @@ Procedure mencoder()
     If GetGadgetText(#mdeint)="Progressive"  : mencoderbat.s=mencoderbat.s+"-vf " :  EndIf
     
     mencoderbat.s=mencoderbat.s+"crop="+Str(twidth.l-Val(GetGadgetText(#leftcrop))-Val(GetGadgetText(#rightcrop)))+":"+Str(theight.l-Val(GetGadgetText(#topcrop))-Val(GetGadgetText(#bottomcrop)))+":"+GetGadgetText(#leftcrop)+":"+GetGadgetText(#topcrop)+","
+    mencoderbat.s=mencoderbat.s+"scale="+Str(width.l)+":"+Str(height.l)
     
   EndIf
   
@@ -381,7 +553,8 @@ Procedure mencoder()
   If GetGadgetText(#denoise)="Normal" : mencoderbat.s=mencoderbat.s+"hqdn3d=4" : EndIf
   If GetGadgetText(#denoise)="Severe" : mencoderbat.s=mencoderbat.s+"hqdn3d=6" : EndIf
   
-  If GetGadgetText(#mdeint)="Progressive" And GetGadgetText(#denoise)="NONE"
+ 
+  If GetGadgetText(#mdeint)="Progressive" And GetGadgetText(#denoise)="NONE" And  GetGadgetState(#allowresize)=0
     mencoderbat.s=mencoder.s+" "
   EndIf
   
@@ -567,123 +740,6 @@ Procedure ffmpeg()
   AddGadgetItem(#queue,-1,mencoderbat.s)
   
 EndProcedure
-
-
-
-Procedure handbrake()
-  
-  mencoderbat.s=""
-  mux.s=""
-  
-  If linux=#True : mencoderbat.s=Chr(34)+handbrakecli.s+Chr(34)+" " : EndIf
-  If windows=#True : mencoderbat.s=Chr(34)+handbrakecli.s+Chr(34)+" " : EndIf
-  mencoderbat.s=mencoderbat.s+"-i "+Chr(34)+inputfile.s+Chr(34)+" "
-  If LCase(GetExtensionPart(inputfile.s))="ifo" : mencoderbat.s=mencoderbat.s+"-t "+Str(pgcid.l)+" " : EndIf
-  
-  mencoderbat.s=mencoderbat.s+"--output "+Chr(34)+GetGadgetText(#outputstring)+Chr(34)+" "
-  mencoderbat.s=mencoderbat.s+"--format "+GetGadgetText(#container)+" "
-  
-  If  GetGadgetText(#videocodec)="XviD" : mencoderbat.s=mencoderbat.s+"--encoder ffmpeg " : EndIf
-  If GetGadgetText(#videocodec)="Mpeg4" : mencoderbat.s=mencoderbat.s+"--encoder ffmpeg " : EndIf
-  If GetGadgetText(#videocodec)="X264"
-    mencoderbat.s=mencoderbat.s+"--encoder x264 "
-    If ReadFile(777,here.s+"menprofile.txt")
-      While Eof(777) = #False
-        line.s = LCase(ReadString(777))
-        If FindString(line.s,"x264-handbrake",0) And FindString(line.s,";"+Str(GetGadgetState(#speedquality))+";",0)
-          encostring.s=StringField(line.s,4,";")
-        EndIf
-      Wend
-      CloseFile(777)
-    EndIf
-    
-    encostring.s=ReplaceString(encostring.s,"-ovc x264 -x264encopts bitrate:threads=auto:","")
-    mencoderbat.s=mencoderbat.s+"--encopts "+encostring.s+" "
-    
-  EndIf
-  
-  If GetGadgetText(#pass)="1 pass" : mencoderbat.s=mencoderbat.s+"--vb "+GetGadgetText(#videokbits)+" " : EndIf
-  If GetGadgetText(#pass)="2 pass" : mencoderbat.s=mencoderbat.s+"--turbo --two-pass --size "+GetGadgetText(#cds)+" " : EndIf
-  If GetGadgetText(#pass)="CRF 1 pass" : mencoderbat.s=mencoderbat.s+"--quality "+GetGadgetText(#videokbits)+" " : EndIf
-  If GetGadgetText(#pass)="Copy Video" : mencoderbat.s=mencoderbat.s+"--quality 1 " : EndIf
-  
-  
-  If GetGadgetText(#mdeint)="FILM NTSC (29.97->23.976)" : mencoderbat.s=mencoderbat.s+"--detelecine " : EndIf
-  If GetGadgetText(#mdeint)="Interlaced" : mencoderbat.s=mencoderbat.s+"--deinterlace " : EndIf
-  If GetGadgetText(#mdeint)="Telecine" : mencoderbat.s=mencoderbat.s+"--detelecine " : EndIf
-  If GetGadgetText(#mdeint)="Mixed Prog/Telecine" : mencoderbat.s=mencoderbat.s+"--detelecine " : EndIf
-  If GetGadgetText(#mdeint)="Mixed Prog/Interlaced" : mencoderbat.s=mencoderbat.s+"--deinterlace " : EndIf
-  If GetGadgetText(#mdeint)="Change FPS to 23.976" : mencoderbat.s=mencoderbat.s+"--rate 23.976 " : EndIf
-  If GetGadgetText(#mdeint)="Change FPS to 25" : mencoderbat.s=mencoderbat.s+"--rate 25 " : EndIf
-  If GetGadgetText(#mdeint)="Change FPS to 29.97" : mencoderbat.s=mencoderbat.s+"--rate 29.97 " : EndIf
-  
-  If GetGadgetText(#audiotrack)<>"none"
-    mencoderbat.s=mencoderbat.s+"--audio "+Str(GetGadgetState(#audiotrack))+" "
-    If GetGadgetText(#audiocodec)="MP3 Audio" : mencoderbat.s=mencoderbat.s+"--aencoder lame " : EndIf
-    If GetGadgetText(#audiocodec)="AAC Audio" : mencoderbat.s=mencoderbat.s+"--aencoder faac " : EndIf
-    If GetGadgetText(#audiocodec)="AC3 Audio" : mencoderbat.s=mencoderbat.s+"--aencoder ac3 " : EndIf
-    If GetGadgetText(#audiocodec)="OGG Audio" : mencoderbat.s=mencoderbat.s+"--aencoder vorbis " : EndIf
-    If GetGadgetText(#audiocodec)="Copy Audio" : mencoderbat.s=mencoderbat.s+"--aencoder ac3 " : EndIf
-    
-    If GetGadgetText(#audiocodec)<>"Copy Audio" And GetGadgetText(#audiocodec)<>"AC3 Audio"
-      mencoderbat.s=mencoderbat.s+"--ab "+GetGadgetText(#audibit)+" "
-      mencoderbat.s=mencoderbat.s+"--mixdown "+GetGadgetText(#channel)+" "
-      
-      If GetGadgetText(#sampling)="48000" : mencoderbat.s=mencoderbat.s+"--arate 48000 " : EndIf
-      If GetGadgetText(#sampling)="44100" : mencoderbat.s=mencoderbat.s+"--arate 44100 " : EndIf
-      If GetGadgetText(#sampling)="24000" : mencoderbat.s=mencoderbat.s+"--arate 24000 " : EndIf
-      If GetGadgetText(#sampling)="22050" : mencoderbat.s=mencoderbat.s+"--arate 22050 " : EndIf
-      If GetGadgetState(#audionormalize)=1 : mencoderbat.s=mencoderbat.s+"--drc 2.0 " : EndIf
-    EndIf
-    
-  EndIf
-  
-  If GetGadgetState(#allowresize)=1
-    mencoderbat.s=mencoderbat.s+"-w "+GetGadgetText(#width)+" "
-    mencoderbat.s=mencoderbat.s+"-l "+GetGadgetText(#height)+" "
-    If GetGadgetText(#bottomcrop)<>"" Or GetGadgetText(#topcrop)<>"" Or GetGadgetText(#leftcrop)<>"" Or GetGadgetText(#rightcrop)<>""
-      mencoderbat.s=mencoderbat.s+"--crop "+GetGadgetText(#topcrop)+":"+GetGadgetText(#bottomcrop)+":"+GetGadgetText(#leftcrop)+":"+GetGadgetText(#rightcrop)+" "
-    EndIf
-  EndIf
-  
-  ;If windows=#true : mencoderbat.s=mencoderbat.s+"-p " : EndIf
-  If GetGadgetText(#denoise)="Super Light" : mencoderbat.s=mencoderbat.s+"--denoise weak " : EndIf
-  If GetGadgetText(#denoise)="Light" : mencoderbat.s=mencoderbat.s+"--denoise weak " : EndIf
-  If GetGadgetText(#denoise)="Normal" : mencoderbat.s=mencoderbat.s+"--denoise medium " : EndIf
-  If GetGadgetText(#denoise)="Severe" : mencoderbat.s=mencoderbat.s+"--denoise strong " : EndIf
-  
-  AddGadgetItem(#queue,-1,mencoderbat.s)
-  
-  
-  If passx.l=2 Or passx.l=4 Or passx.l=5 Or passx.l=7
-    
-    If GetGadgetState(#shutdown)=1
-      If linux=#True : AddGadgetItem(#queue,-1,"shutdown now") : EndIf
-      If windows=#True : AddGadgetItem(#queue,-1,"shutdown -s -t 30 -f") : EndIf
-    EndIf
-    
-  EndIf
-  
-  
-  If queue.l=0
-    If passx.l=2 Or passx.l=4 Or passx.l=5 Or passx.l=7
-      CreateFile(666,here.s+"automen.bat")
-      WriteStringN(666,"")
-      WriteStringN(666,GetGadgetText(#queue))
-      CloseFile(666)
-      If linux=#True
-        RunProgram("chmod","+x "+Chr(34)+here.s+"automen.bat"+Chr(34),here.s,#PB_Program_Wait)
-        RunProgram("xterm","-e "+Chr(34)+here.s+"automen.bat"+Chr(34),here.s)
-      Else
-        RunProgram(here.s+"automen.bat","",here.s)
-      EndIf
-      ClearGadgetItems(#queue)
-    EndIf
-  EndIf
-  
-  
-EndProcedure
-
 
 
 Procedure x264lavf()
@@ -1121,10 +1177,10 @@ Procedure start()
   
   If GetGadgetText(#encodewith)="Use X264 as demuxer and encoder" : x264lavf() : EndIf
   
-  If GetGadgetText(#encodewith)="Use HandBrakeCLI for Encoding" : handbrake() : EndIf
+   If GetGadgetText(#encodewith)="Use ffmpeg as encoder" : ffmpeg() : EndIf
   
-  If GetGadgetText(#encodewith)="Use ffmpeg as encoder" : ffmpeg() : EndIf
-  
+  If GetGadgetText(#encodewith)="Pipe X264 with mencoder" : x264mencoderpipe() : EndIf
+    
 EndProcedure
 
 Procedure startqueue()
@@ -1190,24 +1246,7 @@ Procedure parseprofile()
     SetGadgetAttribute(#speedquality, #PB_TrackBar_Maximum ,countprofile.l)
   EndIf
   
-  If GetGadgetText(#encodewith)="Use HandBrakeCLI for Encoding"
-    countprofile.l=0
-    ReadFile(888,here.s+"menprofile.txt")
-    While Eof(888) = 0
-      line.s = LCase(ReadString(888))
-      
-      If GetGadgetText(#videocodec)="Mpeg4" And FindString(line.s,"handbrake-ffmpeg4",0)
-        countprofile.l=countprofile.l+1
-      EndIf
-      If GetGadgetText(#videocodec)="X264" And FindString(line.s,"handbrake-x264",0)
-        countprofile.l=countprofile.l+1
-      EndIf
-    Wend
-    CloseFile(888)
-    SetGadgetAttribute(#speedquality, #PB_TrackBar_Maximum ,countprofile.l)
-  EndIf
-  
-  If GetGadgetText(#encodewith)="Use AviSynth (only for X264)" Or GetGadgetText(#encodewith)="Use X264 as demuxer and encoder"
+    If GetGadgetText(#encodewith)="Use AviSynth (only for X264)" Or GetGadgetText(#encodewith)="Use X264 as demuxer and encoder" Or GetGadgetText(#encodewith)="Pipe X264 with mencoder" 
     countprofile.l=0
     ReadFile(888,here.s+"menprofile.txt")
     While Eof(888) = 0
@@ -1262,21 +1301,8 @@ Procedure parseprofile()
         EndIf
       EndIf
       
-      If GetGadgetText(#encodewith)="Use HandBrakeCLI for Encoding" And GetGadgetText(#videocodec)="X264"
-        Debug(";"+Str(GetGadgetState(#speedquality))+";+"+LCase(StringField(GetGadgetText(#videocodec),1," ")))
-        If FindString(line.s,";"+Str(GetGadgetState(#speedquality))+";",0) And FindString(line.s,"handbrake-x264",0)
-          SetGadgetText(#speedqualitytext,StringField(GetGadgetText(#videocodec),1," ")+" "+StringField(line,3,";"))
-        EndIf
-      EndIf
       
-      If GetGadgetText(#encodewith)="Use HandBrakeCLI for Encoding" And GetGadgetText(#videocodec)="Mpeg4"
-        Debug(";"+Str(GetGadgetState(#speedquality))+";+"+LCase(StringField(GetGadgetText(#videocodec),1," ")))
-        If FindString(line.s,";"+Str(GetGadgetState(#speedquality))+";",0) And FindString(line.s,"handbrake-ffmpeg4",0)
-          SetGadgetText(#speedqualitytext,StringField(GetGadgetText(#videocodec),1," ")+" "+StringField(line,3,";"))
-        EndIf
-      EndIf
-      
-      If GetGadgetText(#encodewith)="Use AviSynth (only for X264)" Or GetGadgetText(#encodewith)="Use X264 as demuxer and encoder"
+      If GetGadgetText(#encodewith)="Use AviSynth (only for X264)" Or GetGadgetText(#encodewith)="Use X264 as demuxer and encoder" Or GetGadgetText(#encodewith)="Pipe X264 with mencoder" 
         If FindString(line.s,";"+Str(GetGadgetState(#speedquality))+";",0) And FindString(line.s,"avisynth-x264",0)
           SetGadgetText(#speedqualitytext,"X264 "+StringField(line,3,";"))
         EndIf
@@ -1342,9 +1368,6 @@ Procedure preview()
     aid.s="-aid "+Trim(StringField(GetGadgetText(#audiotrack),CountString(GetGadgetText(#audiotrack),":")+1,":"))
   EndIf
   
-  If GetGadgetText(#encodewith)="Use HandBrakeCLI for Encoding"
-    aid.s=""
-  EndIf
   
   CreateFile(987,here.s+"mplayerpreview.bat")
   WriteString(987,mplayer.s+" "+aid.s+" -vf "+vcrop.s+",scale="+GetGadgetText(#width)+":"+GetGadgetText(#height)+" -aspect "+GetGadgetText(#arcombo)+" "+Chr(34)+inputfile.s+Chr(34))
@@ -2018,233 +2041,6 @@ Procedure checkifo()
 EndProcedure
 
 
-Procedure checkmediahandbrake()
-  
-  
-  SetGadgetText(#encodewith,"Use HandBrakeCLI for Encoding")
-  handbrakeoff()
-  
-  ClearGadgetItems(#audiotrack)
-  ClearGadgetItems(#subs)
-  
-  AddGadgetItem(#subs,-1,"none")
-  AddGadgetItem(#audiotrack,-1,"none")
-  
-  
-  SetGadgetText(#bottomcrop,"")
-  SetGadgetText(#topcrop,"")
-  SetGadgetText(#leftcrop,"")
-  SetGadgetText(#rightcrop,"")
-  
-  twidth.l=0
-  theight.l=0
-  tsec.l=0
-  ar.s=""
-  
-  CreateFile(987,here.s+"hbanalysis.bat")
-  WriteString(987,handbrakecli.s+" -t 0 -i "+Chr(34)+inputfile.s+Chr(34)+" 2> mplayer.log")
-  CloseFile(987)
-  
-  If windows=#True
-    RunProgram(here.s+"hbanalysis.bat","",here.s,#PB_Program_Wait)
-  EndIf
-  If linux=#True
-    RunProgram("chmod","+x "+Chr(34)+here.s+"hbanalysis.bat"+Chr(34),here.s,#PB_Program_Wait)
-    RunProgram("xterm","-e "+Chr(34)+here.s+"hbanalysis.bat"+Chr(34),here.s,#PB_Program_Wait)
-  EndIf
-  
-  fh=OpenFile(#PB_Any,here.s+"mplayer.log")
-  While Eof(fh)=0
-    mess.s=ReadString(fh)
-    
-    If FindString(mess,"+ size",0)
-      line.s=StringField(mess.s,2,"size")
-      temp.s=StringField(line.s,2,":")
-      twidth.l=Val(StringField(Trim(temp.s),1,"x"))
-      theight.l=Val(StringField(Trim(temp.s),2,"x"))
-      line.s=StringField(mess.s,2,"display aspect:")
-      ar.s=StringField(Trim(StringField(line.s,2,":")),1,",")
-      
-      If FindString(mess.s,"25.",0) : framerate.f=25.000 : EndIf
-      If FindString(mess.s,"23.9",0) : framerate.f=23.976 : EndIf
-      If FindString(mess.s,"29.9",0) : framerate.f=29.97 : EndIf
-      If FindString(mess.s,"30.0",0) : framerate.f=30 : EndIf
-      
-    EndIf
-    
-    If FindString(mess,"duration",0)
-      line.s=StringField(mess.s,2,"duration")
-      hour.l=Val(StringField(StringField(line.s,1,":"),2," "))
-      minute.l=Val(StringField(StringField(line.s,2,":"),1,":"))
-      second.l=Val(StringField(line.s,3,":"))
-    EndIf
-    
-    If FindString(mess,"+ autocrop",0)
-      line.s=StringField(mess.s,2,":")
-      actop.l=Val(StringField(line.s,1,"/"))
-      acbottom.l=Val(StringField(line.s,2,"/"))
-      acleft.l=Val(StringField(line.s,3,"/"))
-      acright.l=Val(StringField(line.s,4,"/"))
-    EndIf
-    
-    If FindString(mess,"+",0) And FindString(mess.s,",",0) And FindString(mess.s,"audio",0)=0
-      
-      If FindString(mess.s,"AC3",0) : AddGadgetItem(#audiotrack,-1,Trim(StringField(mess.s,2,","))) : EndIf
-      If FindString(mess.s,"DTS",0) : AddGadgetItem(#audiotrack,-1,Trim(StringField(mess.s,2,","))) : EndIf
-      If FindString(mess.s,"MP3",0) : AddGadgetItem(#audiotrack,-1,Trim(StringField(mess.s,2,","))) : EndIf
-      If FindString(mess.s,"MP2",0) : AddGadgetItem(#audiotrack,-1,Trim(StringField(mess.s,2,","))) : EndIf
-      If FindString(mess.s,"AAC",0) : AddGadgetItem(#audiotrack,-1,Trim(StringField(mess.s,2,","))) : EndIf
-      If FindString(mess.s,"VORBIS",0) : AddGadgetItem(#audiotrack,-1,Trim(StringField(mess.s,2,","))) : EndIf
-      If FindString(mess.s,"PCM",0) : AddGadgetItem(#audiotrack,-1,Trim(StringField(mess.s,2,","))) : EndIf
-      If FindString(mess.s,"FLAC",0) : AddGadgetItem(#audiotrack,-1,Trim(StringField(mess.s,2,","))) : EndIf
-      
-    EndIf
-    
-    If FindString(mess,"subtitles",0) And GetExtensionPart(inputfile.s)="mkv" And FindString(mess,"S_TEXT",0)
-      mess.s=ReplaceString(mess.s,"[mkv]","")
-      mess.s=ReplaceString(mess.s,"subtitles","")
-      mess.s=ReplaceString(mess.s,"(","")
-      mess.s=ReplaceString(mess.s,"),","")
-      mess.s=ReplaceString(mess.s,")","")
-      mess.s=ReplaceString(mess.s,"S_TEXT","")
-      mess.s=ReplaceString(mess.s,"/UTF8","")
-      mess.s=ReplaceString(mess.s,"/SSA","")
-      mess.s=ReplaceString(mess.s,"S_VOBSUB","")
-      mess.s=ReplaceString(mess.s,"Track ID ","")
-      mess.s=StringField(mess.s,2,":")
-      AddGadgetItem(#subs,-1,Trim(mess.s))
-    EndIf
-    
-    If FindString(mess,"MPEG2",0)
-      videocodec.s="mpeg2"
-    EndIf
-    If FindString(mess,"MPEG DVD",0)
-      videocodec.s="mpeg2"
-    EndIf
-    If FindString(mess,"VC1",0)
-      videocodec.s="vc1"
-    EndIf
-    If FindString(mess,"theora",0)
-      videocodec.s="theora"
-    EndIf
-    If FindString(mess,"avc1",0)
-      videocodec.s="h.264"
-    EndIf
-    If FindString(mess,"mpeg4",0)
-      videocodec.s="mpeg4 asp"
-    EndIf
-    If FindString(mess,"fraps",0)
-      videocodec.s="fraps"
-    EndIf
-    If FindString(mess,"h.264",0)
-      videocodec.s="h264"
-    EndIf
-    If FindString(mess,"lagarith",0)
-      videocodec.s="lagarith"
-    EndIf
-    If FindString(mess,"mjpeg",0)
-      videocodec.s="mjpeg"
-    EndIf
-    If FindString(mess,"ffvc1",0)
-      videocodec.s="vc1"
-    EndIf
-    
-  Wend
-  
-  CloseFile(fh)
-  
-  tsec.l=hour.l*60*60+minute.l*60+second.l
-  
-  framecount.l=tsec.l*framerate.f
-  
-  SetGadgetText(#arcombo,ar.s)
-  
-  
-  
-  If CountGadgetItems(#audiotrack)>1 : SetGadgetState(#audiotrack,1) : EndIf
-  If CountGadgetItems(#audiotrack)<=1 : SetGadgetState(#audiotrack,0) : EndIf
-  If tsec.l > 1 : SetGadgetText(#videolenght,StrF(tsec.l/60,3)) : EndIf
-  
-  If GetGadgetText(#arcombo)="" : SetGadgetText(#arcombo,StrF(twidth.l/theight.l,4)) : EndIf
-  
-  If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="d2v"
-    fh = ReadFile(#PB_Any,GetGadgetText(#inputstring))
-    While Eof(fh) = #False
-      line.s = ReadString(fh)
-      If FindString(line.s,"Aspect_Ratio=",1)
-        start=FindString(line.s,"Aspect_Ratio=",1)
-        len=Len(line.s)
-        ar.s=Mid(line.s,start+13,len-start)
-      EndIf
-      If FindString(line.s,"Picture_Size=",1)
-        twidth.l=Val(Mid(StringField(line.s,1,"x"),14,4))
-        theight.l=Val(StringField(line.s,2,"x"))
-      EndIf
-    Wend
-    If ar.s="16:9" :  SetGadgetText(#arcombo,"1.7778") : EndIf
-    If ar.s="4:3" :  SetGadgetText(#arcombo,"1.3334") : EndIf
-    If ar.s="1:1" :  SetGadgetText(#arcombo,"1") : EndIf
-    
-  EndIf
-  
-  
-  SetGadgetText(#bottomcrop,"")
-  SetGadgetText(#leftcrop,"")
-  SetGadgetText(#rightcrop,"")
-  SetGadgetText(#topcrop,"")
-  
-  If actop.l>145 Or acbottom.l>145 Or acleft.l>145 Or acright.l>145
-    
-    If actop.l=theight.l Or acright.l=twidth.l
-      actop.l=0
-      acright.l=0
-    EndIf
-    
-    MessageRequester("AutoCrop", "Please, check autocrop value", #PB_MessageRequester_Ok )
-  EndIf
-  
-  SetGadgetText(#bottomcrop,Str(acbottom.l))
-  SetGadgetText(#leftcrop,Str(acleft.l))
-  SetGadgetText(#rightcrop,Str(acright.l))
-  SetGadgetText(#topcrop,Str(actop.l))
-  
-  messinfo.s="Input File: "+GetFilePart(inputfile.s)+Chr(10)
-  messinfo.s=messinfo.s+"Video Codec: "+videocodec.s+Chr(10)
-  messinfo.s=messinfo.s+"Width: "+Str(twidth.l)+"; "
-  messinfo.s=messinfo.s+"Heigh: "+Str(theight.l)+Chr(10)
-  messinfo.s=messinfo.s+"Framerate: "+StrF(framerate.f,3)+"; "
-  messinfo.s=messinfo.s+"Framecount: "+Str(framecount.l)+"; "
-  messinfo.s=messinfo.s+"Duration(sec): "+Str(tsec.l)+Chr(10)
-  messinfo.s=messinfo.s+"Aspect Ratio: "+ar.s+Chr(10)
-  
-  messinfo.s=messinfo.s+Trim(mess2.s)
-  
-  SetGadgetText(#basicfile,messinfo.s)
-  
-  Debug("twidth.l="+Str(twidth.l))
-  Debug("theight.l="+Str(theight.l))
-  Debug("framerate.f="+StrF(framerate.f))
-  Debug("framecount.l="+Str(tsec.l*framerate.f))
-  Debug("tsec.l="+Str(tsec.l))
-  Debug("ar.s"=ar.s)
-  If tsec.l<5 : tsec.l=framecount.l/framerate.f : EndIf
-  
-  SetGadgetText(#widthf,Str(twidth.l))
-  SetGadgetText(#heightf,Str(theight.l))
-  SetGadgetText(#framecountf,Str(framecount.l))
-  SetGadgetText(#frameratef,StrF(framerate.f,3))
-  
-  If framerate.f=59.940 Or framerate.f=29.97
-    result=MessageRequester("AutoMen","Possible Telecine pattern found."+Chr(13)+Chr(13)+"Allow IVTC ? FILM NTSC (29.97->23.976)",#PB_MessageRequester_YesNo)
-    If result=#PB_MessageRequester_Yes : SetGadgetText(#mdeint,"FILM NTSC (29.97->23.976)") : EndIf
-  EndIf
-  
-  SetGadgetState(#subs,0)
-  
-  dimb()
-  
-EndProcedure
-
 Procedure mkvinfo()
   
   
@@ -2273,7 +2069,7 @@ Procedure mkvinfo()
     RunProgram("xterm","-e "+Chr(34)+here.s+"mkvinfo.bat"+Chr(34),here.s,#PB_Program_Wait)
   EndIf
   
-  
+  Delay(500)
   If ReadFile(999,here.s+"mkvinfo.log")
     While Eof(999)=0
       line.s=ReadString(999)
@@ -2733,12 +2529,8 @@ Procedure openinputfile()
     
     exts.s=LCase(GetExtensionPart(inputfile.s))
     If exts.s<>"ifo"
-      If GetGadgetState(#analyzewithhandbrake)=1
-        checkmediahandbrake()
-      Else
         checkmedia()
       EndIf
-    EndIf
     If exts.s="ifo"
       checkifo()
     EndIf
@@ -2780,45 +2572,6 @@ Procedure checkextension()
   
 EndProcedure
 
-Procedure statusbarmess()
-  
-  If GetGadgetText(#container)="MP4" And GetGadgetText(#videocodec)="X264"
-    If GetGadgetText(#encodewith)="Mencoder for Encoding"
-      StatusBarText(#statusbar, 0, "You cannot use Mencoder to make an MP4+X264 file. Switching to HandBrake")
-      SetGadgetText(#encodewith,"Use HandBrakeCLI for Encoding")
-      handbrakeoff()
-      SetGadgetText(#container,"MP4")
-      SetGadgetText(#videocodec,"X264")
-    EndIf
-  EndIf
-  
-  If GetGadgetText(#container)="MP4"
-    If GetGadgetText(#audiocodec)="AAC Audio"
-      If GetGadgetText(#videocodec)="XviD"
-        If GetGadgetText(#encodewith)="Mencoder for Encoding"
-          StatusBarText(#statusbar, 0, "You cannot use Mencoder to make an MP4+XviD+AAC file. Switching audio to MP3")
-          SetGadgetText(#container,"MP4")
-          SetGadgetText(#audiocodec,"MP3 Audio")
-          SetGadgetText(#videocodec,"XviD")
-        EndIf
-      EndIf
-    EndIf
-  EndIf
-  
-  
-  If GetGadgetText(#container)="AVI"
-    If GetGadgetText(#audiocodec)="AAC Audio"
-      If GetGadgetText(#videocodec)="XviD"
-        If GetGadgetText(#encodewith)="Mencoder for Encoding"
-          StatusBarText(#statusbar, 0, "You cannot use Mencoder to make an AVI+XviD+AAC file. Switching audio to MP3")
-          SetGadgetText(#audiocodec,"MP3 Audio")
-        EndIf
-      EndIf
-    EndIf
-  EndIf
-  
-EndProcedure
-
 
 Open_Window_0()
 here.s=GetCurrentDirectory()
@@ -2852,8 +2605,8 @@ If linux=#True
   If FileSize("/usr/bin/mkvinfo")<>-1  : mkvinfo.s="/usr/bin/mkvinfo" : EndIf
   If FileSize("/usr/local/bin/mkvinfo")<>-1 : mkvinfo.s="/usr/local/bin/mkvinfo" : EndIf
   
-  If FileSize("/usr/bin/MP4Box")<>-1  : mp4box.s="/usr/bin/mp4box" : EndIf
-  If FileSize("/usr/local/bin/MP4Box")<>-1 : mp4box.s="/usr/local/bin/mp4box" : EndIf
+  If FileSize("/usr/bin/MP4Box")<>-1  : mp4box.s="/usr/bin/MP4Box" : EndIf
+  If FileSize("/usr/local/bin/MP4Box")<>-1 : mp4box.s="/usr/local/bin/MP4Box" : EndIf
   
   If FileSize("/usr/bin/ffmpeg")<>-1  : ffmpeg.s="/usr/bin/ffmpeg" : EndIf
   If FileSize("/usr/local/bin/ffmpeg")<>-1 : ffmpeg.s="/usr/local/bin/ffmpeg" : EndIf
@@ -2964,7 +2717,7 @@ If ffmpeg.s<>"" : AddGadgetItem(#encodewith,-1,"Use ffmpeg as encoder") : EndIf
 If x264.s<>"" : AddGadgetItem(#encodewith,-1,"Use X264 as demuxer and encoder") : EndIf
 
 If windows=#True And x264.s<>"" : AddGadgetItem(#encodewith,-1,"Use AviSynth (only for X264)") : EndIf
-
+If mencoder.s<>"" And x264.s<>"" : AddGadgetItem(#encodewith,-1,"Pipe X264 with mencoder") : EndIf
 
 SetGadgetState(#encodewith,0)
 
@@ -3010,14 +2763,7 @@ Repeat ; Start of the event loop
       If outputfile.s : SetGadgetText(#outputstring,outputfile.s) : EndIf
       
     ElseIf GadgetID = #audiocodec
-      If GetGadgetText(#audiocodec)="MP3 Audio"
-        DisableGadget(#mp3mode,0)
-      Else
-        DisableGadget(#mp3mode,1)
-      EndIf
-      statusbarmess()
-      
-      
+     handbrakeoff()     
       
     ElseIf GadgetID = #preview
       preview()
@@ -3059,14 +2805,13 @@ Repeat ; Start of the event loop
     ElseIf GadgetID = #videocodec
       checkextension()
       parseprofile()
-      statusbarmess()
       If FindString(GetGadgetText(#pass),"CRF",0) :  SetGadgetText(#Text_33,"Quant") :  DisableGadget(#cds,1) : SetGadgetText(#Text_32,"Quality") : EndIf
       If FindString(GetGadgetText(#pass),"CRF",0)=0 : SetGadgetText(#Text_33,"kbp/s") : DisableGadget(#cds,0) : SetGadgetText(#Text_32,"Video Bitrate") : EndIf
       
       
     ElseIf GadgetID = #container
       checkextension()
-      statusbarmess()
+      
       
     ElseIf GadgetID = #speedquality
       parseprofile()
@@ -3098,17 +2843,12 @@ Repeat ; Start of the event loop
       handbrakeoff()
       parseprofile()
       checkextension()
-      statusbarmess()
-      If FindString(GetGadgetText(#pass),"CRF",0) :  SetGadgetText(#Text_33,"Quant") :  DisableGadget(#cds,1) : SetGadgetText(#Text_32,"Quality") : EndIf
+        If FindString(GetGadgetText(#pass),"CRF",0) :  SetGadgetText(#Text_33,"Quant") :  DisableGadget(#cds,1) : SetGadgetText(#Text_32,"Quality") : EndIf
       If FindString(GetGadgetText(#pass),"CRF",0)=0 : SetGadgetText(#Text_33,"kbp/s") : DisableGadget(#cds,0) : SetGadgetText(#Text_32,"Video Bitrate") : EndIf
       
     ElseIf GadgetID = #audibit
       Dimb()
       
-    ElseIf GadgetID =#analyzewithhandbrake
-      If GetGadgetState(#analyzewithhandbrake)=1 And GetGadgetText(#inputstring)<>""
-        checkmediahandbrake()
-      EndIf
       
     ElseIf GadgetID = #removequeuejob
       RemoveGadgetItem(#queue,0)
@@ -3244,15 +2984,16 @@ End
 ; EnableCompileCount = 1574
 ; EnableBuildCount = 174
 ; EnableExeConstant
-; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 784
-; FirstLine = 932
+; IDE Options = PureBasic 4.60 Beta 4 (Linux - x86)
+; CursorPosition = 2852
+; FirstLine = 2849
 ; Folding = ------
 ; EnableXP
 ; EnableUser
 ; UseIcon = ___logo.ico
 ; Executable = AutoMen_beta.exe
 ; DisableDebugger
-; EnableCompileCount = 452
+; CompileSourceDirectory
+; EnableCompileCount = 479
 ; EnableBuildCount = 1572
 ; EnableExeConstant
