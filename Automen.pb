@@ -43,6 +43,8 @@ Procedure checkencoder()
       AddGadgetItem(#container,-1,"WMV")
     EndIf
     
+    StatusBarText(#statusbar, 0, "Resetting video And audio codec! Forcing video codec to XviD")
+    
   EndIf
   
   If GetGadgetText(#encodewith)="Use AviSynth (only for X264)"  Or GetGadgetText(#encodewith)="Use X264 as demuxer and encoder" Or GetGadgetText(#encodewith)="Pipe X264 with mencoder"
@@ -205,8 +207,6 @@ Procedure handbrakeoff()
     DisableGadget(#audibit,1)
   EndIf
   
-  
-  
   If GetGadgetText(#audiocodec)="OGG Audio"
     
     DisableGadget(#mp3mode,1)
@@ -229,14 +229,8 @@ Procedure handbrakeoff()
     SetGadgetState(#audibit,6)
     GadgetToolTip(#audibit,"Use higher values for better quality")
     
-    
   EndIf
   
-  
-  ;SetGadgetState(#sampling,0)
-  ;SetGadgetState(#videocodec,0)
-  ;SetGadgetState(#container,0)
-  ;DisableGadget(#allowresize,0)
   
 EndProcedure
 
@@ -846,6 +840,8 @@ Procedure  x264avs()
   If linux=#True : workpath.s=workpath.s+"/" : EndIf
   If windows=#True : workpath.s=workpath.s+"\" : EndIf
   
+  outputfile.s=workpath.s+"automen.h264"
+  
   CreateFile(987,workpath.s+"automen.avs")
   
   If ExamineDirectory(0,here+"applications\filters\","*.dll")
@@ -855,11 +851,11 @@ Procedure  x264avs()
         a$=LCase(DirectoryEntryName(0))
         If FindString(a$,"soundout",0)=0
           If FindString(a$,"yadif",0)=0
-            WriteStringN(987,"LoadPlugin("+Chr(34)+here+"filters\"+a$+Chr(34)+")")
+            WriteStringN(987,"LoadPlugin("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
           EndIf
         EndIf
         If FindString(LCase(a$),"yadif",0)<>0
-          WriteStringN(987,"LoadCPlugin("+Chr(34)+here+"filters\"+a$+Chr(34)+")")
+          WriteStringN(987,"LoadCPlugin("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
         EndIf
       EndIf
     Until type=0
@@ -870,7 +866,7 @@ Procedure  x264avs()
       type=NextDirectoryEntry(0)
       If type=1 ; File
         a$=DirectoryEntryName(0)
-        WriteStringN(987,"Import("+Chr(34)+here+"filters\"+a$+Chr(34)+")")
+        WriteStringN(987,"Import("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
       EndIf
     Until type=0
   EndIf
@@ -1010,160 +1006,16 @@ Procedure  x264avs()
   If passx.l=3 : encostring.s=encostring.s+" --pass 1 --bitrate "+bitrate.s+" --stats "+Chr(34)+workpath.s+"automen.stats"+Chr(34)+" " : EndIf
   If passx.l=4 : encostring.s=encostring.s+" --pass 2 --bitrate "+bitrate.s+" --stats "+Chr(34)+workpath.s+"automen.stats"+Chr(34)+" " : EndIf
   If passx.l=5 : encostring.s=encostring.s+" --crf "+bitrate.s+" " : EndIf
-  If passx.l=7 : encostring.s=encostring.s+" --crf 18 " : EndIf
+  If passx.l=7 : encostring.s=encostring.s+" --crf 21 " : EndIf  
+  If passx.l=8 : encostring.s=encostring.s+" --qp "+bitrate.s+" " : EndIf
+  If passx.l=11 : encostring.s=encostring.s+" --crf 21 " : EndIf
   
-  If passx.l=8 : encostring.s=encostring.s+" --crf "+bitrate.s+" " : EndIf
+  If GetGadgetText(#container)="FLV" : outputfile.s=GetFilePart(GetGadgetText(#outputstring)) : EndIf
   
-  If passx.l=10 : encostring.s=encostring.s+" --bitrate %bitrate% " : EndIf
-  
-  If GetGadgetText(#container)="MKV" Or GetGadgetText(#container)="MP4" Or GetGadgetText(#container)="H264"
-    outputfile.s="video.h264"
-  EndIf
-  
-  If GetGadgetText(#container)="FLV"
-    outputfile.s=GetFilePart(GetGadgetText(#outputstring))
-  EndIf
-  
-  mencoderbat.s=mencoderbat.s+encostring.s+" --output "+Chr(34)+workpath.s+outputfile.s+Chr(34)
-  
-  If passx.l=8 : mencoderbat.s=mencoderbat.s+" 2>temp.txt" : EndIf
-  
-  
-  If GetGadgetText(#audiotrack)<>"none"
-    If passx.l=2 Or passx.l=4 Or passx.l=5 Or passx.l=7
-      
-      AddGadgetItem(#queue,-1,mencoderbat.s)
-      
-      mencoderbat.s=mencoder.s+" "
-      
-      mencoderbat.s=mencoderbat.s+"-lavdopts threads=1 -lavcopts threads=1 -mc 0 -noskip "
-      
-      If FindString(GetGadgetText(#audiotrack),"audio stream:",0) And FindString(GetGadgetText(#audiotrack),"language:",0)
-        mencoderbat.s=mencoderbat.s+"-aid "+StringField(GetGadgetText(#audiotrack),CountString(GetGadgetText(#audiotrack),":")+1,":")+" "
-      EndIf
-      
-      If FindString(GetGadgetText(#audiotrack),"ID_AUDIO_ID",0)
-        mencoderbat.s=mencoderbat.s+"-aid "+StringField(GetGadgetText(#audiotrack),2,"=")+" "
-        
-        If LCase(GetExtensionPart(inputfile.s))="mkv"
-          mencoderbat.s=mencoderbat.s+"-aid "+StringField(StringField(StringField(GetGadgetText(#audiotrack),2,"-"),2," "),1,",")+" "
-        EndIf
-        
-        If LCase(GetExtensionPart(inputfile.s))<>"ifo"
-          mencoderbat.s=mencoderbat.s+" "+Chr(34)+inputfile.s+Chr(34)+" -ovc frameno "
-        EndIf
-        
-        
-        If LCase(GetExtensionPart(inputfile.s))="ifo"
-          inputfile.s="dvd://"+Str(pgcid.l)+" -dvd-device "+Chr(34)+Mid(GetPathPart(inputfile.s),0,Len(GetPathPart(inputfile.s))-1)+Chr(34)
-          mencoderbat.s=mencoderbat.s+" "+inputfile.s+" -ovc frameno "
-        EndIf
-        
-        If GetGadgetState(#audionormalize)=1 : mencoderbat.s=mencoderbat.s+" -af volnorm=1 " : EndIf
-        If GetGadgetText(#audiocodec)="MP3 Audio" : mencoderbat.s=mencoderbat.s+" -oac mp3lame -lameopts "+GetGadgetText(#mp3mode)+":br="+GetGadgetText(#audibit)+" " : EndIf
-        If GetGadgetText(#audiocodec)="AAC Audio" : mencoderbat.s=mencoderbat.s+" -oac faac -faacopts br="+GetGadgetText(#audibit)+":mpeg=4:tns:object=2 " : EndIf
-        If GetGadgetText(#audiocodec)="OGG Audio" : mencoderbat.s=mencoderbat.s+" -oac lavc -lavcopts acodec=vorbis:abitrate="+GetGadgetText(#audibit)+" " : EndIf
-        If GetGadgetText(#audiocodec)="AC3 Audio" : mencoderbat.s=mencoderbat.s+" -oac lavc -lavcopts acodec=ac3:abitrate="+GetGadgetText(#audibit)+" " : EndIf
-        If GetGadgetText(#audiocodec)="Copy Audio" : mencoderbat.s=mencoderbat.s+" -oac copy " : EndIf
-        
-        If GetGadgetText(#channel)="1" : mencoderbat.s=mencoderbat.s+" -channels 1 " : EndIf
-        If GetGadgetText(#channel)="2" : mencoderbat.s=mencoderbat.s+" -channels 2 " : EndIf
-        If GetGadgetText(#channel)="Original" : mencoderbat.s=mencoderbat.s+" " : EndIf
-        
-        mencoderbat.s=mencoderbat.s+" -of rawaudio -o "
-        If GetGadgetText(#audiocodec)="MP3 Audio" : mencoderbat.s=mencoderbat.s+Chr(34)+workpath.s+"audio.mp3"+Chr(34) : EndIf
-        If GetGadgetText(#audiocodec)="AAC Audio" : mencoderbat.s=mencoderbat.s+Chr(34)+workpath.s+"audio.aac"+Chr(34) : EndIf
-        If GetGadgetText(#audiocodec)="OGG Audio" : mencoderbat.s=mencoderbat.s+Chr(34)+workpath.s+"audio.ogg"+Chr(34) : EndIf
-        If GetGadgetText(#audiocodec)="AC3 Audio" : mencoderbat.s=mencoderbat.s+Chr(34)+workpath.s+"audio.ac3"+Chr(34) : EndIf
-        If GetGadgetText(#audiocodec)="Copy Audio"
-          If FindString(LCase(GetGadgetText(#audiotrack)),"ac3",0) :  mencoderbat.s=mencoderbat.s+Chr(34)+workpath.s+"audio.ac3"+Chr(34) : EndIf
-          If FindString(LCase(GetGadgetText(#audiotrack)),"dts",0) :  mencoderbat.s=mencoderbat.s+Chr(34)+workpath.s+"audio.dts"+Chr(34) : EndIf
-          If FindString(LCase(GetGadgetText(#audiotrack)),"mp3",0) :  mencoderbat.s=mencoderbat.s+Chr(34)+workpath.s+"audio.mp3"+Chr(34) : EndIf
-          If FindString(LCase(GetGadgetText(#audiotrack)),"aac",0) :  mencoderbat.s=mencoderbat.s+Chr(34)+workpath.s+"audio.aac"+Chr(34) : EndIf
-        EndIf
-        
-      EndIf
-      
-    EndIf
+  mencoderbat.s=mencoderbat.s+encostring.s+" --output "+Chr(34)+outputfile.s+Chr(34)
     
-  EndIf
-  
-  If passx.l=2 Or passx.l=4 Or passx.l=5 Or passx.l=7
-    mux.s=""
-    
-    If GetGadgetText(#mdeint)="FILM NTSC (29.97->23.976)" : framerate.f=23.976 : EndIf
-    If GetGadgetText(#mdeint)="Telecine" : framerate.f=23.976 : EndIf
-    If GetGadgetText(#mdeint)="Mixed Prog/Telecine" : framerate.f=23.976 : EndIf
-    If GetGadgetText(#mdeint)="Change FPS to 23.976" : framerate.f=23.976 : EndIf
-    If GetGadgetText(#mdeint)="Change FPS to 25" : framerate.f=25 : EndIf
-    If GetGadgetText(#mdeint)="Change FPS to 29.97" : framerate.f=29.97 : EndIf
-    
-    If GetGadgetText(#container)="MKV"
-      add.s=""
-      mux.s=Chr(34)+mkvmerge.s+Chr(34)+" -o "+Chr(34)+GetGadgetText(#outputstring)+Chr(34)+" --default-duration 0:"+StrF(framerate.f,3)+"fps "+Chr(34)+workpath.s+"video.h264"+Chr(34)
-    EndIf
-    
-    If GetGadgetText(#container)="MP4"
-      add.s="-add "
-      mux.s=Chr(34)+mp4box.s+Chr(34)+" "+Chr(34)+GetGadgetText(#outputstring)+Chr(34)+" -add "+Chr(34)+workpath.s+"video.h264"+Chr(34)
-    EndIf
-    
-    
-    If GetGadgetText(#audiotrack)<>"none"
-      If GetGadgetText(#container)="MKV" Or GetGadgetText(#container)="MP4"
-        If GetGadgetText(#audiocodec)="MP3 Audio" : mux.s=mux.s+" "+add.s+" "+Chr(34)+workpath.s+"audio.mp3"+Chr(34) : EndIf
-        If GetGadgetText(#audiocodec)="AAC Audio" : mux.s=mux.s+" "+add.s+" "+Chr(34)+workpath.s+"audio.aac"+Chr(34) : EndIf
-        If GetGadgetText(#audiocodec)="OGG Audio" : mux.s=mux.s+" "+add.s+" "+Chr(34)+workpath.s+"audio.ogg"+Chr(34) : EndIf
-        If GetGadgetText(#audiocodec)="AC3 Audio" : mux.s=mux.s+" "+add.s+" "+Chr(34)+workpath.s+"audio.ac3"+Chr(34) : EndIf
-        If GetGadgetText(#audiocodec)="Copy Audio"
-          If FindString(LCase(GetGadgetText(#audiotrack)),"ac3",0) :  mux.s=mux.s+" "+add.s+" "+Chr(34)+workpath.s+"audio.ac3"+Chr(34) : EndIf
-          If FindString(LCase(GetGadgetText(#audiotrack)),"dts",0) :  mux.s=mux.s+" "+add.s+" "+Chr(34)+workpath.s+"audio.dts"+Chr(34) : EndIf
-          If FindString(LCase(GetGadgetText(#audiotrack)),"mp3",0) :  mux.s=mux.s+" "+add.s+" "+Chr(34)+workpath.s+"audio.mp3"+Chr(34) : EndIf
-          If FindString(LCase(GetGadgetText(#audiotrack)),"aac",0) :  mux.s=mux.s+" "+add.s+" "+Chr(34)+workpath.s+"audio.aac"+Chr(34) : EndIf
-        EndIf
-      EndIf
-    EndIf
-    
-  EndIf
-  
-  If passx.l=9
-    mencoderbat.s="FOR /F "+Chr(34)+"tokens=7 delims=. "+Chr(34)+" %%A IN ('findstr encoded temp.txt') DO SET bitrate=%%A"
-  EndIf
-  
   AddGadgetItem(#queue,-1,mencoderbat.s)
   
-  
-  If mux.s<>""
-    If passx.l=2 Or passx.l=4 Or passx.l=5 Or passx.l=7
-      AddGadgetItem(#queue,-1,mux.s)
-    EndIf
-  EndIf
-  
-  
-  If passx.l=2 Or passx.l=4 Or passx.l=5 Or passx.l=7
-    
-    If GetGadgetState(#shutdown)=1
-      If linux=#True : AddGadgetItem(#queue,-1,"shutdown now") : EndIf
-      If windows=#True : AddGadgetItem(#queue,-1,"shutdown -s -t 30 -f") : EndIf
-    EndIf
-    
-  EndIf
-  
-  If queue.l=0
-    If passx.l=2 Or passx.l=4 Or passx.l=5 Or passx.l=7
-      CreateFile(666,workpath.s+"automen.bat")
-      WriteStringN(666,"")
-      WriteStringN(666,GetGadgetText(#queue))
-      CloseFile(666)
-      If linux=#True
-        RunProgram("chmod","+x "+Chr(34)+workpath.s+"automen.bat"+Chr(34),workpath.s,#PB_Program_Wait)
-        RunProgram("xterm","-e "+Chr(34)+workpath.s+"automen.bat"+Chr(34),workpath.s)
-      Else
-        RunProgram(workpath.s+"automen.bat","",workpath.s)
-      EndIf
-      ClearGadgetItems(#queue)
-    EndIf
-  EndIf
   
 EndProcedure
 
@@ -2731,7 +2583,6 @@ parseprofile()
 checkencoder()
 handbrakeoff()
 
-
 StatusBarText(#statusbar, 0, "If you like AutoMen, please consider a donation")
 
 If GetGadgetState(#speedquality)=0 : SetGadgetState(#speedquality,6) : EndIf
@@ -2979,8 +2830,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 2714
-; FirstLine = 2685
+; CursorPosition = 866
+; FirstLine = 832
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2988,6 +2839,6 @@ End
 ; Executable = AutoMen_beta.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 532
-; EnableBuildCount = 1572
+; EnableCompileCount = 537
+; EnableBuildCount = 1573
 ; EnableExeConstant
