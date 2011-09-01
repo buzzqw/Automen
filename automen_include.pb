@@ -376,14 +376,8 @@ Procedure Open_Window_0()
       TextGadget(#PB_Any, 10, 13, 80, 20, "Audio Codec:")
       
       ComboBoxGadget(#audiocodec, 98, 12,130,comboheight )
-      AddGadgetItem(#audiocodec,-1,"MP3 Audio")
-      AddGadgetItem(#audiocodec,-1,"AAC Audio")
-      AddGadgetItem(#audiocodec,-1,"AC3 Audio")
-      AddGadgetItem(#audiocodec,-1,"OGG Audio")
-      AddGadgetItem(#audiocodec,-1,"FLAC Audio")
       AddGadgetItem(#audiocodec,-1,"Copy Audio")
       AddGadgetItem(#audiocodec,-1,"No Audio")
-      SetGadgetText(#audiocodec,"MP3 Audio")
       SetGadgetState(#audiocodec,0)
       
       ;-filters panel
@@ -538,9 +532,9 @@ EndProcedure
 ; EnableCompileCount = 61
 ; EnableBuildCount = 10
 ; EnableExeConstant
-; IDE Options = PureBasic 4.60 Beta 4 (Linux - x86)
-; CursorPosition = 258
-; FirstLine = 256
+; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
+; CursorPosition = 379
+; FirstLine = 375
 ; Folding = --
 ; DisableDebugger
 ; CompileSourceDirectory
