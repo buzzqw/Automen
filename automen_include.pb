@@ -173,7 +173,7 @@ EndProcedure
 
 Procedure Open_Window_0()
   If OpenWindow(#Window_0, 336, 289, 520, 430, "AutoMen "+ver.s,  #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_TitleBar|#PB_Window_ScreenCentered)
-        
+    
     CreateStatusBar(#statusbar,WindowID(#Window_0))
     AddStatusBarField(#PB_Ignore)
     
@@ -208,7 +208,7 @@ Procedure Open_Window_0()
       ComboBoxGadget(#videocodec, 315, 25,65,comboheight )
       AddGadgetItem(#videocodec,-1,"XviD")
       AddGadgetItem(#videocodec,-1,"Mpeg4")
-      AddGadgetItem(#videocodec,-1,"X264")      
+      AddGadgetItem(#videocodec,-1,"X264")
       SetGadgetState(#videocodec,0)
       
       
@@ -218,17 +218,10 @@ Procedure Open_Window_0()
       AddGadgetItem(#container,-1,"MKV")
       SetGadgetState(#container,0)
       
-      
-      
+            
       TextGadget(#PB_Any,245,53,60,20,"Pass to do")
       ComboBoxGadget(#pass, 315, 50,130,comboheight )
-      AddGadgetItem(#pass,-1,"1 pass")
-      AddGadgetItem(#pass,-1,"2 pass")
-      AddGadgetItem(#pass,-1,"CRF 1 pass")
-       AddGadgetItem(#pass,-1,"Same Quality")
-      AddGadgetItem(#pass,-1,"Copy Video")
-      SetGadgetState(#pass,0)
-      
+            
       TextGadget(#PB_Any,245,81,60,20,"Preset")
       TrackBarGadget(#speedquality,308,75,140,17,1,10,#PB_TrackBar_Ticks)
       StringGadget(#speedqualitytext,245,95,200,comboheight,"",#PB_String_ReadOnly|#PB_Text_Center)
@@ -393,7 +386,7 @@ Procedure Open_Window_0()
       
       
       TextGadget(#PB_Any,280, 20, 80, 20, "Select Encoder")
-      ComboBoxGadget(#encodewith,220,48,210,comboheight)    
+      ComboBoxGadget(#encodewith,220,48,210,comboheight)
       SetGadgetState(#encodewith,0)
       
       
@@ -415,13 +408,13 @@ Procedure Open_Window_0()
       
       CheckBoxGadget(#shutdown,18,80,195,20,"Shutdown at end of encoding")
       CheckBoxGadget(#noodml,18,105,185,20,"Don't use ODML")
-      CheckBoxGadget(#ffourcc,18,130,195,20,"FourCC DIVX for XviD encoding")      
+      CheckBoxGadget(#ffourcc,18,130,195,20,"FourCC DIVX for XviD encoding")
       CheckBoxGadget(#multithread,18,180,195,20,"Disable Multithread Encoding")
       CheckBoxGadget(#clean,218,180,225,20,"Clean temp file at end of encoding")
       
       ButtonGadget(#makereport,318,150,90,comboheight,"Make Report")
       
-            
+      
       ;-queue
       AddGadgetItem(#Panel_0, -1, "Queue")
       Frame3DGadget(#PB_Any, 8,5, 440, 200, "Queue")
@@ -442,11 +435,11 @@ Procedure Open_Window_0()
     
     
     ;GadgetToolTip(#play,"Press this button for playing input file")
-     
+    
     
     GadgetToolTip(#extsub,"Browse for external subtitle. This subs will be hardcodec in video. Option avaiable only for mencoder and avisynth x264")
     GadgetToolTip(#addedtoqueue,"Select what add as last command in queue. You can edit this list")
-    GadgetToolTip(#buttonaddtoqueue,"Click here for adding to queue, as bottom line, the command written at right")        
+    GadgetToolTip(#buttonaddtoqueue,"Click here for adding to queue, as bottom line, the command written at right")
     GadgetToolTip(#multithread,"Check this button for disabling multithread encoding. Useful when mencoder crash unexpectly (only for mencoder)")
     GadgetToolTip(#subs,"This subs will be burnt in video. Option avaiable only when encoding with Mencoder")
     GadgetToolTip(#speedquality,"Select the quality/speed trade-off. Left for faster encoding. Right for slower encoding")
@@ -485,7 +478,7 @@ Procedure Open_Window_0()
     GadgetToolTip(#mp3mode,"Set kind of LAME encoding. Constant BitRate or Average BitRate")
     GadgetToolTip(#denoise,"Set denoise level")
     GadgetToolTip(#resizer,"Set resizer to use")
-    GadgetToolTip(#shutdown,"Force shutdown of pc at end of encoding")    
+    GadgetToolTip(#shutdown,"Force shutdown of pc at end of encoding")
     GadgetToolTip(#noodml,"Force no use of Open DML AVI type")
     GadgetToolTip(#ffourcc,"Force DIVX CC")
     GadgetToolTip(#audiocodec,"This is the codec audio to apply")
@@ -493,7 +486,7 @@ Procedure Open_Window_0()
     GadgetToolTip(#sampling,"Sampling of audio. Do attention")
     GadgetToolTip(#channel,"Number of channels to output")
     GadgetToolTip(#audiotrack,"Select the audio track")
-    GadgetToolTip(#audionormalize,"Normalize the volume")    
+    GadgetToolTip(#audionormalize,"Normalize the volume")
     GadgetToolTip(#addtoqueue,"Add the current work to queue")
     GadgetToolTip(#removequeuejob,"Remove the first line from queue")
     GadgetToolTip(#startqueue,"Start all queued jobs")
@@ -533,8 +526,8 @@ EndProcedure
 ; EnableBuildCount = 10
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 379
-; FirstLine = 375
+; CursorPosition = 220
+; FirstLine = 214
 ; Folding = --
 ; DisableDebugger
 ; CompileSourceDirectory

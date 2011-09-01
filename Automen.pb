@@ -13,17 +13,24 @@ Global fileaudio.s
 Declare start()
 
 Procedure checkencoder()
-  
-  
-  
+    
   If GetGadgetText(#encodewith)="Mencoder for Encoding" Or GetGadgetText(#encodewith)="Use ffmpeg as encoder"
     ClearGadgetItems(#videocodec)
+    ClearGadgetItems(#pass)
+    
     AddGadgetItem(#videocodec,-1,"XviD")
     AddGadgetItem(#videocodec,-1,"Mpeg4")
     AddGadgetItem(#videocodec,-1,"X264")
     
+    AddGadgetItem(#pass,-1,"1 pass")
+    AddGadgetItem(#pass,-1,"2 pass")
+    AddGadgetItem(#pass,-1,"CRF 1 pass")
+    
+    
     If GetGadgetText(#encodewith)="Use ffmpeg as encoder"
       AddGadgetItem(#videocodec,-1,"WMV")
+      AddGadgetItem(#pass,-1,"Same Quality")
+      AddGadgetItem(#pass,-1,"Copy Video")
     EndIf
     
     ClearGadgetItems(#container)
@@ -42,6 +49,11 @@ Procedure checkencoder()
     StatusBarText(#statusbar, 0, "Resetting video And audio codec! Forcing video codec to X264")
     AddGadgetItem(#videocodec,-1,"X264")
     
+    ClearGadgetItems(#pass)
+    AddGadgetItem(#pass,-1,"1 pass")
+    AddGadgetItem(#pass,-1,"2 pass")
+    AddGadgetItem(#pass,-1,"CRF 1 pass")
+    
     ClearGadgetItems(#container)
     AddGadgetItem(#container,-1,"MKV")
     AddGadgetItem(#container,-1,"MP4")
@@ -50,6 +62,7 @@ Procedure checkencoder()
     
   EndIf
   
+  SetGadgetState(#pass,0)
   SetGadgetState(#videocodec,0)
   SetGadgetState(#container,0)
   
@@ -59,7 +72,7 @@ EndProcedure
 Procedure handbrakeoff()
   
   StatusBarText(#statusbar, 0, "Resetting video and audio codec!")
-    
+  
   If GetGadgetText(#audiocodec)="MP3 Audio"
     
     ClearGadgetItems(#audibit)
@@ -304,7 +317,7 @@ EndProcedure
 Procedure sanitycheck()
   
   
-  If Val(GetGadgetText(#videokbits))>100 And FindString(GetGadgetText(#pass),"CRF",0)=0
+  If Val(GetGadgetText(#videokbits))>60 And FindString(GetGadgetText(#pass),"CRF",0)=0
     SetGadgetColor(#videokbits,#PB_Gadget_BackColor,$33CC00)
   Else
     SetGadgetColor(#videokbits,#PB_Gadget_BackColor,$0000FF)
@@ -601,6 +614,11 @@ Procedure mencoder()
     If GetGadgetText(#videocodec)="X264" : encostring.s=ReplaceString(encostring.s,"bitrate","crf="+bitrate.s) : EndIf
   EndIf
   If passx.l=7 : encostring.s=ReplaceString(encostring.s,encostring.s,"-ovc copy ") : EndIf
+  If passx.l=11
+    If GetGadgetText(#videocodec)="XviD" : encostring.s=ReplaceString(encostring.s,"bitrate","fixed_quant=2.5") : EndIf
+    If GetGadgetText(#videocodec)="Mpeg4" : encostring.s=ReplaceString(encostring.s,"vbitrate","vqscale=2.5") : EndIf
+    If GetGadgetText(#videocodec)="X264" : encostring.s=ReplaceString(encostring.s,"bitrate","crf=21") : EndIf
+  EndIf
   
   If GetGadgetText(#videocodec)="Mpeg4" : encostring.s=ReplaceString(encostring.s,"pass=","vpass=") : EndIf
   
@@ -2702,11 +2720,12 @@ If mp4box.s="" :   MessageRequester("Muxer", "No MP4Box (gpac) found on path. Pl
 If mkvmerge.s="" : MessageRequester("Muxer", "No MKVtoolnix found on path. Please install it. Quitting...", #PB_MessageRequester_Ok) : End : EndIf
 
 
-If lame.s<>"" : AddGadgetItem(#audiocodec,-1,"MP3 Audio") : EndIf
+If lame.s<>"" : AddGadgetItem(#audiocodec,-1,"MP3 Audio") : SetGadgetText(#audiocodec,"MP3 Audio") : EndIf
 If faac.s<>"" Or neroAacEnc.s<>"": AddGadgetItem(#audiocodec,-1,"AAC Audio") : EndIf
 If aften.s<>"" : AddGadgetItem(#audiocodec,-1,"AC3 Audio") : EndIf
 If oggenc.s<>"" : AddGadgetItem(#audiocodec,-1,"OGG Audio") : EndIf
 If flac.s<>"" : AddGadgetItem(#audiocodec,-1,"FLAC Audio") : EndIf
+
 If mencoder.s<>"" : AddGadgetItem(#encodewith,-1,"Mencoder for Encoding") : EndIf
 If ffmpeg.s<>"" : AddGadgetItem(#encodewith,-1,"Use ffmpeg as encoder") : EndIf
 If x264.s<>"" : AddGadgetItem(#encodewith,-1,"Use X264 as demuxer and encoder") : EndIf
@@ -2717,7 +2736,9 @@ If mencoder.s<>"" And x264.s<>"" : AddGadgetItem(#encodewith,-1,"Pipe X264 with 
 SetGadgetState(#encodewith,0)
 
 parseprofile()
+checkencoder()
 handbrakeoff()
+
 
 StatusBarText(#statusbar, 0, "If you like AutoMen, please consider a donation")
 
@@ -2967,8 +2988,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 555
-; FirstLine = 552
+; CursorPosition = 2722
+; FirstLine = 2708
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2976,6 +2997,6 @@ End
 ; Executable = AutoMen_beta.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 493
+; EnableCompileCount = 500
 ; EnableBuildCount = 1572
 ; EnableExeConstant
