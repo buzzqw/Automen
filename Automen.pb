@@ -549,7 +549,6 @@ Procedure mencoder()
   If GetGadgetText(#denoise)="Normal" : mencoderbat.s=mencoderbat.s+"hqdn3d=4" : EndIf
   If GetGadgetText(#denoise)="Severe" : mencoderbat.s=mencoderbat.s+"hqdn3d=6" : EndIf
   
-  
   If GetGadgetText(#mdeint)="Progressive" And GetGadgetText(#denoise)="NONE" And  GetGadgetState(#allowresize)=0
     mencoderbat.s=mencoder.s+" "
   EndIf
@@ -769,14 +768,16 @@ Procedure x264lavf()
     width.l=Val(GetGadgetText(#width))
     height.l=Val(GetGadgetText(#height))
   EndIf
+    
   
-  
-  
-  ;  --vf, --video-filter <filter0>/<filter1>/... Apply video filtering to the input file
-  ;    Available filters:
-  ;    crop:left,top,right,bottom
-  ;          removes pixels from the edges of the frame
-  ;    resize:[width,height][,sar][,fittobox][,method]
+  ;     --vf, --video-filter <filter0>/<filter1>/... Apply video filtering To the input file
+  ;
+  ;    Filter options may be specified in <filter>:<option>=<value> format.
+  ;
+  ;       Available filters:
+  ;        crop:left,top,right,bottom
+  ;            removes pixels from the edges of the frame
+  ;    resize:[width,height][,sar][,fittobox][,csp][,method]
   ;          resizes frames based on the given criteria:
   ;          - resolution only: resizes And adapts sar To avoid stretching
   ;          - sar only: sets the sar And resizes To avoid stretching
@@ -784,15 +785,18 @@ Procedure x264lavf()
   ;          - fittobox: resizes the video based on the desired contraints
   ;             - width, height, both
   ;          - fittobox And sar: same As above except With specified sar
-  ;          using resizer method ["bicubic"]
-  ;           - fastbilinear, bilinear, bicubic, experimental, point,
-  ;           - area, bicublin, gauss, sinc, lanczos, spline
+  ;          - csp: convert To the given csp. syntax: [name][:depth]
+  ;             - valid csp names [keep current]: i420, yv12, nv12, i444, yv24, bgr, bgra, rgb, i422
+  ;             - depth: 8 Or 16 bits per pixel [keep current]
+  ;          note: Not all depths are supported by all csps.
+  ;          - method: use resizer method ["bicubic"]
+  ;             - fastbilinear, bilinear, bicubic, experimental, point,
+  ;             - area, bicublin, gauss, sinc, lanczos, spline
   ;    select_every:Step,offset1[,...]
   ;          apply a selection pattern To input frames
   ;          Step: the number of frames in the pattern
   ;          offsets: the offset into the Step To Select a frame
   ;          see: http://avisynth.org/mediawiki/Select#SelectEvery
-  
   
   bitrate.s=GetGadgetText(#videokbits)
   
@@ -810,12 +814,10 @@ Procedure x264lavf()
   If passx.l=2 : mencoderbat.s=mencoderbat.s+" --pass 1 --bitrate "+bitrate.s+" --stats "+Chr(34)+here.s+"automen.stats"+Chr(34)+" " : EndIf
   If passx.l=3 : mencoderbat.s=mencoderbat.s+" --pass 2 --bitrate "+bitrate.s+" --stats "+Chr(34)+here.s+"automen.stats"+Chr(34)+" " : EndIf
   If passx.l=4 : mencoderbat.s=mencoderbat.s+" --crf "+bitrate.s+" " : EndIf
-  If passx.l=8 : mencoderbat.s=mencoderbat.s+" --qp "+bitrate.s+" " : EndIf
-  
   If passx.l=7: mencoderbat.s=mencoderbat.s+" --crf 21" : EndIf ;missing copy from x264, but 21 should be similar
+  If passx.l=8 : mencoderbat.s=mencoderbat.s+" --qp "+bitrate.s+" " : EndIf
   If passx.l=11 : mencoderbat.s=mencoderbat.s+" --crf 21 " : EndIf ;missing samecrf , but 21 should be similar
-  
-  
+    
   If GetGadgetState(#allowresize)=1
     mencoderbat.s=mencoderbat.s+"--video-filter crop:"+Str(leftcrop.l)+","+Str(topcrop.l)+","+Str(rightcrop.l)+","+Str(bottomcrop.l)+"/resize:"+Str(width.l)+","+Str(height.l)+",method="+StringField(GetGadgetText(#resizer),2," ")
   EndIf
@@ -843,7 +845,7 @@ Procedure  x264avs()
   
   CreateFile(987,workpath.s+"automen.avs")
   
-  If ExamineDirectory(0,here+"filters\","*.dll")
+  If ExamineDirectory(0,here+"applications\filters\","*.dll")
     Repeat
       type=NextDirectoryEntry(0)
       If type=1 ; File
@@ -860,7 +862,7 @@ Procedure  x264avs()
     Until type=0
   EndIf
   
-  If ExamineDirectory(0,here+"filters\","*.avsi")
+  If ExamineDirectory(0,here+"applications\filters\","*.avsi")
     Repeat
       type=NextDirectoryEntry(0)
       If type=1 ; File
@@ -987,7 +989,7 @@ Procedure  x264avs()
   
   CloseFile(987)
   
-  mencoderbat.s=Chr(34)+here.s+"applications\x264.exe"+Chr(34)+" "+Chr(34)+workpath.s+"automen.avs"+Chr(34)+" "
+  mencoderbat.s=x264.s+" "+Chr(34)+workpath.s+"automen.avs"+Chr(34)+" "
   
   If ReadFile(777,here.s+"menprofile.txt")
     While Eof(777) = #False
@@ -2976,8 +2978,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 436
-; FirstLine = 412
+; CursorPosition = 827
+; FirstLine = 785
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2985,6 +2987,6 @@ End
 ; Executable = AutoMen_beta.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 524
+; EnableCompileCount = 528
 ; EnableBuildCount = 1572
 ; EnableExeConstant
