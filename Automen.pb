@@ -34,9 +34,10 @@ Procedure checkencoder()
     EndIf
     
     ClearGadgetItems(#container)
-    AddGadgetItem(#container,-1,"AVI")
-    AddGadgetItem(#container,-1,"MP4")
-    AddGadgetItem(#container,-1,"MKV")
+    
+    If ffmpeg.s<>"" Or mencoder.s<>"" : AddGadgetItem(#container,-1,"AVI") : EndIf
+    If mp4box.s<>"" : AddGadgetItem(#container,-1,"MP4") : EndIf
+    If mkvmerge.s<>"" : AddGadgetItem(#container,-1,"MKV") : EndIf
     
     If GetGadgetText(#encodewith)="Use ffmpeg as encoder"
       AddGadgetItem(#container,-1,"WMV")
@@ -55,8 +56,10 @@ Procedure checkencoder()
     AddGadgetItem(#pass,-1,"CRF 1 pass")
     
     ClearGadgetItems(#container)
-    AddGadgetItem(#container,-1,"MKV")
-    AddGadgetItem(#container,-1,"MP4")
+    
+    If mp4box.s<>"" : AddGadgetItem(#container,-1,"MP4") : EndIf
+    If mkvmerge.s<>"" : AddGadgetItem(#container,-1,"MKV") : EndIf
+    
     AddGadgetItem(#container,-1,"H264")
     AddGadgetItem(#container,-1,"FLV")
     
@@ -573,7 +576,7 @@ Procedure mencoder()
       sub.s=" -sid "+Trim(StringField(StringField(GetGadgetText(#subs),2,":"),1,"language"))+" "
       sub.s=sub.s+" -subfont-autoscale 3 -subfont-text-scale 5 "
     EndIf
-    If GetGadgetText(#subs)="" Or GetGadgetText(#subs)="none"      
+    If GetGadgetText(#subs)="" Or GetGadgetText(#subs)="none"
       subs.s=" -sid 9999 "
     EndIf
   EndIf
@@ -581,7 +584,7 @@ Procedure mencoder()
   If FindString(GetGadgetText(#subs),"/",0) Or FindString(GetGadgetText(#subs),"\",0)
     sub.s=" -sub "+Chr(34)+GetGadgetText(#subs)+Chr(34)+" "
   EndIf
-    
+  
   If subs.s<>"" : mencoderbat.s=mencoderbat.s+subs.s : EndIf
   
   If GetGadgetState(#ffourcc)=1 : fourcc.s=" -ffourcc DIVX "  : EndIf
@@ -768,7 +771,7 @@ Procedure x264lavf()
     width.l=Val(GetGadgetText(#width))
     height.l=Val(GetGadgetText(#height))
   EndIf
-    
+  
   
   ;     --vf, --video-filter <filter0>/<filter1>/... Apply video filtering To the input file
   ;
@@ -817,7 +820,7 @@ Procedure x264lavf()
   If passx.l=7: mencoderbat.s=mencoderbat.s+" --crf 21" : EndIf ;missing copy from x264, but 21 should be similar
   If passx.l=8 : mencoderbat.s=mencoderbat.s+" --qp "+bitrate.s+" " : EndIf
   If passx.l=11 : mencoderbat.s=mencoderbat.s+" --crf 21 " : EndIf ;missing samecrf , but 21 should be similar
-    
+  
   If GetGadgetState(#allowresize)=1
     mencoderbat.s=mencoderbat.s+"--video-filter crop:"+Str(leftcrop.l)+","+Str(topcrop.l)+","+Str(rightcrop.l)+","+Str(bottomcrop.l)+"/resize:"+Str(width.l)+","+Str(height.l)+",method="+StringField(GetGadgetText(#resizer),2," ")
   EndIf
@@ -2707,8 +2710,7 @@ If mencoder.s="" : MessageRequester("Mencoder ", "No Mencoder found on path. Ple
 If x264.s="" :     MessageRequester("X264", "No X264 found on path. Please install it", #PB_MessageRequester_Ok) :  EndIf
 If mplayer.s="" :  MessageRequester("Mplayer", "No Mplayer found on path. Please install it. Otherwise will be impossibile to preview video or analyze DVD", #PB_MessageRequester_Ok) : EndIf
 If mp4box.s="" :   MessageRequester("Muxer", "No MP4Box (gpac) found on path. Please install it otherwise will be impossibile to mux on MP4", #PB_MessageRequester_Ok) : EndIf
-If mkvmerge.s="" : MessageRequester("Muxer", "No MKVtoolnix found on path. Please install it. Quitting...", #PB_MessageRequester_Ok) : End : EndIf
-
+If mkvmerge.s="" : MessageRequester("Muxer", "No MKVtoolnix found on path. Please install it otherwise will be impossibile to mux on MKV", #PB_MessageRequester_Ok) : EndIf
 
 If lame.s<>"" : AddGadgetItem(#audiocodec,-1,"MP3 Audio") : SetGadgetText(#audiocodec,"MP3 Audio") : EndIf
 If faac.s<>"" Or neroAacEnc.s<>"": AddGadgetItem(#audiocodec,-1,"AAC Audio") : EndIf
@@ -2817,7 +2819,6 @@ Repeat ; Start of the event loop
       
     ElseIf GadgetID = #container
       checkextension()
-      
       
     ElseIf GadgetID = #speedquality
       parseprofile()
@@ -2978,8 +2979,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 827
-; FirstLine = 785
+; CursorPosition = 2714
+; FirstLine = 2685
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2987,6 +2988,6 @@ End
 ; Executable = AutoMen_beta.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 528
+; EnableCompileCount = 532
 ; EnableBuildCount = 1572
 ; EnableExeConstant

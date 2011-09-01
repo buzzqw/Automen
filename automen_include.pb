@@ -210,15 +210,10 @@ Procedure Open_Window_0()
       AddGadgetItem(#videocodec,-1,"Mpeg4")
       AddGadgetItem(#videocodec,-1,"X264")
       SetGadgetState(#videocodec,0)
-      
-      
-      ComboBoxGadget(#container,385,25,60,comboheight.l)
-      AddGadgetItem(#container,-1,"AVI")
-      AddGadgetItem(#container,-1,"MP4")
-      AddGadgetItem(#container,-1,"MKV")
-      SetGadgetState(#container,0)
-      
             
+      ComboBoxGadget(#container,385,25,60,comboheight.l)      
+      SetGadgetState(#container,0)
+                  
       TextGadget(#PB_Any,245,53,60,20,"Pass to do")
       ComboBoxGadget(#pass, 315, 50,130,comboheight )
             
@@ -524,7 +519,8 @@ EndProcedure
 ; EnableBuildCount = 10
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 8
+; CursorPosition = 215
+; FirstLine = 202
 ; Folding = --
 ; DisableDebugger
 ; CompileSourceDirectory
