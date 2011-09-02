@@ -1160,7 +1160,7 @@ Procedure  x264avs()
       Default
         WriteStringN(987,"LanczosResize("+Str(width.l)+","+Str(height.l)+","+Str(leftcrop.l)+","+Str(topcrop.l)+",-"+Str(rightcrop.l)+",-"+Str(bottomcrop)+")")
       EndSelect
-       
+        
     EndIf
     
   EndIf
