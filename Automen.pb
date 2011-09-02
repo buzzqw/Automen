@@ -2977,9 +2977,9 @@ End
 ; EnableXP
 ; EnableUser
 ; UseIcon = ___logo.ico
-; Executable = AutoMen_beta.exe
+; Executable = AutoMen_beta1.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 602
-; EnableBuildCount = 1573
+; EnableCompileCount = 603
+; EnableBuildCount = 1574
 ; EnableExeConstant
