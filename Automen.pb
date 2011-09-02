@@ -1634,9 +1634,7 @@ Procedure audioencoding()
     ProcedureReturn 0
   EndIf
   
-  If linux=#True
-    audioffmpeg()
-  EndIf
+  If linux=#True : audioffmpeg() : EndIf
   
   If windows=#True
     Select LCase(GetExtensionPart(inputfile.s))
@@ -1646,8 +1644,8 @@ Procedure audioencoding()
       EndIf
       If eac3to.s=""
         audioffmpeg()
-      EndIf
-    Case "mkv"
+      EndIf 
+    Case "mkv" 
       If eac3to.s<>""
         eac3toaudio()
       EndIf
@@ -2096,55 +2094,6 @@ Procedure eac3toanalyzeaudio()
   
 EndProcedure
 
-
-Procedure ffmpeganalyzeaudio()
-  
-  ClearGadgetItems(#audiotrack)
-  AddGadgetItem(#audiotrack,0,"none")
-  
-  DeleteFile(here.s+"ffmpeganalysis.bat")
-  DeleteFile(here.s+"ffmpeganalysis.txt")
-  CreateFile(987,here.s+"ffmpeganalysis.bat")
-  WriteString(987,ffmpeg.s+" -i "+Chr(34)+inputfile.s+Chr(34)+" 2>"+Chr(34)+here.s+"ffmpeganalysis.txt"+Chr(34))
-  CloseFile(987)
-  If linux=#True
-    RunProgram("chmod","+x "+Chr(34)+here.s+"ffmpeganalysis.bat"+Chr(34),here.s,#PB_Program_Wait)
-    RunProgram("xterm","-e "+Chr(34)+here.s+"ffmpeganalysis.bat"+Chr(34),here.s,#PB_Program_Wait)
-  Else
-    RunProgram(here.s+"ffmpeganalysis.bat","",here.s,#PB_Program_Wait)
-  EndIf
-  
-  Delay(500)
-  
-  fh=ReadFile(#PB_Any,here.s+"ffmpeganalysis.txt")
-  While Eof(fh)=0
-    mess.s=ReadString(fh)
-    If FindString(mess.s,"Audio: ",0)
-      AddGadgetItem(#audiotrack,-1,Trim(mess.s))
-    EndIf
-    If FindString(mess.s,"fps",0)
-      ffps.f=ValF((StringField(StringField(mess.s,6,","),2," ")))
-    EndIf
-    If FindString(mess.s,"x",0) And FindString(mess.s,"Video:",0)
-      ffh.f=ValF((StringField(StringField(StringField(mess.s,3,","),2,"x"),1," ")))
-      ffw.f=ValF((StringField(StringField(StringField(mess.s,3,","),1,"x"),2," ")))
-    EndIf
-    If FindString(mess.s,"Duration:",0)
-      fhour.f=ValF((StringField(mess.s,2,":")))
-      fmin.f=ValF((StringField(mess.s,3,":")))
-      fsec.f=ValF((StringField(mess.s,4,":")))
-      ftsec.l=Int(fthour.f*3600+fmin.f*60+fsec.f)
-    EndIf
-    
-  Wend
-  
-  CloseFile(fh)
-  
-  
-  SetGadgetState(#audiotrack,1)
-  
-  
-EndProcedure
 
 Procedure checkmedia()
   
@@ -2973,8 +2922,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 2277
-; FirstLine = 2277
+; CursorPosition = 2095
+; FirstLine = 2094
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2982,6 +2931,6 @@ End
 ; Executable = AutoMen_beta1.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 603
+; EnableCompileCount = 604
 ; EnableBuildCount = 1574
 ; EnableExeConstant
