@@ -150,19 +150,17 @@ Procedure handbrakeoff()
   
   If GetGadgetText(#audiocodec)="AC3 Audio"
     ClearGadgetItems(#audibit)
+    AddGadgetItem(#audibit,-1,"640")
+    AddGadgetItem(#audibit,-1,"448")
+    AddGadgetItem(#audibit,-1,"384")
     AddGadgetItem(#audibit,-1,"320")
-    AddGadgetItem(#audibit,-1,"288")
-    AddGadgetItem(#audibit,-1,"256")
     AddGadgetItem(#audibit,-1,"224")
     AddGadgetItem(#audibit,-1,"192")
-    AddGadgetItem(#audibit,-1,"160")
-    AddGadgetItem(#audibit,-1,"128")
-    AddGadgetItem(#audibit,-1,"96")
-    AddGadgetItem(#audibit,-1,"64")
-    SetGadgetState(#audibit,6)
+    SetGadgetState(#audibit,2)
     
     DisableGadget(#mp3mode,1)
     DisableGadget(#audibit,0)
+    
     SetGadgetText(#text50,"Audio Bitrate:")
     SetGadgetText(#text51,"kbit/s")
     GadgetToolTip(#audibit,"Bitrate of audio")
@@ -1415,7 +1413,12 @@ Procedure eac3toaudio()
   EndIf
   
   If GetGadgetText(#audiocodec)="AC3 Audio"
-    encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": "+Chr(34)+workpath.s+"automen_audio.ac3"+Chr(34)+resampleaudio.s+normalize.s+down.s
+    If aften.s=""
+      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": "+Chr(34)+workpath.s+"automen_audio.ac3"+Chr(34)+resampleaudio.s+normalize.s+down.s
+    EndIf
+    If aften.s<>""
+      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": stdout.wav "+down.s+resampleaudio.s+normalize.s+"| "+aften.s+" - -b "+GetGadgetText(#audibit)+" "+Chr(34)+workpath.s+"automen_audio.ac3"+Chr(34)
+    EndIf
     fileaudio.s=workpath.s+"automen_audio.ac3"
   EndIf
   
@@ -1623,6 +1626,9 @@ Procedure audioencoding()
       If eac3to.s<>""
         eac3toaudio()
       EndIf
+      If eac3to.s=""
+        audioffmpeg()
+      EndIf      
     Case "mkv"
       If eac3to.s<>""
         eac3toaudio()
@@ -1630,6 +1636,8 @@ Procedure audioencoding()
       If eac3to.s=""
         audioffmpeg()
       EndIf
+    Default
+      audioffmpeg()
     EndSelect
   EndIf
   
@@ -2937,8 +2945,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1396
-; FirstLine = 1375
+; CursorPosition = 1623
+; FirstLine = 1596
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2946,6 +2954,6 @@ End
 ; Executable = AutoMen_beta.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 586
+; EnableCompileCount = 592
 ; EnableBuildCount = 1573
 ; EnableExeConstant
