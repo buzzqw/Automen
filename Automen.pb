@@ -1531,7 +1531,8 @@ Procedure audioffmpeg()
   If GetGadgetText(#audiocodec)<>"Copy Audio"
     
     Select GetExtensionPart(inputfile.s)
-    Case "mkv"
+      Case "mkv"
+        
       If mkvinfo.s<>""
         AddGadgetItem(#queue,-1,encostring.s)
         encostring.s=ffmpeg.s+" -i "+filetoanalyze.s+" -vn "
@@ -2970,8 +2971,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1551
-; FirstLine = 1504
+; CursorPosition = 1576
+; FirstLine = 1552
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2979,6 +2980,6 @@ End
 ; Executable = AutoMen_beta.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 600
+; EnableCompileCount = 602
 ; EnableBuildCount = 1573
 ; EnableExeConstant
