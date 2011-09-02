@@ -1160,7 +1160,7 @@ Procedure  x264avs()
       Default
         WriteStringN(987,"LanczosResize("+Str(width.l)+","+Str(height.l)+","+Str(leftcrop.l)+","+Str(topcrop.l)+",-"+Str(rightcrop.l)+",-"+Str(bottomcrop)+")")
       EndSelect
-      
+       
     EndIf
     
   EndIf
@@ -3190,7 +3190,7 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1030
+; CursorPosition = 1162
 ; FirstLine = 1132
 ; Folding = ------
 ; EnableXP
