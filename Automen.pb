@@ -447,8 +447,7 @@ Procedure x264mencoderpipe()
     If GetGadgetText(#mdeint)="Change FPS to 29.97" : mencoderbat.s=mencoderbat.s+" -ofps 30000/1001 -vf " :  framer.s="29.97 " : EndIf
     If GetGadgetText(#mdeint)="Progressive"  : mencoderbat.s=mencoderbat.s+"-vf " :  EndIf
     
-  EndIf
-  
+  EndIf  
   
   If GetGadgetText(#denoise)<>"NONE"  And GetGadgetState(#allowresize)=1 : mencoderbat.s=mencoderbat.s+"," : EndIf
   If GetGadgetText(#denoise)="Super Light" : mencoderbat.s=mencoderbat.s+"hqdn3d=1" : EndIf
@@ -3191,8 +3190,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 436
-; FirstLine = 421
+; CursorPosition = 1030
+; FirstLine = 1132
 ; Folding = ------
 ; EnableXP
 ; EnableUser
