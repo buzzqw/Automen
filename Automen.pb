@@ -1531,8 +1531,8 @@ Procedure audioffmpeg()
   If GetGadgetText(#audiocodec)<>"Copy Audio"
     
     Select GetExtensionPart(inputfile.s)
-      Case "mkv"
-        
+    Case "mkv"
+      
       If mkvinfo.s<>""
         AddGadgetItem(#queue,-1,encostring.s)
         encostring.s=ffmpeg.s+" -i "+filetoanalyze.s+" -vn "
@@ -2288,7 +2288,9 @@ Procedure checkmedia()
   If linux=#True
     Select LCase(GetExtensionPart(inputfile.s))
     Case "mkv"
-      mkvinfo()
+      If mkvinfo.s<>""
+        mkvinfo()
+      EndIf
     EndSelect
   EndIf
   
@@ -2971,8 +2973,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1576
-; FirstLine = 1552
+; CursorPosition = 2277
+; FirstLine = 2277
 ; Folding = ------
 ; EnableXP
 ; EnableUser
