@@ -1477,9 +1477,9 @@ Procedure audioffmpeg()
     
   EndIf
   
-  If GetExtensionPart(inputfile.s)="mkv"
+  If GetExtensionPart(inputfile.s)="mkv" And mkvinfo.s<>""
     
-    If windows=#True : encostring.s=Chr(34)+GetPathPart(mkvmerge.s)+"mkvextract.exe"+Chr(34)+" tracks "+Chr(34)+inputfile.s+Chr(34)+" " : EndIf
+    If windows=#True : encostring.s=mkvextract.s+" tracks "+Chr(34)+inputfile.s+Chr(34)+" " : EndIf
     If linux=#True : encostring.s="mkvextract tracks "+Chr(34)+inputfile.s+Chr(34)+" " : EndIf
     
     aid.s=StringField(GetGadgetText(#audiotrack),1,":")
@@ -1532,8 +1532,25 @@ Procedure audioffmpeg()
     
     Select GetExtensionPart(inputfile.s)
     Case "mkv"
-      AddGadgetItem(#queue,-1,encostring.s)
-      encostring.s=ffmpeg.s+" -i "+filetoanalyze.s+" -vn "
+      If mkvinfo.s<>""
+        AddGadgetItem(#queue,-1,encostring.s)
+        encostring.s=ffmpeg.s+" -i "+filetoanalyze.s+" -vn "
+      EndIf
+      
+      If mkvinfo=""
+        encostring.s=ffmpeg.s+" -i "+Chr(34)+inputfile.s+Chr(34)+" -vn "
+        If GetGadgetState(#audiotrack)>1
+          mess.s=GetGadgetText(#audiotrack)
+          aid.s=StringField(mess.s,2,"#")
+          aid.s=StringField(aid.s,1,":")
+          aid.s=StringField(aid.s,2,".")
+          If FindString(aid.s,"[",0) : aid.s=StringField(aid.s,1,"[") : EndIf
+          If FindString(aid.s,"(",0) : aid.s=StringField(aid.s,1,"(") : EndIf
+          If FindString(GetGadgetText(#audiotrack),"audio stream",0) :  aid.s = Str(GetGadgetState(#audiotrack)) : EndIf
+          encostring.s=encostring.s+" -map ["+aid.s+":0]"
+        EndIf
+      EndIf
+      
     Default
       encostring.s=ffmpeg.s+" -i "+Chr(34)+inputfile.s+Chr(34)+" -vn "
       If GetGadgetState(#audiotrack)>1
@@ -1628,7 +1645,7 @@ Procedure audioencoding()
       EndIf
       If eac3to.s=""
         audioffmpeg()
-      EndIf      
+      EndIf
     Case "mkv"
       If eac3to.s<>""
         eac3toaudio()
@@ -2014,7 +2031,7 @@ Procedure mkvinfo()
   aa.l=0
   
   CreateFile(999,here.s+"mkvinfo.bat")
-  If windows=#True : WriteString(999,Chr(34)+GetPathPart(mkvmerge.s)+"mkvinfo.exe"+Chr(34)+" "+Chr(34)+inputfile.s+Chr(34)+" > mkvinfo.log") : EndIf
+  If windows=#True : WriteString(999,mkvinfo.s+" "+Chr(34)+inputfile.s+Chr(34)+" > mkvinfo.log") : EndIf
   If linux=#True  : WriteString(999,"mkvinfo " +Chr(34)+inputfile.s+Chr(34)+" > mkvinfo.log") : EndIf
   CloseFile(999)
   
@@ -2285,7 +2302,7 @@ Procedure checkmedia()
       If eac3to.s<>""
         eac3toanalyzeaudio()
       EndIf
-      If eac3to.s=""
+      If eac3to.s="" And mkvinfo.s<>""
         mkvinfo()
       EndIf
     EndSelect
@@ -2549,6 +2566,9 @@ If linux=#True
   If FileSize("/usr/bin/mkvmerge")<>-1  : mkvmerge.s="/usr/bin/mkvmerge" : EndIf
   If FileSize("/usr/local/bin/mkvmerge")<>-1 : mkvmerge.s="/usr/local/bin/mkvmerge" : EndIf
   
+  If FileSize("/usr/bin/mkvextract")<>-1  : mkvextract.s="/usr/bin/mkvextract" : EndIf
+  If FileSize("/usr/local/bin/mkvextract")<>-1 : mkvextract.s="/usr/local/bin/mkvextract" : EndIf
+  
   If FileSize("/usr/bin/mkvinfo")<>-1  : mkvinfo.s="/usr/bin/mkvinfo" : EndIf
   If FileSize("/usr/local/bin/mkvinfo")<>-1 : mkvinfo.s="/usr/local/bin/mkvinfo" : EndIf
   
@@ -2596,6 +2616,8 @@ If windows=#True
   If FileSize(here.s+"mplayer.exe")<>-1 : mplayer.s=Chr(34)+here.s+"mplayer.exe"+Chr(34) : EndIf
   If FileSize(here.s+"mencoder.exe")<>-1 : mencoder.s=Chr(34)+here.s+"mencoder.exe"+Chr(34) : EndIf
   If FileSize(here.s+"mkvmerge.exe")<>-1 : mkvmerge.s=Chr(34)+here.s+"mkvmerge.exe"+Chr(34) : EndIf
+  If FileSize(here.s+"mkvinfo.exe")<>-1 : mkvinfo.s=Chr(34)+here.s+"mkvinfo.exe"+Chr(34) : EndIf
+  If FileSize(here.s+"mkvextract.exe")<>-1 : mkvextract.s=Chr(34)+here.s+"mkvextract.exe"+Chr(34) : EndIf
   If FileSize(here.s+"mp4box.exe")<>-1 : mp4box.s=Chr(34)+here.s+"mp4box.exe"+Chr(34) : EndIf
   If FileSize(here.s+"ffmpeg.exe")<>-1 : ffmpeg.s=Chr(34)+here.s+"ffmpeg.exe"+Chr(34) : EndIf
   If FileSize(here.s+"eac3to.exe")<>-1 : eac3to.s=Chr(34)+here.s+"eac3to.exe"+Chr(34) : EndIf
@@ -2612,7 +2634,9 @@ If windows=#True
   
   If FileSize(here.s+"applications\mplayer\mplayer.exe")<>-1 : mplayer.s=Chr(34)+here.s+"applications\mplayer\mplayer.exe"+Chr(34) : EndIf
   If FileSize(here.s+"applications\mplayer\mencoder.exe")<>-1 : mencoder.s=Chr(34)+here.s+"applications\mplayer\mencoder.exe"+Chr(34) : EndIf
+  If FileSize(here.s+"applications\mkvtoolnix\mkvinfo.exe")<>-1 : mkvinfo.s=Chr(34)+here.s+"applications\mkvtoolnix\mkvinfo.exe"+Chr(34) : EndIf
   If FileSize(here.s+"applications\mkvtoolnix\mkvmerge.exe")<>-1 : mkvmerge.s=Chr(34)+here.s+"applications\mkvtoolnix\mkvmerge.exe"+Chr(34) : EndIf
+  If FileSize(here.s+"applications\mkvtoolnix\mkvextract.exe")<>-1 : mkvextract.s=Chr(34)+here.s+"applications\mkvtoolnix\mkvextract.exe"+Chr(34) : EndIf
   If FileSize(here.s+"applications\mkvtoolnix\mkvinfo.exe")<>-1 : mkvinfo.s=Chr(34)+here.s+"applications\mkvtoolnix\mkvinfo.exe"+Chr(34) : EndIf
   If FileSize(here.s+"applications\mp4box\mp4box.exe")<>-1 : mp4box.s=Chr(34)+here.s+"applications\mp4box\mp4box.exe"+Chr(34) : EndIf
   If FileSize(here.s+"applications\ffmpeg\ffmpeg.exe")<>-1 : ffmpeg.s=Chr(34)+here.s+"applications\ffmpeg\ffmpeg.exe"+Chr(34) : EndIf
@@ -2632,8 +2656,9 @@ If windows=#True
   
   If FileSize(here.s+"tools\mencoder\mplayer.exe")<>-1 : mplayer.s=Chr(34)+here.s+"tools\mencoder\mplayer.exe"+Chr(34) : EndIf
   If FileSize(here.s+"tools\mencoder\mencoder.exe")<>-1 : mencoder.s=Chr(34)+here.s+"tools\mencoder\mencoder.exe"+Chr(34) : EndIf
-  If FileSize(here.s+"tools\mkvmerge\mkvmerge.exe")<>-1 : mkvmerge.s=Chr(34)+here.s+"tools\mkvmerge\mkvmerge.exe"+Chr(34) : EndIf
   If FileSize(here.s+"tools\mkvmerge\mkvinfo.exe")<>-1 : mkvinfo.s=Chr(34)+here.s+"tools\mkvmerge\mkvinfo.exe"+Chr(34) : EndIf
+  If FileSize(here.s+"tools\mkvmerge\mkvmerge.exe")<>-1 : mkvmerge.s=Chr(34)+here.s+"tools\mkvmerge\mkvmerge.exe"+Chr(34) : EndIf
+  If FileSize(here.s+"tools\mkvmerge\mkvextract.exe")<>-1 : mkvextract.s=Chr(34)+here.s+"tools\mkvmerge\mkvextract.exe"+Chr(34) : EndIf
   If FileSize(here.s+"tools\mp4box\mp4box.exe")<>-1 : mp4box.s=Chr(34)+here.s+"tools\mp4box\mp4box.exe"+Chr(34) : EndIf
   If FileSize(here.s+"tools\ffmpeg\ffmpeg.exe")<>-1 : ffmpeg.s=Chr(34)+here.s+"tools\ffmpeg\ffmpeg.exe"+Chr(34) : EndIf
   If FileSize(here.s+"tools\x264\x264.exe")<>-1 : x264.s=Chr(34)+here.s+"tools\x264tools.exe"+Chr(34) : EndIf
@@ -2945,8 +2970,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1623
-; FirstLine = 1596
+; CursorPosition = 1551
+; FirstLine = 1504
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2954,6 +2979,6 @@ End
 ; Executable = AutoMen_beta.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 592
+; EnableCompileCount = 600
 ; EnableBuildCount = 1573
 ; EnableExeConstant
