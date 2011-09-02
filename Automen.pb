@@ -366,6 +366,58 @@ Procedure x264mencoderpipe()
   
   mencoderbat.s=mencoder.s+" "
   
+  If windows=#True
+    
+    If LCase(GetExtensionPart(inputfile.s))="avs" Or LCase(GetExtensionPart(inputfile.s))="d2v" Or LCase(GetExtensionPart(inputfile.s))="dgm" Or LCase(GetExtensionPart(inputfile.s))="dgv" Or LCase(GetExtensionPart(inputfile.s))="dga" Or LCase(GetExtensionPart(inputfile.s))="dgi"
+      CreateFile(987,workpath.s+"automen.avs")
+      
+      If ExamineDirectory(0,here+"applications\filters\","*.dll")
+        Repeat
+          type=NextDirectoryEntry(0)
+          If type=1 ; File
+            a$=LCase(DirectoryEntryName(0))
+            If FindString(a$,"soundout",0)=0
+              If FindString(a$,"yadif",0)=0
+                WriteStringN(987,"LoadPlugin("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+              EndIf
+            EndIf
+            If FindString(LCase(a$),"yadif",0)<>0
+              WriteStringN(987,"LoadCPlugin("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+            EndIf
+          EndIf
+        Until type=0
+      EndIf
+      
+      If ExamineDirectory(0,here+"applications\filters\","*.avsi")
+        Repeat
+          type=NextDirectoryEntry(0)
+          If type=1 ; File
+            a$=DirectoryEntryName(0)
+            WriteStringN(987,"Import("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+          EndIf
+        Until type=0
+      EndIf
+      
+      Select LCase(GetExtensionPart(inputfile.s))
+      Case "avs"
+        WriteStringN(987,"Import("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "d2v"
+        WriteStringN(987,"Mpeg2Source("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dgm","dgv"
+        WriteStringN(987,"DGSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dga"
+        WriteStringN(987,"AVCSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dgi"
+        WriteStringN(987,"DGSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      EndSelect
+      
+      CloseFile(987)
+      inputfile.s=workpath.s+"automen.avs"
+      
+    EndIf
+    
+  EndIf
+  
   If GetGadgetState(#allowresize)=1
     
     If GetGadgetText(#mdeint)="FILM NTSC (29.97->23.976)" : mencoderbat=mencoderbat.s+" -vf pullup,softskip," : framer.s="23.976 " : EndIf
@@ -503,6 +555,59 @@ Procedure mencoder()
     MessageRequester("AutoMen", "Attention!"+Chr(10)+"Analyze file First!")
     ProcedureReturn
   EndIf
+  
+  If windows=#True
+    
+    If LCase(GetExtensionPart(inputfile.s))="avs" Or LCase(GetExtensionPart(inputfile.s))="d2v" Or LCase(GetExtensionPart(inputfile.s))="dgm" Or LCase(GetExtensionPart(inputfile.s))="dgv" Or LCase(GetExtensionPart(inputfile.s))="dga" Or LCase(GetExtensionPart(inputfile.s))="dgi"
+      CreateFile(987,workpath.s+"automen.avs")
+      
+      If ExamineDirectory(0,here+"applications\filters\","*.dll")
+        Repeat
+          type=NextDirectoryEntry(0)
+          If type=1 ; File
+            a$=LCase(DirectoryEntryName(0))
+            If FindString(a$,"soundout",0)=0
+              If FindString(a$,"yadif",0)=0
+                WriteStringN(987,"LoadPlugin("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+              EndIf
+            EndIf
+            If FindString(LCase(a$),"yadif",0)<>0
+              WriteStringN(987,"LoadCPlugin("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+            EndIf
+          EndIf
+        Until type=0
+      EndIf
+      
+      If ExamineDirectory(0,here+"applications\filters\","*.avsi")
+        Repeat
+          type=NextDirectoryEntry(0)
+          If type=1 ; File
+            a$=DirectoryEntryName(0)
+            WriteStringN(987,"Import("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+          EndIf
+        Until type=0
+      EndIf
+      
+      Select LCase(GetExtensionPart(inputfile.s))
+      Case "avs"
+        WriteStringN(987,"Import("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "d2v"
+        WriteStringN(987,"Mpeg2Source("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dgm","dgv"
+        WriteStringN(987,"DGSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dga"
+        WriteStringN(987,"AVCSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dgi"
+        WriteStringN(987,"DGSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      EndSelect
+      
+      CloseFile(987)
+      inputfile.s=workpath.s+"automen.avs"
+      
+    EndIf
+    
+  EndIf
+  
   
   mencoderbat.s=mencoder.s+" "
   
@@ -643,12 +748,6 @@ Procedure ffmpeg()
   If GetGadgetText(#videocodec)="Mpeg4" : outputfile.s=workpath.s+"automen.avi" : EndIf
   If GetGadgetText(#videocodec)="WMV" : outputfile.s=workpath.s+"automen.wmv" : EndIf
   
-  If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="ifo"
-    dump.s=mplayer.s+" dvd://"+Str(pgcid.l)+" -dvd-device "+Chr(34)+Mid(GetPathPart(GetGadgetText(#inputstring)),0,Len(GetPathPart(GetGadgetText(#inputstring)))-1)+Chr(34)+" -dumpstream -dumpfile "+Chr(34)+workpath.s+"film.vob"+Chr(34)
-    inputfile.s=workpath.s+"film.vob"
-    AddGadgetItem(#queue,0,dump.s)
-  EndIf
-  
   leftcrop.l=Val(GetGadgetText(#leftcrop))
   topcrop.l=Val(GetGadgetText(#topcrop))
   rightcrop.l=Val(GetGadgetText(#rightcrop))
@@ -662,6 +761,58 @@ Procedure ffmpeg()
   If GetGadgetText(#width)=""
     MessageRequester("AutoMen", "Attention!"+Chr(10)+"Analyze file First!")
     ProcedureReturn
+  EndIf
+  
+  If windows=#True
+    
+    If LCase(GetExtensionPart(inputfile.s))="avs" Or LCase(GetExtensionPart(inputfile.s))="d2v" Or LCase(GetExtensionPart(inputfile.s))="dgm" Or LCase(GetExtensionPart(inputfile.s))="dgv" Or LCase(GetExtensionPart(inputfile.s))="dga" Or LCase(GetExtensionPart(inputfile.s))="dgi"
+      CreateFile(987,workpath.s+"automen.avs")
+      
+      If ExamineDirectory(0,here+"applications\filters\","*.dll")
+        Repeat
+          type=NextDirectoryEntry(0)
+          If type=1 ; File
+            a$=LCase(DirectoryEntryName(0))
+            If FindString(a$,"soundout",0)=0
+              If FindString(a$,"yadif",0)=0
+                WriteStringN(987,"LoadPlugin("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+              EndIf
+            EndIf
+            If FindString(LCase(a$),"yadif",0)<>0
+              WriteStringN(987,"LoadCPlugin("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+            EndIf
+          EndIf
+        Until type=0
+      EndIf
+      
+      If ExamineDirectory(0,here+"applications\filters\","*.avsi")
+        Repeat
+          type=NextDirectoryEntry(0)
+          If type=1 ; File
+            a$=DirectoryEntryName(0)
+            WriteStringN(987,"Import("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+          EndIf
+        Until type=0
+      EndIf
+      
+      Select LCase(GetExtensionPart(inputfile.s))
+      Case "avs"
+        WriteStringN(987,"Import("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "d2v"
+        WriteStringN(987,"Mpeg2Source("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dgm","dgv"
+        WriteStringN(987,"DGSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dga"
+        WriteStringN(987,"AVCSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dgi"
+        WriteStringN(987,"DGSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      EndSelect
+      
+      CloseFile(987)
+      inputfile.s=workpath.s+"automen.avs"
+      
+    EndIf
+    
   EndIf
   
   If linux=#True : mencoderbat.s=ffmpeg.s+" " : EndIf
@@ -751,8 +902,6 @@ Procedure x264lavf()
   
   outputfile.s=workpath.s+"automen.h264"
   
-  mencoderbat.s=x264.s+" "+Chr(34)+inputfile.s+Chr(34)+" "
-  
   leftcrop.l=Val(GetGadgetText(#leftcrop))
   topcrop.l=Val(GetGadgetText(#topcrop))
   rightcrop.l=Val(GetGadgetText(#rightcrop))
@@ -763,6 +912,59 @@ Procedure x264lavf()
     height.l=Val(GetGadgetText(#height))
   EndIf
   
+  If windows=#True
+    
+    If LCase(GetExtensionPart(inputfile.s))="avs" Or LCase(GetExtensionPart(inputfile.s))="d2v" Or LCase(GetExtensionPart(inputfile.s))="dgm" Or LCase(GetExtensionPart(inputfile.s))="dgv" Or LCase(GetExtensionPart(inputfile.s))="dga" Or LCase(GetExtensionPart(inputfile.s))="dgi"
+      CreateFile(987,workpath.s+"automen.avs")
+      
+      If ExamineDirectory(0,here+"applications\filters\","*.dll")
+        Repeat
+          type=NextDirectoryEntry(0)
+          If type=1 ; File
+            a$=LCase(DirectoryEntryName(0))
+            If FindString(a$,"soundout",0)=0
+              If FindString(a$,"yadif",0)=0
+                WriteStringN(987,"LoadPlugin("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+              EndIf
+            EndIf
+            If FindString(LCase(a$),"yadif",0)<>0
+              WriteStringN(987,"LoadCPlugin("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+            EndIf
+          EndIf
+        Until type=0
+      EndIf
+      
+      If ExamineDirectory(0,here+"applications\filters\","*.avsi")
+        Repeat
+          type=NextDirectoryEntry(0)
+          If type=1 ; File
+            a$=DirectoryEntryName(0)
+            WriteStringN(987,"Import("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+          EndIf
+        Until type=0
+      EndIf
+      
+      Select LCase(GetExtensionPart(inputfile.s))
+      Case "avs"
+        WriteStringN(987,"Import("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "d2v"
+        WriteStringN(987,"Mpeg2Source("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dgm","dgv"
+        WriteStringN(987,"DGSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dga"
+        WriteStringN(987,"AVCSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dgi"
+        WriteStringN(987,"DGSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      EndSelect
+      
+      CloseFile(987)
+      inputfile.s=workpath.s+"automen.avs"
+      
+    EndIf
+    
+  EndIf
+  
+  mencoderbat.s=x264.s+" "+Chr(34)+inputfile.s+Chr(34)+" "
   
   ;     --vf, --video-filter <filter0>/<filter1>/... Apply video filtering To the input file
   ;
@@ -1321,7 +1523,11 @@ EndProcedure
 
 Procedure muxavi()
   
-  mux.s=ffmpeg.s+" -i "+Chr(34)+outputfile.s+Chr(34)+" -i "+Chr(34)+fileaudio.s+Chr(34)+" -vcodec copy -acodec copy -y "+Chr(34)+GetGadgetText(#outputstring)+Chr(34)
+  mux.s=ffmpeg.s+" -i "+Chr(34)+outputfile.s+Chr(34)
+  If GetGadgetText(#audiotrack)<>"" And GetGadgetText(#audiotrack)<>"none"
+    mux.s=mux.s+" -i "+Chr(34)+fileaudio.s+Chr(34)
+  EndIf
+  mux.s=mux.s+" -vcodec copy -acodec copy -y "+Chr(34)+GetGadgetText(#outputstring)+Chr(34)
   AddGadgetItem(#queue,-1,mux.s)
   
 EndProcedure
@@ -1644,8 +1850,8 @@ Procedure audioencoding()
       EndIf
       If eac3to.s=""
         audioffmpeg()
-      EndIf 
-    Case "mkv" 
+      EndIf
+    Case "mkv"
       If eac3to.s<>""
         eac3toaudio()
       EndIf
@@ -2117,6 +2323,58 @@ Procedure checkmedia()
   DeleteFile(here.s+"mplayer.bat")
   DeleteFile(here.s+"automen.log")
   
+  If windows=#True
+    
+    If LCase(GetExtensionPart(inputfile.s))="avs" Or LCase(GetExtensionPart(inputfile.s))="d2v" Or LCase(GetExtensionPart(inputfile.s))="dgm" Or LCase(GetExtensionPart(inputfile.s))="dgv" Or LCase(GetExtensionPart(inputfile.s))="dga" Or LCase(GetExtensionPart(inputfile.s))="dgi"
+      CreateFile(987,workpath.s+"automen.avs")
+      
+      If ExamineDirectory(0,here+"applications\filters\","*.dll")
+        Repeat
+          type=NextDirectoryEntry(0)
+          If type=1 ; File
+            a$=LCase(DirectoryEntryName(0))
+            If FindString(a$,"soundout",0)=0
+              If FindString(a$,"yadif",0)=0
+                WriteStringN(987,"LoadPlugin("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+              EndIf
+            EndIf
+            If FindString(LCase(a$),"yadif",0)<>0
+              WriteStringN(987,"LoadCPlugin("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+            EndIf
+          EndIf
+        Until type=0
+      EndIf
+      
+      If ExamineDirectory(0,here+"applications\filters\","*.avsi")
+        Repeat
+          type=NextDirectoryEntry(0)
+          If type=1 ; File
+            a$=DirectoryEntryName(0)
+            WriteStringN(987,"Import("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+          EndIf
+        Until type=0
+      EndIf
+      
+      Select LCase(GetExtensionPart(inputfile.s))
+      Case "avs"
+        WriteStringN(987,"Import("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "d2v"
+        WriteStringN(987,"Mpeg2Source("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dgm","dgv"
+        WriteStringN(987,"DGSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dga"
+        WriteStringN(987,"AVCSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dgi"
+        WriteStringN(987,"DGSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      EndSelect
+      
+      CloseFile(987)
+      checkfile.s=workpath.s+"automen.avs"
+      
+    EndIf
+    
+  EndIf
+  
   CreateFile(987,here.s+"analyze.bat")
   
   If linux=#True
@@ -2256,31 +2514,10 @@ Procedure checkmedia()
       EndIf
       If eac3to.s="" And mkvinfo.s<>""
         mkvinfo()
-      EndIf
+      EndIf   ; no Default since it's already detected by ffmpeg
     EndSelect
   EndIf
   
-  If framerate.f=0 : framerate.f=tbr.f : EndIf
-  
-  ;ffmpeg rounding error
-  
-  If framerate>23.900 And framerate<23.99
-    framerate.f=23.976
-  EndIf
-  
-  If framerate.f<>25 And framerate.f<>23.976  And framerate.f<>29.97 And framerate.f<>50 And framerate.f<>60 And framerate.f<>30 And framerate.f<>24 And framerate.f<>59.94
-    framerate.f=Round(framerate.f,#PB_Round_Nearest)
-  EndIf
-  
-  framecount.l=tsec.l*framerate.f
-  
-  If FindString(ar.s,"/",0) : ar.s=StrF(ValF(StringField(ar.s,1,"/"))/ValF(StringField(ar.s,2,"/"))) : EndIf
-  
-  SetGadgetText(#arcombo,ar.s)
-  
-  If CountGadgetItems(#audiotrack)>1 : SetGadgetState(#audiotrack,1) : EndIf
-  If CountGadgetItems(#audiotrack)<=1 : SetGadgetState(#audiotrack,0) : EndIf
-  If tsec.l > 1 : SetGadgetText(#videolenght,StrF(tsec.l/60,3)) : EndIf
   
   If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="d2v"
     fh = ReadFile(#PB_Any,GetGadgetText(#inputstring))
@@ -2296,9 +2533,9 @@ Procedure checkmedia()
         theight.l=Val(StringField(line.s,2,"x"))
       EndIf
     Wend
-    If ar.s="16:9" :  SetGadgetText(#arcombo,"1.7778") : EndIf
-    If ar.s="4:3" :  SetGadgetText(#arcombo,"1.3334") : EndIf
-    If ar.s="1:1" :  SetGadgetText(#arcombo,"1") : EndIf
+    If ar.s="16:9" : ar.s="1.7778" :  SetGadgetText(#arcombo,"1.7778") : EndIf
+    If ar.s="4:3" :  ar.s="1.3334" : SetGadgetText(#arcombo,"1.3334") : EndIf
+    If ar.s="1:1" :  ar.s="1" : SetGadgetText(#arcombo,"1") : EndIf
     videocodec.s="mpeg2"
   EndIf
   
@@ -2353,6 +2590,26 @@ Procedure checkmedia()
     videocodec.s="h264"
   EndIf
   
+  If framerate.f=0 : framerate.f=tbr.f : EndIf
+  
+  ;ffmpeg rounding error
+  
+  If framerate>23.900 And framerate<23.99 : framerate.f=23.976 : EndIf
+  
+  If framerate.f<>25 And framerate.f<>23.976  And framerate.f<>29.97 And framerate.f<>50 And framerate.f<>60 And framerate.f<>30 And framerate.f<>24 And framerate.f<>59.94
+    framerate.f=Round(framerate.f,#PB_Round_Nearest)
+  EndIf
+  
+  framecount.l=tsec.l*framerate.f
+  
+  If FindString(ar.s,"/",0) : ar.s=StrF(ValF(StringField(ar.s,1,"/"))/ValF(StringField(ar.s,2,"/"))) : EndIf
+  If FindString(ar.s,":",0) : ar.s=StrF(ValF(StringField(ar.s,1,":"))/ValF(StringField(ar.s,2,":"))) : EndIf
+  
+  SetGadgetText(#arcombo,ar.s)
+  
+  If CountGadgetItems(#audiotrack)>1 : SetGadgetState(#audiotrack,1) : EndIf
+  If CountGadgetItems(#audiotrack)<=1 : SetGadgetState(#audiotrack,0) : EndIf
+  If tsec.l > 1 : SetGadgetText(#videolenght,StrF(tsec.l/60,3)) : EndIf
   
   If GetGadgetText(#arcombo)="" : SetGadgetText(#arcombo,StrF(twidth.l/theight.l,4)) : EndIf
   
@@ -2922,8 +3179,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 2095
-; FirstLine = 2094
+; CursorPosition = 1479
+; FirstLine = 1434
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2931,6 +3188,6 @@ End
 ; Executable = AutoMen_beta1.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 604
+; EnableCompileCount = 616
 ; EnableBuildCount = 1574
 ; EnableExeConstant
