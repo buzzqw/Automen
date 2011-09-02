@@ -1533,6 +1533,18 @@ Procedure muxavi()
 EndProcedure
 
 
+Procedure muxwmv()
+  
+  mux.s=ffmpeg.s+" -i "+Chr(34)+outputfile.s+Chr(34)
+  If GetGadgetText(#audiotrack)<>"" And GetGadgetText(#audiotrack)<>"none"
+    mux.s=mux.s+" -i "+Chr(34)+fileaudio.s+Chr(34)
+  EndIf
+  mux.s=mux.s+" -vcodec copy -acodec copy -y "+Chr(34)+GetGadgetText(#outputstring)+Chr(34)
+  AddGadgetItem(#queue,-1,mux.s)
+  
+EndProcedure
+
+
 Procedure muxh264()
   
   mux.s="copy "+Chr(34)+outputfile.s+Chr(34)+" "+Chr(34)+GetGadgetText(#outputstring)+Chr(34)
@@ -1562,6 +1574,10 @@ Procedure mux()
   
   If GetExtensionPart(GetGadgetText(#outputstring))="h264"
     muxh264()
+  EndIf
+  
+  If GetExtensionPart(GetGadgetText(#outputstring))="wmv"
+    muxwmv()
   EndIf
   
   If GetExtensionPart(GetGadgetText(#outputstring))="avi"
@@ -2695,8 +2711,7 @@ Procedure openinputfile()
       If GetGadgetText(#container)="MKV": SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".mkv") : EndIf
       If GetGadgetText(#container)="AVI": SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".avi") : EndIf
       If GetGadgetText(#container)="H264": SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".h264") : EndIf
-      If GetGadgetText(#container)="MP4" : SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".mp4") : EndIf
-      If GetGadgetText(#container)="OGV" : SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".ogv") : EndIf
+      If GetGadgetText(#container)="MP4" : SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".mp4") : EndIf      
       If GetGadgetText(#container)="WMV" : SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".WMV") : EndIf
       outputfile.s=GetGadgetText(#outputstring)
     EndIf
@@ -2727,7 +2742,6 @@ Procedure checkextension()
     If GetGadgetText(#container)="H264": SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".h264") : EndIf
     If GetGadgetText(#container)="MP4" : SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".mp4") : EndIf
     If GetGadgetText(#container)="WMV" : SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".wmv") : EndIf
-    If GetGadgetText(#container)="OGV" : SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".ogv") : EndIf
     outputfile.s=GetGadgetText(#outputstring)
   EndIf
   
@@ -2737,7 +2751,6 @@ Procedure checkextension()
     If GetGadgetText(#container)="H264": SetGadgetText(#outputstring,Mid(outputfile.s,0,Len(GetGadgetText(#outputstring))-1-Len(GetExtensionPart(GetGadgetText(#outputstring))))+".h264") : EndIf
     If GetGadgetText(#container)="AVI": SetGadgetText(#outputstring,Mid(outputfile.s,0,Len(GetGadgetText(#outputstring))-1-Len(GetExtensionPart(GetGadgetText(#outputstring))))+".avi") : EndIf
     If GetGadgetText(#container)="MP4" : SetGadgetText(#outputstring,Mid(outputfile.s,0,Len(GetGadgetText(#outputstring))-1-Len(GetExtensionPart(GetGadgetText(#outputstring))))+".mp4") : EndIf
-    If GetGadgetText(#container)="OGV" : SetGadgetText(#outputstring,Mid(outputfile.s,0,Len(GetGadgetText(#outputstring))-1-Len(GetExtensionPart(GetGadgetText(#outputstring))))+".ogv") : EndIf
     If GetGadgetText(#container)="WMV" : SetGadgetText(#outputstring,Mid(outputfile.s,0,Len(GetGadgetText(#outputstring))-1-Len(GetExtensionPart(GetGadgetText(#outputstring))))+".wmv") : EndIf
     outputfile.s=GetGadgetText(#outputstring)
   EndIf
@@ -2967,8 +2980,7 @@ Repeat ; Start of the event loop
         If GetGadgetText(#container)="MKV" : outputfile.s=outputfile.s+".mkv" : EndIf
         If GetGadgetText(#container)="MP4" : outputfile.s=outputfile.s+".mp4" : EndIf
         If GetGadgetText(#container)="H264" : outputfile.s=outputfile.s+".h264" : EndIf
-        If GetGadgetText(#container)="AVI" : outputfile.s=outputfile.s+".avi" : EndIf
-        If GetGadgetText(#container)="OGV" : outputfile.s=outputfile.s+".ogv" : EndIf
+        If GetGadgetText(#container)="AVI" : outputfile.s=outputfile.s+".avi" : EndIf        
         If GetGadgetText(#container)="WMV" : outputfile.s=outputfile.s+".wmv" : EndIf
       EndIf
       If outputfile.s : SetGadgetText(#outputstring,outputfile.s) : EndIf
@@ -3179,8 +3191,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1479
-; FirstLine = 1434
+; CursorPosition = 436
+; FirstLine = 421
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -3188,6 +3200,6 @@ End
 ; Executable = AutoMen_beta1.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 616
+; EnableCompileCount = 619
 ; EnableBuildCount = 1574
 ; EnableExeConstant

@@ -400,6 +400,7 @@ Procedure Open_Window_0()
       
       
       CheckBoxGadget(#noodml,18,130,185,20,"Don't use ODML")
+      CheckBoxGadget(#multithread,248,130,185,20,"Don't use multithread encoding")
             
       CheckBoxGadget(#clean,18,155,225,20,"Clean temp file at end of encoding")
       CheckBoxGadget(#ffourcc,248,155,185,20,"FourCC DIVX for XviD encoding")      
@@ -520,8 +521,8 @@ EndProcedure
 ; EnableBuildCount = 10
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 420
-; FirstLine = 366
+; CursorPosition = 402
+; FirstLine = 398
 ; Folding = --
 ; DisableDebugger
 ; CompileSourceDirectory
