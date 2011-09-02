@@ -7,8 +7,8 @@ Global acbottom.l,acleft.l,acright.l,actop.l,aspectinfo.f,mencoderbat.s,bitrate.
 Global messinfo.s,outputinfo.s,here.s,outputfile.s,pgcid.l,mencoder.s,workpath.s
 Global here.s,queue.l, queuecount.l,passx.l,mplayer.s,mkvmerge.s,mp4box.s,pgc.s,start.l,mux.s,vcrop.s,extsubs.s
 Global linux,windows
-Global mencoder.s,mplayer.s,x264.s,ffmpeg.s,mkvmerge.s,mp4box.s,lame.s,oggenc.s,faac.s,mkvinfo.s,flac.s,faad.s,aften.s
-Global fileaudio.s
+Global mencoder.s,mplayer.s,x264.s,ffmpeg.s,mkvmerge.s,mp4box.s,lame.s,oggenc.s,faac.s,mkvinfo.s,flac.s,faad.s,aften.s,neroaacenc.s
+Global fileaudio.s,eac3to.s,mkvextract.s,mkvinfo.s
 
 Declare start()
 
@@ -63,7 +63,7 @@ Procedure checkencoder()
     If mkvmerge.s<>"" : AddGadgetItem(#container,-1,"MKV") : EndIf
     
     AddGadgetItem(#container,-1,"H264")
-        
+    
   EndIf
   
   SetGadgetState(#pass,0)
@@ -820,7 +820,7 @@ Procedure x264lavf()
   
   If GetGadgetText(#mdeint)="Progressive" : mencoderbat.s=mencoderbat.s+" --no-interlaced ": EndIf
   If GetGadgetText(#mdeint)="Interlaced" : mencoderbat.s=mencoderbat.s+" --no-interlaced ": EndIf
-    
+  
   mencoderbat.s=mencoderbat.s+" --output "+Chr(34)+outputfile.s+Chr(34)+" "
   
   If windows=#True : mencoderbat.s=mencoderbat.s+ "2>automenx264.log" : EndIf
@@ -1015,6 +1015,7 @@ Procedure  x264avs()
   
   
 EndProcedure
+
 
 
 Procedure start()
@@ -1283,12 +1284,12 @@ Procedure muxmkv()
 EndProcedure
 
 Procedure clean()
-   
-  If GetGadgetState(#clean)=1    
+  
+  If GetGadgetState(#clean)=1
     AddGadgetItem(#queue,-1,"del /q "+Chr(34)+workpath.s+"automen*.*"+Chr(34))
   EndIf
   
-  If GetGadgetState(#shutdown)=1    
+  If GetGadgetState(#shutdown)=1
     If linux=#True :  AddGadgetItem(#queue,-1,"shutdown -h now") : EndIf
     If windows=#True : AddGadgetItem(#queue,-1,"shutdown -s -t 30 -f") : EndIf
   EndIf
@@ -1359,34 +1360,90 @@ Procedure mux()
     muxh264()
   EndIf
   
-   If GetExtensionPart(GetGadgetText(#outputstring))="avi"
+  If GetExtensionPart(GetGadgetText(#outputstring))="avi"
     muxavi()
-  EndIf  
+  EndIf
   
   
 EndProcedure
 
+Procedure eac3toaudio()
+    
+    If FindString(GetGadgetText(#audiotrack),"2.0",0)  : aacch.s="2" : EndIf
+    If FindString(GetGadgetText(#audiotrack),"2.0",0) And GetGadgetText(#channel)="Original" : down.s=" -down2 " : EndIf
+    If FindString(GetGadgetText(#audiotrack),"5.1",0) And GetGadgetText(#channel)="2" : down.s=" -down2 " : EndIf
+    If FindString(GetGadgetText(#audiotrack),"7.1",0) And GetGadgetText(#channel)="2" : down.s=" -down2 " : EndIf
+    If FindString(GetGadgetText(#audiotrack),"1.0 channels",0) :   down.s=" " : aacch.s="1" : EndIf
+    If GetGadgetText(#sampling)<>"AUTO" : resampleaudio.s=" -resampleTo"+GetGadgetText(#sampling)+" " : EndIf
+    If GetGadgetState(#audionormalize)=1 : normalize.s=" -normalize " : EndIf
+    
+    aid.s=Trim(StringField(GetGadgetText(#audiotrack),1,":"))
+    
+    If GetFilePart(inputfile.s)="film.vob"
+      aid.s=Str(Val(Trim(StringField(StringField(GetGadgetText(#audiotrack),1,"f"),2,":")))+2)
+      inputfile.s=workpath.s+"film.vob"
+    EndIf
+    
+    If GetGadgetText(#audiocodec)="MP3 Audio"
+      down.s=" -down16 -down2 "
+      If FindString(GetGadgetText(#audiotrack),"1.0",0) :   down.s=" " : EndIf
+      
+      If GetGadgetText(#mp3mode)="abr"
+        encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": stdout.wav "+down.s+resampleaudio.s+normalize.s+"| "+Chr(34)+lame.s+Chr(34)+" - -h --abr "+GetGadgetText(#audibit)+" "+Chr(34)+workpath.s+"automen_audio.mp3"+Chr(34)
+      EndIf
+      If GetGadgetText(#mp3mode)="cbr"
+        encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": stdout.wav "+down.s+resampleaudio.s+normalize.s+"| "+Chr(34)+lame.s+Chr(34)+" - -h --cbr -b "+GetGadgetText(#audibit)+" "+Chr(34)+workpath.s+"automen_audio.mp3"+Chr(34)
+      EndIf
+      fileaudio.s=workpath.s+"automen_audio.mp3"
+    EndIf
+    
+    If GetGadgetText(#audiocodec)="OGG Audio"
+      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": stdout.wav "+resampleaudio.s+normalize.s+down.s+"| "+Chr(34)+oggenc.s+Chr(34)+" - -q "+GetGadgetText(#audibit)+" -o "+Chr(34)+workpath.s+"automen_audio.ogg"+Chr(34)
+      fileaudio.s=workpath.s+"automen_audio.ogg"
+    EndIf
+    
+    If GetGadgetText(#audiocodec)="AAC Audio"
+      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": stdout.wav "+resampleaudio.s+normalize.s+down.s+"| "+Chr(34)+neroaacenc.s+Chr(34)+" -If - -q "+GetGadgetText(#audibit)+" -ignorelength -of "+Chr(34)+workpath.s+"automen_audio.mp4"+Chr(34)
+      fileaudio.s=workpath.s+"automen_audio.mp4"
+    EndIf
+    
+    If GetGadgetText(#audiocodec)="FLAC Audio"
+      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": "+Chr(34)+workpath.s+"automen_audio.flac"+Chr(34)+resampleaudio.s+normalize.s+down.s
+      fileaudio.s=workpath.s+"automen_audio.flac"
+    EndIf
+    
+    If GetGadgetText(#audiocodec)="AC3 Audio"
+      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": "+Chr(34)+workpath.s+"automen_audio.ac3"+Chr(34)+resampleaudio.s+normalize.s+down.s
+      fileaudio.s=workpath.s+"automen_audio.ac3"
+    EndIf
+    
+    If GetGadgetText(#audiocodec)="Copy Audio"
+      extaudio.s=GetGadgetText(#audiotrack)
+      If FindString(extaudio.s,"ac3",0) : extaudio.s="ac3" : EndIf
+      If FindString(extaudio.s,"ac3 ex,",0 ): extaudio.s="ac3" : EndIf
+      If FindString(extaudio.s,"dts master",0) : extaudio.s="dts" : EndIf
+      If FindString(extaudio.s,"truehd/ac3,",0) : extaudio.s="dts" : EndIf
+      If FindString(extaudio.s,"dts",0 ): extaudio.s="dts" : EndIf
+      If FindString(extaudio.s,"dts",0 ): extaudio.s="dts" : EndIf
+      If FindString(extaudio.s,"flac,",0) : extaudio.s="flac" : EndIf
+      If FindString(extaudio.s,"mp2,",0) : extaudio.s="mp2" : EndIf
+      If FindString(extaudio.s,"mp3,",0) : extaudio.s="mp3" : EndIf
+      If FindString(extaudio.s,"aac,",0) : extaudio.s="aac" : EndIf
+      If FindString(extaudio.s,"pcm,",0 ): extaudio.s="pcm" : EndIf
+      If FindString(extaudio.s,"vorbis,",0) : extaudio.s="ogg" : EndIf
+      
+      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": "+Chr(34)+workpath.s+"automen_audio."+extaudio.s+Chr(34)
+      fileaudio.s=workpath.s+"automen_audio."+extaudio.s
+    EndIf
+    
+    AddGadgetItem(#queue,-1,encostring.s)
+  
+EndProcedure
+
+
+
 Procedure audioffmpeg()
   
-  workpath.s=GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s)))
-  
-  CreateDirectory(GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s))))
-  
-  If linux=#True  : workpath.s=workpath.s+"/" : EndIf
-  If windows=#True : workpath.s=workpath.s+"\" : EndIf
-  
-  If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="ifo"
-    dump.s=mplayer.s+" dvd://"+Str(pgcid.l)+" -dvd-device "+Chr(34)+Mid(GetPathPart(GetGadgetText(#inputstring)),0,Len(GetPathPart(GetGadgetText(#inputstring)))-1)+Chr(34)+" -dumpstream -dumpfile "+Chr(34)+workpath.s+"film.vob"+Chr(34)
-    AddGadgetItem(#queue,0,dump.s)
-    inputfile.s=workpath.s+"film.vob"
-  EndIf
-  
-  fileaudio.s=""
-  encostring.s=""
-  
-  If GetGadgetText(#audiotrack)="none" Or GetGadgetText(#audiocodec)="No Audio"
-    ProcedureReturn 0
-  EndIf
   
   If GetGadgetText(#audiocodec)="Copy Audio"
     
@@ -1532,7 +1589,49 @@ Procedure audioffmpeg()
   
 EndProcedure
 
-
+Procedure audioencoding()
+  
+  workpath.s=GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s)))
+  
+  CreateDirectory(GetPathPart(inputfile.s)+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile.s))))
+  
+  If linux=#True  : workpath.s=workpath.s+"/" : EndIf
+  If windows=#True : workpath.s=workpath.s+"\" : EndIf
+  
+  If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="ifo"
+    dump.s=mplayer.s+" dvd://"+Str(pgcid.l)+" -dvd-device "+Chr(34)+Mid(GetPathPart(GetGadgetText(#inputstring)),0,Len(GetPathPart(GetGadgetText(#inputstring)))-1)+Chr(34)+" -dumpstream -dumpfile "+Chr(34)+workpath.s+"film.vob"+Chr(34)
+    AddGadgetItem(#queue,0,dump.s)
+    inputfile.s=workpath.s+"film.vob"
+  EndIf
+  
+  fileaudio.s=""
+  encostring.s=""
+  
+  If GetGadgetText(#audiotrack)="none" Or GetGadgetText(#audiocodec)="No Audio"
+    ProcedureReturn 0
+  EndIf
+  
+  If linux=#True
+    audioffmpeg()
+  EndIf
+  
+  If windows=#True
+    Select LCase(GetExtensionPart(inputfile.s))
+    Case "evo","vob","mpeg","mpg","ts","m2t","m2ts"
+      If eac3to.s<>""
+        eac3toaudio()
+      EndIf
+    Case "mkv"
+      If eac3to.s<>""
+        eac3toaudio()
+      EndIf
+      If eac3to.s=""
+        audioffmpeg()
+      EndIf
+    EndSelect
+  EndIf
+  
+EndProcedure
 
 Procedure autocrop()
   
@@ -1934,10 +2033,8 @@ Procedure mkvinfo()
   EndIf
   
   For bb=1 To aa
-    If FindString(mkv(bb)\mediatype.s,"A_",0)
-      AddGadgetItem(#audiotrack,-1,Str(mkv(bb)\trackid.l)+": "+mkv(bb)\mediatype.s+" "+mkv(bb)\tag.s)
-      Debug(Str(mkv(bb)\trackid.l)+": "+mkv(bb)\mediatype.s+" "+mkv(bb)\tag.s)
-    EndIf
+    If FindString(mkv(bb)\mediatype.s,"A_",0) : AddGadgetItem(#audiotrack,-1,Str(mkv(bb)\trackid.l)+": "+mkv(bb)\mediatype.s+" "+mkv(bb)\tag.s) : EndIf
+    ;If FindString(mkv(bb)\mediatype.s,"S_",0) : AddGadgetItem(#subs,bb,Str(mkv(bb)\trackid.l)+": "+mkv(bb)\mediatype.s+" "+mkv(bb)\tag.s) : EndIf
   Next bb
   
   SetGadgetState(#audiotrack,1)
@@ -1960,19 +2057,14 @@ Procedure eac3toanalyzeaudio()
   If ReadFile(865,here.s+"eac3toinfo.log")
     While Eof(865)=#False
       mess.s=ReplaceString(LCase(ReadString(865)),Chr(8),"")
-      
-      If LCase(GetExtensionPart(inputfile.s))<>"d2v" And LCase(GetExtensionPart(inputfile.s))<>"dga" And LCase(GetExtensionPart(inputfile.s))<>"avs" And LCase(GetExtensionPart(inputfile.s))<>"dgi" And LCase(GetExtensionPart(inputfile.s))<>"dgm" And LCase(GetExtensionPart(inputfile.s))<>"dgv"
-        Debug(mess.s)
-        If FindString(mess.s,"cha",0) And FindString(mess.s,".",0) And FindString(mess.s,"embedded:",0)=0 And FindString(mess.s,"core:",0)=0 And FindString(mess.s,Chr(34),0)=0
-          AddGadgetItem(#audiotrack,-1,Trim(mess.s))
-        EndIf
+      ;If FindString(mess.s,"subtitle",0) And FindString(mess.s,"audio",0)=0 : AddGadgetItem(#subs,-1,Trim(mess.s)) : EndIf
+      If FindString(mess.s,"cha",0) And FindString(mess.s,".",0) And FindString(mess.s,"embedded:",0)=0 And FindString(mess.s,"core:",0)=0 And FindString(mess.s,Chr(34),0)=0
+        AddGadgetItem(#audiotrack,-1,Trim(mess.s))
       EndIf
     Wend
     
     CloseFile(865)
-    
   EndIf
-  
   
 EndProcedure
 
@@ -2387,7 +2479,7 @@ Procedure openinputfile()
     silentresize()
   EndIf
   
-    
+  
 EndProcedure
 
 
@@ -2564,8 +2656,32 @@ If flac.s<>"" : AddGadgetItem(#audiocodec,-1,"FLAC Audio") : EndIf
 
 If mencoder.s<>"" : AddGadgetItem(#encodewith,-1,"Mencoder for Encoding") : EndIf
 If ffmpeg.s<>"" : AddGadgetItem(#encodewith,-1,"Use ffmpeg as encoder") : EndIf
-If x264.s<>"" : AddGadgetItem(#encodewith,-1,"Use X264 as demuxer and encoder") : EndIf
 
+If linux=#True
+  
+  If x264.s<>""
+    CreateFile(987,here.s+".x264check")
+    WriteString(987,"x264 --fullhelp | grep support >"+Chr(34)+here.s+".x264supp"+Chr(34))
+    CloseFile(987)
+    
+    RunProgram("chmod","+x "+Chr(34)+here.s+".x264check"+Chr(34),here.s,#PB_Program_Wait)
+    RunProgram("xterm","-e "+Chr(34)+here.s+".x264check"+Chr(34),here.s,#PB_Program_Wait)
+    
+    If FileSize(here.s+".x264supp")<>-1
+      ReadFile(fh,here.s+".x264supp")
+      While Eof(fh)=#False
+        line.s=ReadString(fh)
+        If FindString(line.s,"lavf support (yes)",0)
+          AddGadgetItem(#encodewith,-1,"Use X264 as demuxer and encoder")
+        EndIf
+      Wend
+      CloseFile(fh)
+    EndIf
+  EndIf
+EndIf
+
+
+If x264.s<>""  And windows=#True : AddGadgetItem(#encodewith,-1,"Use X264 as demuxer and encoder") : EndIf
 If windows=#True And x264.s<>"" : AddGadgetItem(#encodewith,-1,"Use AviSynth (only for X264)") : EndIf
 If mencoder.s<>"" And x264.s<>"" : AddGadgetItem(#encodewith,-1,"Pipe X264 with mencoder") : EndIf
 
@@ -2656,7 +2772,7 @@ Repeat ; Start of the event loop
       checkextension()
       parseprofile()
       If FindString(GetGadgetText(#pass),"CRF",0) :  SetGadgetText(#Text_33,"Quant") :  DisableGadget(#cds,1) : SetGadgetText(#Text_32,"Quality") : EndIf
-      If FindString(GetGadgetText(#pass),"CRF",0)=0 : SetGadgetText(#Text_33,"kbp/s") : DisableGadget(#cds,0) : SetGadgetText(#Text_32,"Video Bitrate") : EndIf      
+      If FindString(GetGadgetText(#pass),"CRF",0)=0 : SetGadgetText(#Text_33,"kbp/s") : DisableGadget(#cds,0) : SetGadgetText(#Text_32,"Video Bitrate") : EndIf
       
     ElseIf GadgetID = #container
       checkextension()
@@ -2745,9 +2861,9 @@ Repeat ; Start of the event loop
       
       queuecount.l=0
       queue.l=0
-      If GetGadgetText(#pass)="1 pass" : passx.l=1 : audioffmpeg() : start() :  mux() : clean() : startqueue() : EndIf
+      If GetGadgetText(#pass)="1 pass" : passx.l=1 : audioencoding() :  start() :  mux() : clean() : startqueue() : EndIf
       If GetGadgetText(#pass)="2 pass"
-        audioffmpeg()
+        audioencoding()
         passx.l=2 : start()
         passx.l=3 : start()
         mux()
@@ -2755,28 +2871,28 @@ Repeat ; Start of the event loop
         startqueue()
       EndIf
       
-      If GetGadgetText(#pass)="CRF 1 pass" : passx.l=4 : audioffmpeg() : start() : mux() : clean() : startqueue() : EndIf
-      If GetGadgetText(#pass)="QP 1 pass" : passx.l=8 : audioffmpeg() : start()  : mux() : clean() : startqueue() : EndIf
-      If GetGadgetText(#pass)="Copy Video" : passx.l=7 : audioffmpeg() : start() : mux() : clean() : startqueue() : EndIf
-      If GetGadgetText(#pass)="Same Quality" : passx.l=11 : audioffmpeg() : start() : mux() : clean() : startqueue() : EndIf      
-            
+      If GetGadgetText(#pass)="CRF 1 pass" : passx.l=4 : audioencoding() :  start() : mux() : clean() : startqueue() : EndIf
+      If GetGadgetText(#pass)="QP 1 pass" : passx.l=8 : audioencoding() :  start()  : mux() : clean() : startqueue() : EndIf
+      If GetGadgetText(#pass)="Copy Video" : passx.l=7 : audioencoding() :  start() : mux() : clean() : startqueue() : EndIf
+      If GetGadgetText(#pass)="Same Quality" : passx.l=11 : audioencoding() : start() : mux() : clean() : startqueue() : EndIf
+      
     ElseIf GadgetID = #addtoqueue
       
       queuecount.l=queuecount.l+1
       queue.l=1
-      If GetGadgetText(#pass)="1 pass" : passx.l=1 : audioffmpeg() : start() : mux() : clean() : EndIf
+      If GetGadgetText(#pass)="1 pass" : passx.l=1 : audioencoding() :  start() : mux() : clean() : EndIf
       If GetGadgetText(#pass)="2 pass"
-        audioffmpeg()
+        audioencoding()
         passx.l=2 : start()
         passx.l=3 : start()
         mux()
         clean()
       EndIf
       
-      If GetGadgetText(#pass)="CRF 1 pass" : passx.l=4 : audioffmpeg() : start() : mux() : clean() : EndIf
-      If GetGadgetText(#pass)="QP 1 pass" : passx.l=8 : audioffmpeg() : start()  : mux() : clean() : EndIf
-      If GetGadgetText(#pass)="Copy Video" : passx.l=7 : audioffmpeg() : start() : mux() : clean() : EndIf
-      If GetGadgetText(#pass)="Same Quality" : passx.l=11 : audioffmpeg() : start() : mux() : clean() : EndIf
+      If GetGadgetText(#pass)="CRF 1 pass" : passx.l=4 : audioencoding() :  start() : mux() : clean() : EndIf
+      If GetGadgetText(#pass)="QP 1 pass" : passx.l=8 : audioencoding() :  start()  : mux() : clean() : EndIf
+      If GetGadgetText(#pass)="Copy Video" : passx.l=7 : audioencoding() :  start() : mux() : clean() : EndIf
+      If GetGadgetText(#pass)="Same Quality" : passx.l=11 : audioencoding() :  start() : mux() : clean() : EndIf
       
       
     ElseIf GadgetID = #startqueue
@@ -2818,8 +2934,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 2766
-; FirstLine = 2729
+; CursorPosition = 1421
+; FirstLine = 1398
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -2827,6 +2943,6 @@ End
 ; Executable = AutoMen_beta.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 547
+; EnableCompileCount = 584
 ; EnableBuildCount = 1573
 ; EnableExeConstant

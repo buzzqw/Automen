@@ -417,7 +417,8 @@ Procedure Open_Window_0()
       ButtonGadget(#startqueue,255,180,80,comboheight,"Start Queue")
       ButtonGadget(#buttonaddtoqueue,340,180,40,comboheight,"add ...")
       ComboBoxGadget(#addedtoqueue,385,180,65,comboheight,#PB_ComboBox_Editable)
-      AddGadgetItem(#addedtoqueue,-1,"pause")
+      CompilerIf #PB_Compiler_OS = #PB_OS_Linux :  AddGadgetItem(#addedtoqueue,-1,"read") : CompilerEndIf
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows :  AddGadgetItem(#addedtoqueue,-1,"pause") : CompilerEndIf
       AddGadgetItem(#addedtoqueue,-1,"shutdown")
       AddGadgetItem(#addedtoqueue,-1,"Edit Me...")
       SetGadgetState(#addedtoqueue,0)
@@ -519,8 +520,8 @@ EndProcedure
 ; EnableBuildCount = 10
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 215
-; FirstLine = 202
+; CursorPosition = 420
+; FirstLine = 366
 ; Folding = --
 ; DisableDebugger
 ; CompileSourceDirectory
