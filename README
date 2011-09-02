@@ -1,3 +1,11 @@
-AutoMen is a mencoder, ffmpeg, x264 gui written in PureBasic
-it aims at simplicity and modularity.
-The applications is compilable for windows and linux
+This repository contains code of my applications
+
+you will find the code for AutoMen, AutoFFmpeg, MultiX264.
+
+The applications are quite similar
+AutoFFmpeg: aim to use only ffmpeg as encoder
+MultiX264: is a multi decoder/encoder but always for X264
+AutoMen: is a multi encoder gui (mencoder , x264 , ffmpeg) able to encode with xvid/mpeg4,x264,wmv codec
+
+All source code is under GLP3 and developed with purebasic (now 4.6beta4). 
+all code aims to be portable with linux
