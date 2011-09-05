@@ -445,6 +445,10 @@ Procedure Open_Window_0()
     ;GadgetToolTip(#play,"Press this button for playing input file")
     
     
+    
+    GadgetToolTip(#encodewith,"Select decoder/encoder. Every encoder has pro and cons and can encode with different codecs")
+    GadgetToolTip(#videolenght,"Lenght of movie (in minutes)")
+    GadgetToolTip(#basicfile,"Summary information about file to encode")
     GadgetToolTip(#extsub,"Browse for external subtitle. This subs will be hardcodec in video. Option avaiable only for mencoder and avisynth x264")
     GadgetToolTip(#addedtoqueue,"Select what add as last command in queue. You can edit this list")
     GadgetToolTip(#buttonaddtoqueue,"Click here for adding to queue, as bottom line, the command written at right")
@@ -533,9 +537,9 @@ EndProcedure
 ; EnableCompileCount = 61
 ; EnableBuildCount = 10
 ; EnableExeConstant
-; IDE Options = PureBasic 4.51 (Linux - x64)
-; CursorPosition = 170
-; FirstLine = 167
+; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
+; CursorPosition = 448
+; FirstLine = 436
 ; Folding = --
 ; DisableDebugger
 ; CompileSourceDirectory

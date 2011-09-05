@@ -129,7 +129,7 @@ Procedure checkaudio()
       AddGadgetItem(#audibit,-1,"96")
       AddGadgetItem(#audibit,-1,"64")
       SetGadgetState(#audibit,6)
-           
+      
       SetGadgetText(#text50,"Audio Bitrate:")
       SetGadgetText(#text51,"kbit/s")
       GadgetToolTip(#audibit,"Bitrate of audio")
@@ -164,7 +164,7 @@ Procedure checkaudio()
       
       SetGadgetState(#audibit,6)
       SetGadgetText(#text50,"Audio Quality")
-           
+      
       GadgetToolTip(#audibit,"Use higher values for better quality")
       
       ClearGadgetItems(#channel)
@@ -293,81 +293,10 @@ Procedure checkaudio()
   
 EndProcedure
 
-Procedure makereport()
-  
-  If GetGadgetText(#queue)=""
-    queue.l=1
-    
-    If GetGadgetText(#width)=""
-      MessageRequester("AutoMen", "Attention!"+Chr(13)+Chr(10)+"Load file First!")
-      ProcedureReturn
-    EndIf
-    
-    queuecount.l=queuecount.l+1
-    queue.l=1
-    If GetGadgetText(#pass)="1 pass" : passx.l=2 : start() : EndIf
-    If GetGadgetText(#pass)="2 pass"
-      passx.l=3 : start()
-      passx.l=4 : start()
-    EndIf
-    If GetGadgetText(#pass)="CRF 1 pass"
-      passx.l=5
-      start()
-    EndIf
-    If GetGadgetText(#pass)="Copy Video"
-      passx.l=7
-      start()
-    EndIf
-  EndIf
-  
-  
-  CreateFile(147,here.s+"Post_This_File.txt")
-  
-  WriteStringN(147,"[CODE]AutoMen "+ver.s+" report")
-  WriteStringN(147,"")
-  WriteStringN(147,"Input File: "+inputfile.s+" ( "+GetGadgetText(#inputstring)+" )")
-  WriteStringN(147,"")
-  WriteStringN(147,GetGadgetText(#basicfile))
-  WriteStringN(147,"")
-  WriteStringN(147,"Resized resolution: "+GetGadgetText(#width)+" / "+GetGadgetText(#height))
-  WriteStringN(147,"Crop Values : "+GetGadgetText(#leftcrop)+":"+GetGadgetText(#topcrop)+":"+GetGadgetText(#rightcrop)+":"+GetGadgetText(#bottomcrop))
-  If GetGadgetState(#itu)=1 : WriteStringN(147,"Activate: Follow ITU Resizing") : EndIf
-  If GetGadgetState(#anamorphic)=1 : WriteStringN(147,"Activate: Anamorphic Resize") : EndIf
-  If GetGadgetState(#allowresize)=0 : WriteStringN(147,"No Resize & Crop: On") : EndIf
-  WriteStringN(147,"")
-  WriteStringN(147,"Encoding With: "+GetGadgetText(#videocodec))
-  WriteStringN(147,"Container: "+GetGadgetText(#container))
-  WriteStringN(147,"Encoding Mode: "+GetGadgetText(#pass))
-  WriteStringN(147,"Video Bitrate: "+GetGadgetText(#videokbits))
-  WriteStringN(147,"Denoise Level: "+GetGadgetText(#denoise))
-  WriteStringN(147,"Resizer : "+GetGadgetText(#resizer))
-  WriteStringN(147,"")
-  
-  If GetGadgetState(#noodml)=1 : WriteStringN(147,"Don't use ODML: On") : EndIf
-  If GetGadgetState(#ffourcc)=1 : WriteStringN(147,"Use DIVX as FourCC for XviD: On") : EndIf
-  WriteStringN(147,GetGadgetText(#encodewith))
-  WriteStringN(147,"")
-  WriteStringN(147,"Audio Track: "+GetGadgetText(#audiotrack))
-  WriteStringN(147,"Audio Codec: "+GetGadgetText(#audiocodec))
-  WriteStringN(147,"Audio Bitrate: "+GetGadgetText(#audibit))
-  WriteStringN(147,"Audio Channels: "+GetGadgetText(#channel))
-  WriteStringN(147,"Audio Mode: "+GetGadgetText(#mp3mode))
-  If GetGadgetState(#audionormalize)=1 : WriteStringN(147,"Audio Normalize: On") : EndIf
-  WriteStringN(147,"")
-  WriteStringN(147,"Start Queue ->")
-  WriteStringN(147,GetGadgetText(#queue))
-  WriteStringN(147,"-> End Queue")
-  WriteStringN(147,"")
-  
-  
-  WriteString(147,"[/CODE]")
-  
-  CloseFile(147)
-  
-  MessageRequester("AutoMen","               ---> Post_This_File.txt <--- file created in "+Chr(13)+Chr(10)+Chr(10)+here.s+" folder")
-  RunProgram("Post_This_File.txt",here.s,"")
-  
-EndProcedure
+
+
+
+
 
 
 Procedure sanitycheck()
@@ -1954,6 +1883,7 @@ Procedure audioencoding()
   
 EndProcedure
 
+
 Procedure autocrop()
   
   DeleteFile(here.s+"mplayer_deep.bat")
@@ -2832,6 +2762,84 @@ Procedure checkextension()
   
 EndProcedure
 
+Procedure makereport()
+  
+  If GetGadgetText(#queue)=""
+    queue.l=1
+    
+    If GetGadgetText(#width)=""
+      MessageRequester("AutoMen", "Attention!"+Chr(13)+Chr(10)+"Load file First!")
+      ProcedureReturn
+    EndIf
+    
+    queuecount.l=queuecount.l+1
+    queue.l=1
+    
+    If GetGadgetText(#pass)="1 pass" : passx.l=1 : audioencoding() :  start() :  mux() : clean() : EndIf
+    If GetGadgetText(#pass)="2 pass"
+      audioencoding()
+      passx.l=2 : start()
+      passx.l=3 : start()
+      mux()
+      clean()
+    EndIf
+    
+    If GetGadgetText(#pass)="CRF 1 pass" : passx.l=4 : audioencoding() :  start() : mux() : clean() : EndIf
+    If GetGadgetText(#pass)="QP 1 pass" : passx.l=8 : audioencoding() :  start()  : mux() : clean() : EndIf
+    If GetGadgetText(#pass)="Copy Video" : passx.l=7 : audioencoding() :  start() : mux() : clean() : EndIf
+    If GetGadgetText(#pass)="Same Quality" : passx.l=11 : audioencoding() :  start() : mux() : clean() : EndIf
+    
+  EndIf
+  
+  
+  CreateFile(147,here.s+"Post_This_File.txt")
+  
+  WriteStringN(147,"[CODE]AutoMen "+ver.s+" report")
+  WriteStringN(147,"")
+  WriteStringN(147,"Input File: "+inputfile.s+" ( "+GetGadgetText(#inputstring)+" )")
+  WriteStringN(147,"")
+  WriteStringN(147,GetGadgetText(#basicfile))
+  WriteStringN(147,"")
+  WriteStringN(147,"Resized resolution: "+GetGadgetText(#width)+" / "+GetGadgetText(#height))
+  WriteStringN(147,"Crop Values : "+GetGadgetText(#leftcrop)+":"+GetGadgetText(#topcrop)+":"+GetGadgetText(#rightcrop)+":"+GetGadgetText(#bottomcrop))
+  If GetGadgetState(#itu)=1 : WriteStringN(147,"Activate: Follow ITU Resizing") : EndIf
+  If GetGadgetState(#anamorphic)=1 : WriteStringN(147,"Activate: Anamorphic Resize") : EndIf
+  If GetGadgetState(#allowresize)=0 : WriteStringN(147,"No Resize & Crop: On") : EndIf
+  WriteStringN(147,"")
+  WriteStringN(147,"Encoding With: "+GetGadgetText(#videocodec))
+  WriteStringN(147,"Container: "+GetGadgetText(#container))
+  WriteStringN(147,"Encoding Mode: "+GetGadgetText(#pass))
+  WriteStringN(147,"Video Bitrate: "+GetGadgetText(#videokbits))
+  WriteStringN(147,"Denoise Level: "+GetGadgetText(#denoise))
+  WriteStringN(147,"Resizer : "+GetGadgetText(#resizer))
+  WriteStringN(147,"")
+  
+  If GetGadgetState(#noodml)=1 : WriteStringN(147,"Don't use ODML: On") : EndIf
+  If GetGadgetState(#ffourcc)=1 : WriteStringN(147,"Use DIVX as FourCC for XviD: On") : EndIf
+  WriteStringN(147,GetGadgetText(#encodewith))
+  WriteStringN(147,"")
+  WriteStringN(147,"Audio Track: "+GetGadgetText(#audiotrack))
+  WriteStringN(147,"Audio Codec: "+GetGadgetText(#audiocodec))
+  WriteStringN(147,"Audio Bitrate: "+GetGadgetText(#audibit))
+  WriteStringN(147,"Audio Channels: "+GetGadgetText(#channel))
+  WriteStringN(147,"Audio Mode: "+GetGadgetText(#mp3mode))
+  If GetGadgetState(#audionormalize)=1 : WriteStringN(147,"Audio Normalize: On") : EndIf
+  WriteStringN(147,"")
+  WriteStringN(147,"Start Queue ->")
+  WriteStringN(147,GetGadgetText(#queue))
+  WriteStringN(147,"-> End Queue")
+  WriteStringN(147,"")
+  
+  
+  WriteString(147,"[/CODE]")
+  
+  CloseFile(147)
+  
+  MessageRequester("AutoMen","               ---> Post_This_File.txt <--- file created in "+Chr(13)+Chr(10)+Chr(10)+here.s+" folder")
+  RunProgram("Post_This_File.txt",here.s,"")
+  
+EndProcedure
+
 
 Open_Window_0()
 here.s=GetCurrentDirectory()
@@ -3265,8 +3273,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 288
-; FirstLine = 246
+; CursorPosition = 1864
+; FirstLine = 1826
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -3274,6 +3282,6 @@ End
 ; Executable = AutoMen_beta3.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 640
+; EnableCompileCount = 643
 ; EnableBuildCount = 1575
 ; EnableExeConstant
