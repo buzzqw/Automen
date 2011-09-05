@@ -73,11 +73,16 @@ Procedure checkencoder()
 EndProcedure
 
 
-Procedure handbrakeoff()
+Procedure checkaudio()
   
   StatusBarText(#statusbar, 0, "Resetting video and audio codec!")
   
   If GetGadgetText(#audiocodec)="MP3 Audio"
+    
+    DisableGadget(#mp3mode,0)
+    DisableGadget(#audibit,0)
+    DisableGadget(#sampling,0)
+    DisableGadget(#channel,0)
     
     ClearGadgetItems(#audibit)
     AddGadgetItem(#audibit,-1,"320")
@@ -91,21 +96,28 @@ Procedure handbrakeoff()
     AddGadgetItem(#audibit,-1,"64")
     SetGadgetState(#audibit,6)
     
-    ClearGadgetItems(#channel)    
+    ClearGadgetItems(#channel)
     AddGadgetItem(#channel,-1,"2")
     AddGadgetItem(#channel,-1,"1")
     
     SetGadgetText(#text50,"Audio Bitrate:")
     SetGadgetText(#text51,"kbit/s")
     SetGadgetState(#channel,1)
-    DisableGadget(#mp3mode,0)
-    DisableGadget(#audibit,0)
+    
     GadgetToolTip(#audibit,"Bitrate of audio")
+    
+    
     
   EndIf
   
   If neroaacenc.s=""
     If GetGadgetText(#audiocodec)="AAC Audio"
+      
+      DisableGadget(#mp3mode,1)
+      DisableGadget(#audibit,0)
+      DisableGadget(#sampling,0)
+      DisableGadget(#channel,0)
+      
       ClearGadgetItems(#audibit)
       AddGadgetItem(#audibit,-1,"320")
       AddGadgetItem(#audibit,-1,"288")
@@ -117,22 +129,27 @@ Procedure handbrakeoff()
       AddGadgetItem(#audibit,-1,"96")
       AddGadgetItem(#audibit,-1,"64")
       SetGadgetState(#audibit,6)
-      DisableGadget(#mp3mode,1)
-      DisableGadget(#audibit,0)
+           
       SetGadgetText(#text50,"Audio Bitrate:")
       SetGadgetText(#text51,"kbit/s")
       GadgetToolTip(#audibit,"Bitrate of audio")
       
       ClearGadgetItems(#channel)
-    AddGadgetItem(#channel,-1,"Original")
-    AddGadgetItem(#channel,-1,"2")
-    AddGadgetItem(#channel,-1,"1")
+      AddGadgetItem(#channel,-1,"Original")
+      AddGadgetItem(#channel,-1,"2")
+      AddGadgetItem(#channel,-1,"1")
       
     EndIf
   EndIf
   
   If neroaacenc.s<>""
     If GetGadgetText(#audiocodec)="AAC Audio"
+      
+      DisableGadget(#audibit,0)
+      DisableGadget(#mp3mode,1)
+      DisableGadget(#sampling,0)
+      DisableGadget(#channel,0)
+      
       ClearGadgetItems(#audibit)
       AddGadgetItem(#audibit,-1,"1")
       AddGadgetItem(#audibit,-1,"0.9")
@@ -144,22 +161,29 @@ Procedure handbrakeoff()
       AddGadgetItem(#audibit,-1,"0.3")
       AddGadgetItem(#audibit,-1,"0.2")
       AddGadgetItem(#audibit,-1,"0.1")
+      
       SetGadgetState(#audibit,6)
       SetGadgetText(#text50,"Audio Quality")
-      DisableGadget(#mp3mode,1)
-      DisableGadget(#audibit,0)
+           
       GadgetToolTip(#audibit,"Use higher values for better quality")
       
       ClearGadgetItems(#channel)
-    AddGadgetItem(#channel,-1,"Original")
-    AddGadgetItem(#channel,-1,"2")
-    AddGadgetItem(#channel,-1,"1")
+      AddGadgetItem(#channel,-1,"Original")
+      AddGadgetItem(#channel,-1,"2")
+      AddGadgetItem(#channel,-1,"1")
+      SetGadgetState(#channel,0)
       
     EndIf
   EndIf
   
   
   If GetGadgetText(#audiocodec)="AC3 Audio"
+    
+    DisableGadget(#sampling,0)
+    DisableGadget(#mp3mode,1)
+    DisableGadget(#audibit,0)
+    DisableGadget(#channel,0)
+    
     ClearGadgetItems(#audibit)
     AddGadgetItem(#audibit,-1,"640")
     AddGadgetItem(#audibit,-1,"448")
@@ -169,9 +193,6 @@ Procedure handbrakeoff()
     AddGadgetItem(#audibit,-1,"192")
     SetGadgetState(#audibit,2)
     
-    DisableGadget(#mp3mode,1)
-    DisableGadget(#audibit,0)
-    
     SetGadgetText(#text50,"Audio Bitrate:")
     SetGadgetText(#text51,"kbit/s")
     GadgetToolTip(#audibit,"Bitrate of audio")
@@ -180,10 +201,17 @@ Procedure handbrakeoff()
     AddGadgetItem(#channel,-1,"Original")
     AddGadgetItem(#channel,-1,"2")
     AddGadgetItem(#channel,-1,"1")
+    SetGadgetState(#channel,0)
     
   EndIf
   
   If GetGadgetText(#audiocodec)="FLAC Audio"
+    
+    DisableGadget(#mp3mode,1)
+    DisableGadget(#audibit,0)
+    DisableGadget(#sampling,1)
+    DisableGadget(#channel,0)
+    
     ClearGadgetItems(#audibit)
     AddGadgetItem(#audibit,-1,"-8")
     AddGadgetItem(#audibit,-1,"-7")
@@ -196,8 +224,6 @@ Procedure handbrakeoff()
     AddGadgetItem(#audibit,-1,"0")
     SetGadgetState(#audibit,3)
     
-    DisableGadget(#mp3mode,1)
-    DisableGadget(#audibit,0)
     SetGadgetText(#text50,"Audio Compr.:")
     SetGadgetText(#text51,"kbit/s")
     GadgetToolTip(#audibit,"0 (fastest compression) to -8 (highest compression); -5 is the default")
@@ -206,10 +232,17 @@ Procedure handbrakeoff()
     AddGadgetItem(#channel,-1,"Original")
     AddGadgetItem(#channel,-1,"2")
     AddGadgetItem(#channel,-1,"1")
+    SetGadgetState(#channel,0)
     
   EndIf
   
   If GetGadgetText(#audiocodec)="Copy Audio"
+    
+    DisableGadget(#mp3mode,1)
+    DisableGadget(#sampling,1)
+    DisableGadget(#audibit,1)
+    DisableGadget(#channel,1)
+    
     ClearGadgetItems(#audibit)
     AddGadgetItem(#audibit,-1,"320")
     AddGadgetItem(#audibit,-1,"288")
@@ -221,16 +254,16 @@ Procedure handbrakeoff()
     AddGadgetItem(#audibit,-1,"96")
     AddGadgetItem(#audibit,-1,"64")
     SetGadgetState(#audibit,2)
-    DisableGadget(#mp3mode,1)
-    DisableGadget(#audibit,1)
-    DisableGadget(#channel,1)
-        
+    
   EndIf
   
   If GetGadgetText(#audiocodec)="OGG Audio"
     
     DisableGadget(#mp3mode,1)
     DisableGadget(#audibit,0)
+    DisableGadget(#sampling,1)
+    DisableGadget(#channel,0)
+    
     SetGadgetText(#text50,"Audio Quality")
     SetGadgetText(#text51,"")
     
@@ -249,10 +282,11 @@ Procedure handbrakeoff()
     SetGadgetState(#audibit,6)
     GadgetToolTip(#audibit,"Use higher values for better quality")
     
-     ClearGadgetItems(#channel)
+    ClearGadgetItems(#channel)
     AddGadgetItem(#channel,-1,"Original")
     AddGadgetItem(#channel,-1,"2")
     AddGadgetItem(#channel,-1,"1")
+    SetGadgetState(#channel,0)
     
   EndIf
   
@@ -475,7 +509,7 @@ Procedure x264mencoderpipe()
     If GetGadgetText(#mdeint)="Change FPS to 29.97" : mencoderbat.s=mencoderbat.s+" -ofps 30000/1001 -vf " :  framer.s="29.97 " : EndIf
     If GetGadgetText(#mdeint)="Progressive"  : mencoderbat.s=mencoderbat.s+"-vf " :  EndIf
     
-  EndIf  
+  EndIf
   
   If GetGadgetText(#denoise)<>"NONE"  And GetGadgetState(#allowresize)=1 : mencoderbat.s=mencoderbat.s+"," : EndIf
   If GetGadgetText(#denoise)="Super Light" : mencoderbat.s=mencoderbat.s+"hqdn3d=1" : EndIf
@@ -1188,7 +1222,7 @@ Procedure  x264avs()
       Default
         WriteStringN(987,"LanczosResize("+Str(width.l)+","+Str(height.l)+","+Str(leftcrop.l)+","+Str(topcrop.l)+",-"+Str(rightcrop.l)+",-"+Str(bottomcrop)+")")
       EndSelect
-        
+      
     EndIf
     
   EndIf
@@ -1438,19 +1472,19 @@ Procedure preview()
   EndIf
   
   If LCase(GetExtensionPart(inputfile.s))="mkv"
-  If mkvinfo.s<>"" 
-     aid.s="-aid "+StringField(GetGadgetText(#audiotrack),1,":")
-   EndIf
-   If mkvinfo=""
-    mess.s=GetGadgetText(#audiotrack)
-        aid.s=StringField(mess.s,2,"#")
-        aid.s=StringField(aid.s,1,":")
-        aid.s=StringField(aid.s,2,".")
-        If FindString(aid.s,"[",0) : aid.s=StringField(aid.s,1,"[") : EndIf
-        If FindString(aid.s,"(",0) : aid.s=StringField(aid.s,1,"(") : EndIf
-   EndIf
- EndIf
- 
+    If mkvinfo.s<>""
+      aid.s="-aid "+StringField(GetGadgetText(#audiotrack),1,":")
+    EndIf
+    If mkvinfo=""
+      mess.s=GetGadgetText(#audiotrack)
+      aid.s=StringField(mess.s,2,"#")
+      aid.s=StringField(aid.s,1,":")
+      aid.s=StringField(aid.s,2,".")
+      If FindString(aid.s,"[",0) : aid.s=StringField(aid.s,1,"[") : EndIf
+      If FindString(aid.s,"(",0) : aid.s=StringField(aid.s,1,"(") : EndIf
+    EndIf
+  EndIf
+  
   
   If LCase(GetExtensionPart(inputfile.s))="ifo"
     aid.s="-aid "+Trim(StringField(GetGadgetText(#audiotrack),CountString(GetGadgetText(#audiotrack),":")+1,":"))
@@ -2356,7 +2390,7 @@ Procedure eac3toanalyzeaudio()
 EndProcedure
 
 
-  Procedure checkmedia()
+Procedure checkmedia()
   
   ClearGadgetItems(#audiotrack)
   
@@ -2470,7 +2504,7 @@ EndProcedure
     EndIf
     If FindString(mess,"DAR ",0)
       aa.l=FindString(mess.s,"DAR",0)
-      ar.s=StrF(Val(StringField(StringField(StringField(Mid(mess.s,aa,1000),1,","),2," "),1,":"))/Val(StringField(StringField(StringField(Mid(mess.s,aa,1000),1,","),2," "),2,":")),4)      
+      ar.s=StrF(Val(StringField(StringField(StringField(Mid(mess.s,aa,1000),1,","),2," "),1,":"))/Val(StringField(StringField(StringField(Mid(mess.s,aa,1000),1,","),2," "),2,":")),4)
     EndIf
     If FindString(mess,"DAR 16:9]",0)
       ar.s="1.7778"
@@ -2645,7 +2679,7 @@ EndProcedure
     videocodec.s="h264"
   EndIf
   
-   
+  
   If framerate.f=0 : framerate.f=tbr.f : EndIf
   
   ;ffmpeg rounding error
@@ -2751,7 +2785,7 @@ Procedure openinputfile()
       If GetGadgetText(#container)="MKV": SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".mkv") : EndIf
       If GetGadgetText(#container)="AVI": SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".avi") : EndIf
       If GetGadgetText(#container)="H264": SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".h264") : EndIf
-      If GetGadgetText(#container)="MP4" : SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".mp4") : EndIf      
+      If GetGadgetText(#container)="MP4" : SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".mp4") : EndIf
       If GetGadgetText(#container)="WMV" : SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".WMV") : EndIf
       outputfile.s=GetGadgetText(#outputstring)
     EndIf
@@ -2987,7 +3021,7 @@ SetGadgetState(#encodewith,0)
 
 parseprofile()
 checkencoder()
-handbrakeoff()
+checkaudio()
 
 StatusBarText(#statusbar, 0, "If you like AutoMen, please consider a donation")
 
@@ -3020,13 +3054,13 @@ Repeat ; Start of the event loop
         If GetGadgetText(#container)="MKV" : outputfile.s=outputfile.s+".mkv" : EndIf
         If GetGadgetText(#container)="MP4" : outputfile.s=outputfile.s+".mp4" : EndIf
         If GetGadgetText(#container)="H264" : outputfile.s=outputfile.s+".h264" : EndIf
-        If GetGadgetText(#container)="AVI" : outputfile.s=outputfile.s+".avi" : EndIf        
+        If GetGadgetText(#container)="AVI" : outputfile.s=outputfile.s+".avi" : EndIf
         If GetGadgetText(#container)="WMV" : outputfile.s=outputfile.s+".wmv" : EndIf
       EndIf
       If outputfile.s : SetGadgetText(#outputstring,outputfile.s) : EndIf
       
     ElseIf GadgetID = #audiocodec
-      handbrakeoff()
+      checkaudio()
       
     ElseIf GadgetID = #preview
       preview()
@@ -3231,8 +3265,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 2856
-; FirstLine = 2844
+; CursorPosition = 288
+; FirstLine = 246
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -3240,6 +3274,6 @@ End
 ; Executable = AutoMen_beta3.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 637
+; EnableCompileCount = 640
 ; EnableBuildCount = 1575
 ; EnableExeConstant
