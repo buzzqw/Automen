@@ -136,7 +136,9 @@ Enumeration
   #StatusBar_0
 EndEnumeration
 
-UsePNGImageDecoder()
+;UsePNGImageDecoder()
+
+UseJPEGImageDecoder()
 
 Global Image0,FontID1,comboheight.l
 
@@ -146,16 +148,27 @@ CompilerIf #PB_Compiler_OS = #PB_OS_Windows : comboheight.l=20 : CompilerEndIf
 
 Image0 = CatchImage(#paypal, ?Image0)
 
+CompilerIf #PB_Compiler_OS = #PB_OS_Windows
 If LoadFont(1,GetCurrentDirectory()+"DejaVuSansMono.ttf", 8)
   SetGadgetFont(#PB_Default,FontID(1))
-Else
+  Else
   LoadFont(1,"Arial", 8)
   SetGadgetFont(#PB_Default,FontID(1))
 EndIf
+CompilerEndIf
+
+CompilerIf #PB_Compiler_OS = #PB_OS_Linux 
+  If LoadFont(1,"DejaVuSansCondensed", 8)
+   SetGadgetFont(#PB_Default,FontID(1))
+Else
+  LoadFont(1,"Arial", 7)
+  SetGadgetFont(#PB_Default,FontID(1))
+EndIf
+CompilerEndIf
 
 
 DataSection
-  Image0: IncludeBinary "_paypal_logo.png"
+  Image0: IncludeBinary "_paypal_logo.jpg"
 EndDataSection
 
 
@@ -435,7 +448,7 @@ Procedure Open_Window_0()
     GadgetToolTip(#extsub,"Browse for external subtitle. This subs will be hardcodec in video. Option avaiable only for mencoder and avisynth x264")
     GadgetToolTip(#addedtoqueue,"Select what add as last command in queue. You can edit this list")
     GadgetToolTip(#buttonaddtoqueue,"Click here for adding to queue, as bottom line, the command written at right")
-    GadgetToolTip(#multithread,"Check this button for disabling multithread encoding. Useful when mencoder crash unexpectly (only for mencoder)")
+    GadgetToolTip(#multithread,"Check this button for disabling multithread encoding. Useful when mencoder crash unexpectly (only for mencoder and ffmpeg)")
     GadgetToolTip(#subs,"This subs will be burnt in video. Option avaiable only when encoding with Mencoder")
     GadgetToolTip(#speedquality,"Select the quality/speed trade-off. Left for faster encoding. Right for slower encoding")
     GadgetToolTip(#framecountf,"This is the number of frames detected by Mplayer. Feel free to change it if wrong")
@@ -520,9 +533,9 @@ EndProcedure
 ; EnableCompileCount = 61
 ; EnableBuildCount = 10
 ; EnableExeConstant
-; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 402
-; FirstLine = 398
+; IDE Options = PureBasic 4.51 (Linux - x64)
+; CursorPosition = 170
+; FirstLine = 167
 ; Folding = --
 ; DisableDebugger
 ; CompileSourceDirectory

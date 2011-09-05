@@ -91,8 +91,7 @@ Procedure handbrakeoff()
     AddGadgetItem(#audibit,-1,"64")
     SetGadgetState(#audibit,6)
     
-    ClearGadgetItems(#channel)
-    AddGadgetItem(#channel,-1,"Original")
+    ClearGadgetItems(#channel)    
     AddGadgetItem(#channel,-1,"2")
     AddGadgetItem(#channel,-1,"1")
     
@@ -123,6 +122,12 @@ Procedure handbrakeoff()
       SetGadgetText(#text50,"Audio Bitrate:")
       SetGadgetText(#text51,"kbit/s")
       GadgetToolTip(#audibit,"Bitrate of audio")
+      
+      ClearGadgetItems(#channel)
+    AddGadgetItem(#channel,-1,"Original")
+    AddGadgetItem(#channel,-1,"2")
+    AddGadgetItem(#channel,-1,"1")
+      
     EndIf
   EndIf
   
@@ -144,6 +149,12 @@ Procedure handbrakeoff()
       DisableGadget(#mp3mode,1)
       DisableGadget(#audibit,0)
       GadgetToolTip(#audibit,"Use higher values for better quality")
+      
+      ClearGadgetItems(#channel)
+    AddGadgetItem(#channel,-1,"Original")
+    AddGadgetItem(#channel,-1,"2")
+    AddGadgetItem(#channel,-1,"1")
+      
     EndIf
   EndIf
   
@@ -164,6 +175,11 @@ Procedure handbrakeoff()
     SetGadgetText(#text50,"Audio Bitrate:")
     SetGadgetText(#text51,"kbit/s")
     GadgetToolTip(#audibit,"Bitrate of audio")
+    
+    ClearGadgetItems(#channel)
+    AddGadgetItem(#channel,-1,"Original")
+    AddGadgetItem(#channel,-1,"2")
+    AddGadgetItem(#channel,-1,"1")
     
   EndIf
   
@@ -186,6 +202,11 @@ Procedure handbrakeoff()
     SetGadgetText(#text51,"kbit/s")
     GadgetToolTip(#audibit,"0 (fastest compression) to -8 (highest compression); -5 is the default")
     
+    ClearGadgetItems(#channel)
+    AddGadgetItem(#channel,-1,"Original")
+    AddGadgetItem(#channel,-1,"2")
+    AddGadgetItem(#channel,-1,"1")
+    
   EndIf
   
   If GetGadgetText(#audiocodec)="Copy Audio"
@@ -202,6 +223,8 @@ Procedure handbrakeoff()
     SetGadgetState(#audibit,2)
     DisableGadget(#mp3mode,1)
     DisableGadget(#audibit,1)
+    DisableGadget(#channel,1)
+        
   EndIf
   
   If GetGadgetText(#audiocodec)="OGG Audio"
@@ -225,6 +248,11 @@ Procedure handbrakeoff()
     AddGadgetItem(#audibit,-1,"0")
     SetGadgetState(#audibit,6)
     GadgetToolTip(#audibit,"Use higher values for better quality")
+    
+     ClearGadgetItems(#channel)
+    AddGadgetItem(#channel,-1,"Original")
+    AddGadgetItem(#channel,-1,"2")
+    AddGadgetItem(#channel,-1,"1")
     
   EndIf
   
@@ -1407,10 +1435,22 @@ Procedure preview()
   
   If LCase(GetExtensionPart(inputfile.s))<>"mkv"
     aid.s="-aid "+StringField(GetGadgetText(#audiotrack),2,"=")+" "
-  Else
-    aid.s="-aid "+StringField(StringField(StringField(GetGadgetText(#audiotrack),2,"-"),2," "),1,",")+" "
   EndIf
   
+  If LCase(GetExtensionPart(inputfile.s))="mkv"
+  If mkvinfo.s<>"" 
+     aid.s="-aid "+StringField(GetGadgetText(#audiotrack),1,":")
+   EndIf
+   If mkvinfo=""
+    mess.s=GetGadgetText(#audiotrack)
+        aid.s=StringField(mess.s,2,"#")
+        aid.s=StringField(aid.s,1,":")
+        aid.s=StringField(aid.s,2,".")
+        If FindString(aid.s,"[",0) : aid.s=StringField(aid.s,1,"[") : EndIf
+        If FindString(aid.s,"(",0) : aid.s=StringField(aid.s,1,"(") : EndIf
+   EndIf
+ EndIf
+ 
   
   If LCase(GetExtensionPart(inputfile.s))="ifo"
     aid.s="-aid "+Trim(StringField(GetGadgetText(#audiotrack),CountString(GetGadgetText(#audiotrack),":")+1,":"))
@@ -2029,7 +2069,7 @@ Procedure silentscale()
     SetGadgetColor(#rightcrop,#PB_Gadget_BackColor,$0000FF)
   EndIf
   
-  SetGadgetText(#arerror,StrF((dar.f/(ValF(GetGadgetText(#width))/ValF(GetGadgetText(#height))))*100-100,4))
+  SetGadgetText(#arerror,StrF((dar.f/(Val(GetGadgetText(#width))/Val(GetGadgetText(#height))))*100-100,4))
   
 EndProcedure
 
@@ -2316,7 +2356,7 @@ Procedure eac3toanalyzeaudio()
 EndProcedure
 
 
-Procedure checkmedia()
+  Procedure checkmedia()
   
   ClearGadgetItems(#audiotrack)
   
@@ -2430,7 +2470,7 @@ Procedure checkmedia()
     EndIf
     If FindString(mess,"DAR ",0)
       aa.l=FindString(mess.s,"DAR",0)
-      ar.s=StrF(ValF(StringField(StringField(StringField(Mid(mess.s,aa,1000),1,","),2," "),1,":"))/ValF(StringField(StringField(StringField(Mid(mess.s,aa,1000),1,","),2," "),2,":")),4)
+      ar.s=StrF(Val(StringField(StringField(StringField(Mid(mess.s,aa,1000),1,","),2," "),1,":"))/Val(StringField(StringField(StringField(Mid(mess.s,aa,1000),1,","),2," "),2,":")),4)      
     EndIf
     If FindString(mess,"DAR 16:9]",0)
       ar.s="1.7778"
@@ -2605,6 +2645,7 @@ Procedure checkmedia()
     videocodec.s="h264"
   EndIf
   
+   
   If framerate.f=0 : framerate.f=tbr.f : EndIf
   
   ;ffmpeg rounding error
@@ -3190,8 +3231,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1162
-; FirstLine = 1132
+; CursorPosition = 2856
+; FirstLine = 2844
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -3199,6 +3240,6 @@ End
 ; Executable = AutoMen_beta3.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 620
+; EnableCompileCount = 637
 ; EnableBuildCount = 1575
 ; EnableExeConstant
