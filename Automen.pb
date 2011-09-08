@@ -1397,8 +1397,21 @@ Procedure preview()
   vcrop.s="crop="+Str(twidth.l-Val(GetGadgetText(#leftcrop))-Val(GetGadgetText(#rightcrop)))+":"+Str(theight.l-Val(GetGadgetText(#topcrop))-Val(GetGadgetText(#bottomcrop)))+":"+GetGadgetText(#leftcrop)+":"+GetGadgetText(#topcrop)
   
   If LCase(GetExtensionPart(inputfile.s))<>"mkv"
-    aid.s="-aid "+StringField(GetGadgetText(#audiotrack),2,"=")+" "
+    If linux=#True
+      mess.s=GetGadgetText(#audiotrack)
+      aid.s=StringField(mess.s,2,"#")
+      aid.s=StringField(aid.s,1,":")
+      aid.s=StringField(aid.s,2,".")
+      If FindString(aid.s,"[",0) : aid1.s=StringField(aid.s,1,"[") : EndIf
+      If FindString(aid.s,"(",0) : aid1.s=StringField(aid.s,1,"(") : EndIf
+      aid.s="-demuxer lavf -aid "+aid1.s+" "
+    EndIf
+    If windows=#True
+      aid.s="-demuxer lavf -aid "+Str(GetGadgetState(#audiotrack))+" "
+    EndIf
   EndIf
+  
+  
   
   If LCase(GetExtensionPart(inputfile.s))="mkv"
     If mkvinfo.s<>""
@@ -1414,15 +1427,16 @@ Procedure preview()
     EndIf
   EndIf
   
-  
   If LCase(GetExtensionPart(inputfile.s))="ifo"
     aid.s="-aid "+Trim(StringField(GetGadgetText(#audiotrack),CountString(GetGadgetText(#audiotrack),":")+1,":"))
   EndIf
   
-  
   CreateFile(987,here.s+"mplayerpreview.bat")
   WriteString(987,mplayer.s+" "+aid.s+" -vf "+vcrop.s+",scale="+GetGadgetText(#width)+":"+GetGadgetText(#height)+" -aspect "+GetGadgetText(#arcombo)+" "+Chr(34)+inputfile.s+Chr(34))
   CloseFile(987)
+  
+  
+  If GetGadgetText(#arcombo)="NaN" : MessageRequester("Automen","Check AR value!. Quit preview") : ProcedureReturn 0 : EndIf
   
   RunProgram(mplayer.s," "+aid.s+" -vf "+vcrop.s+",scale="+GetGadgetText(#width)+":"+GetGadgetText(#height)+" -aspect "+GetGadgetText(#arcombo)+" "+Chr(34)+inputfile.s+Chr(34),here.s)
   
@@ -2481,7 +2495,7 @@ Procedure checkmedia()
     EndIf
     If FindString(mess.s,"Stream",0) And FindString(mess.s,"Video:",0)  And FindString(mess.s,"1920x1080",0)
       theight.l=1080
-      twidth.l=1920
+      twidth.l=1920      
     EndIf
     
     If FindString(mess.s,"Duration:",0)
@@ -2491,7 +2505,7 @@ Procedure checkmedia()
       tsec.l=Int(fthour.f*3600+fmin.f*60+fsec.f)
     EndIf
     
-    If FindString(mess.s,"cropdetect",0)
+    If FindString(mess.s,"cropdetect",0) And FindString(mess.s,"crop=",0)
       ; pdetect @ 03702BC0] x1:0 x2:695 y1:2 y2:573 w:688 h:560 x:4 y:8 pos:2811918 pts:6512000 t:6.512000 crop=688:560:4:8"
       mess4.s=StringField(mess.s,2,"=")
       actop.l=Val(StringField(mess4.s,4,":"))
@@ -2650,13 +2664,24 @@ Procedure checkmedia()
     MessageRequester("AutoCrop", "Please, check autocrop value", #PB_MessageRequester_Ok )
   EndIf
   
+  If actop.l=0 Or acbottom.l=0 Or acleft.l=0 Or acright.l=0
+    
+    If actop.l=theight.l Or acright.l=twidth.l
+      actop.l=0
+      acright.l=0
+    EndIf
+    
+    MessageRequester("AutoCrop", "Please, check autocrop value", #PB_MessageRequester_Ok )
+  EndIf
+  
+  
   SetGadgetText(#bottomcrop,Str(acbottom.l))
   SetGadgetText(#leftcrop,Str(acleft.l))
   SetGadgetText(#rightcrop,Str(acright.l))
   SetGadgetText(#topcrop,Str(actop.l))
   
   If ar.s="" : ar.s=StrF(twidth.l/theight.l,4) : EndIf
-  
+   
   Debug("twidth.l="+Str(twidth.l))
   Debug("theight.l="+Str(theight.l))
   Debug("framerate.f="+StrF(framerate.f))
@@ -2666,7 +2691,7 @@ Procedure checkmedia()
   If tsec.l<5 : tsec.l=framecount.l/framerate.f : EndIf
   
   If framecount.l>100 : SetGadgetText(#framecountf,Str(framecount.l)) : EndIf
-  
+    
   SetGadgetText(#widthf,Str(twidth.l))
   SetGadgetText(#heightf,Str(theight.l))
   SetGadgetText(#framecountf,Str(framecount.l))
@@ -2719,6 +2744,8 @@ Procedure openinputfile()
       If GetGadgetText(#container)="WMV" : SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".WMV") : EndIf
       outputfile.s=GetGadgetText(#outputstring)
     EndIf
+    
+    Delay(300)
     
     start.l=1
     
@@ -3273,8 +3300,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1864
-; FirstLine = 1826
+; CursorPosition = 2665
+; FirstLine = 2641
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -3282,6 +3309,6 @@ End
 ; Executable = AutoMen_beta3.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 643
+; EnableCompileCount = 661
 ; EnableBuildCount = 1575
 ; EnableExeConstant
