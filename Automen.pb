@@ -2665,13 +2665,7 @@ Procedure checkmedia()
   EndIf
   
   If actop.l=0 Or acbottom.l=0 Or acleft.l=0 Or acright.l=0
-    
-    If actop.l=theight.l Or acright.l=twidth.l
-      actop.l=0
-      acright.l=0
-    EndIf
-    
-    MessageRequester("AutoCrop", "Please, check autocrop value", #PB_MessageRequester_Ok )
+     MessageRequester("AutoCrop", "Please, check autocrop value", #PB_MessageRequester_Ok )
   EndIf
   
   
@@ -3300,7 +3294,7 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 2665
+; CursorPosition = 2667
 ; FirstLine = 2641
 ; Folding = ------
 ; EnableXP
