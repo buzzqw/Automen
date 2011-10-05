@@ -957,7 +957,7 @@ Until Event = #PB_Event_CloseWindow ; End of the event loop
 End
 ;
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 37
+; CursorPosition = 22
 ; FirstLine = 10
 ; Folding = ---
 ; EnableXP
@@ -966,6 +966,6 @@ End
 ; Executable = AutoFFmpegGui.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 616
+; EnableCompileCount = 617
 ; EnableBuildCount = 31
 ; EnableExeConstant

@@ -10,7 +10,7 @@ Global linux,windows
 Global mencoder.s,mplayer.s,x264.s,ffmpeg.s,mkvmerge.s,mp4box.s,lame.s,oggenc.s,faac.s,mkvinfo.s,flac.s,faad.s,aften.s,neroaacenc.s
 Global fileaudio.s,eac3to.s,mkvextract.s,mkvinfo.s
 
-Declare start()
+;Declare start()
 
 Procedure checkencoder()
   
@@ -105,7 +105,6 @@ Procedure checkaudio()
     SetGadgetState(#channel,1)
     
     GadgetToolTip(#audibit,"Bitrate of audio")
-    
     
     
   EndIf
@@ -257,6 +256,16 @@ Procedure checkaudio()
     
   EndIf
   
+  If GetGadgetText(#audiocodec)="No Audio"
+    
+    DisableGadget(#mp3mode,1)
+    DisableGadget(#sampling,1)
+    DisableGadget(#audibit,1)
+    DisableGadget(#channel,1)
+    ClearGadgetItems(#audibit)
+    
+  EndIf
+  
   If GetGadgetText(#audiocodec)="OGG Audio"
     
     DisableGadget(#mp3mode,1)
@@ -294,11 +303,6 @@ Procedure checkaudio()
 EndProcedure
 
 
-
-
-
-
-
 Procedure sanitycheck()
   
   
@@ -326,7 +330,6 @@ Procedure sanitycheck()
   
   
 EndProcedure
-
 
 
 Procedure x264mencoderpipe()
@@ -1375,6 +1378,18 @@ Procedure Dimb()
       Next aa
     EndIf
     
+    If GetGadgetText(#audiocodec)="FLAC Audio"
+      abit.l=384
+      If FindString(GetGadgetText(#audiotrack),"kb/s",0)
+        For aa=1 To CountString(GetGadgetText(#audiotrack),",")+1
+          mess.s=StringField(GetGadgetText(#audiotrack),aa,",")
+          If FindString(mess.s,"kb/s",0)
+            abit.l=Val(ReplaceString(mess.s,"kb/s",""))
+          EndIf
+        Next aa
+      EndIf
+    EndIf
+    
     bitrate1.f=((Dimb.f-framecount.l*24-abit.l*1000*tsec.l*0.128)/((tsec.l*0.128)/1024)/1000)/1024
   EndIf
   
@@ -1567,8 +1582,7 @@ Procedure muxh264()
   
   AddGadgetItem(#queue,-1,mux.s)
   
-  If GetGadgetText(#audiotrack)<>"none"
-    ;mux.s="copy "+Chr(34)+fileaudio.s+Chr(34)+" "+Chr(34)+GetPathPart(GetGadgetText(#outputstring))+GetFilePart(fileaudio.s)+Chr(34)
+  If GetGadgetText(#audiotrack)<>"none"    
     mux.s="copy "+Chr(34)+fileaudio.s+Chr(34)+" "+Chr(34)+Mid(GetGadgetText(#outputstring),0,Len(GetGadgetText(#outputstring))-4)+GetExtensionPart(fileaudio.s)+Chr(34)
     AddGadgetItem(#queue,-1,mux.s)
   EndIf
@@ -1580,23 +1594,23 @@ Procedure mux()
   
   mux.s=""
   
-  If GetExtensionPart(GetGadgetText(#outputstring))="mkv"
+  If GetExtensionPart(LCase(GetGadgetText(#outputstring)))="mkv"
     muxmkv()
   EndIf
   
-  If GetExtensionPart(GetGadgetText(#outputstring))="mp4"
+  If GetExtensionPart(LCase(GetGadgetText(#outputstring)))="mp4"
     muxmp4()
   EndIf
   
-  If GetExtensionPart(GetGadgetText(#outputstring))="h264"
+  If GetExtensionPart(LCase(GetGadgetText(#outputstring)))="h264"
     muxh264()
   EndIf
   
-  If GetExtensionPart(GetGadgetText(#outputstring))="wmv"
+  If GetExtensionPart(LCase(GetGadgetText(#outputstring)))="wmv"
     muxwmv()
   EndIf
   
-  If GetExtensionPart(GetGadgetText(#outputstring))="avi"
+  If GetExtensionPart(LCase(GetGadgetText(#outputstring)))="avi"
     muxavi()
   EndIf
   
@@ -1969,7 +1983,7 @@ Procedure autocrop()
       acright.l=0
     EndIf
     
-    MessageRequester("AutoCrop", "Please, check autocrop value", #PB_MessageRequester_Ok )
+    MessageRequester("AutoCrop", "Please check autocrop value", #PB_MessageRequester_Ok )
   EndIf
   
   SetGadgetText(#bottomcrop,Str(acbottom.l))
@@ -2495,7 +2509,7 @@ Procedure checkmedia()
     EndIf
     If FindString(mess.s,"Stream",0) And FindString(mess.s,"Video:",0)  And FindString(mess.s,"1920x1080",0)
       theight.l=1080
-      twidth.l=1920      
+      twidth.l=1920
     EndIf
     
     If FindString(mess.s,"Duration:",0)
@@ -2540,7 +2554,7 @@ Procedure checkmedia()
     Case "evo","vob","mpeg","mpg","ts","m2t","m2ts"
       If eac3to.s<>""
         eac3toanalyzeaudio()
-      EndIf
+      EndIf      ; don't warry about missing eac3to, just use ffmpeg
     Case "mkv"
       If eac3to.s<>""
         eac3toanalyzeaudio()
@@ -2661,21 +2675,20 @@ Procedure checkmedia()
       acright.l=0
     EndIf
     
-    MessageRequester("AutoCrop", "Please, check autocrop value", #PB_MessageRequester_Ok )
+    MessageRequester("AutoCrop", "Please check autocrop value", #PB_MessageRequester_Ok )
   EndIf
   
-  If actop.l=0 Or acbottom.l=0 Or acleft.l=0 Or acright.l=0
-     MessageRequester("AutoCrop", "Please, check autocrop value", #PB_MessageRequester_Ok )
+  If actop.l=0 And acbottom.l=0 And acleft.l=0 And acright.l=0
+    MessageRequester("AutoCrop", "Please check autocrop value", #PB_MessageRequester_Ok )
   EndIf
-  
-  
+    
   SetGadgetText(#bottomcrop,Str(acbottom.l))
   SetGadgetText(#leftcrop,Str(acleft.l))
   SetGadgetText(#rightcrop,Str(acright.l))
   SetGadgetText(#topcrop,Str(actop.l))
   
   If ar.s="" : ar.s=StrF(twidth.l/theight.l,4) : EndIf
-   
+  
   Debug("twidth.l="+Str(twidth.l))
   Debug("theight.l="+Str(theight.l))
   Debug("framerate.f="+StrF(framerate.f))
@@ -2685,7 +2698,7 @@ Procedure checkmedia()
   If tsec.l<5 : tsec.l=framecount.l/framerate.f : EndIf
   
   If framecount.l>100 : SetGadgetText(#framecountf,Str(framecount.l)) : EndIf
-    
+  
   SetGadgetText(#widthf,Str(twidth.l))
   SetGadgetText(#heightf,Str(theight.l))
   SetGadgetText(#framecountf,Str(framecount.l))
@@ -2850,10 +2863,7 @@ Procedure makereport()
   WriteStringN(147,GetGadgetText(#queue))
   WriteStringN(147,"-> End Queue")
   WriteStringN(147,"")
-  
-  
   WriteString(147,"[/CODE]")
-  
   CloseFile(147)
   
   MessageRequester("AutoMen","               ---> Post_This_File.txt <--- file created in "+Chr(13)+Chr(10)+Chr(10)+here.s+" folder")
@@ -2911,8 +2921,8 @@ If linux=#True
   If FileSize("/usr/bin/flac")<>-1  : flac.s="/usr/bin/flac" : EndIf
   If FileSize("/usr/local/bin/flac")<>-1 : flac.s="/usr/local/bin/flac" : EndIf
   
-  If FileSize("/usr/bin/faac")<>-1  : flac.s="/usr/bin/faac" : EndIf
-  If FileSize("/usr/local/bin/faac")<>-1 : flac.s="/usr/local/bin/faac" : EndIf
+  If FileSize("/usr/bin/faac")<>-1  : faac.s="/usr/bin/faac" : EndIf
+  If FileSize("/usr/local/bin/faac")<>-1 : faac.s="/usr/local/bin/faac" : EndIf
   
   If FileSize("/usr/bin/lame")<>-1  : lame.s="/usr/bin/lame" : EndIf
   If FileSize("/usr/local/bin/lame")<>-1 : lame.s="/usr/local/bin/lame" : EndIf
@@ -2937,6 +2947,7 @@ EndIf
 
 If windows=#True
   
+  ; local path
   If FileSize(here.s+"x264.exe")<>-1 : x264.s=Chr(34)+here.s+"x264.exe"+Chr(34) : EndIf
   If FileSize(here.s+"mplayer.exe")<>-1 : mplayer.s=Chr(34)+here.s+"mplayer.exe"+Chr(34) : EndIf
   If FileSize(here.s+"mencoder.exe")<>-1 : mencoder.s=Chr(34)+here.s+"mencoder.exe"+Chr(34) : EndIf
@@ -2956,7 +2967,7 @@ If windows=#True
   If FileSize(here.s+"lame.exe")<>-1 : lame.s=Chr(34)+here.s+"lame.exe"+Chr(34) : EndIf
   If FileSize(here.s+"neroaacenc.exe")<>-1 : neroaacenc.s=Chr(34)+here.s+"neroaacenc.exe"+Chr(34) : EndIf
   
-  
+  ; standard path
   If FileSize(here.s+"applications\mplayer\mplayer.exe")<>-1 : mplayer.s=Chr(34)+here.s+"applications\mplayer\mplayer.exe"+Chr(34) : EndIf
   If FileSize(here.s+"applications\mplayer\mencoder.exe")<>-1 : mencoder.s=Chr(34)+here.s+"applications\mplayer\mencoder.exe"+Chr(34) : EndIf
   If FileSize(here.s+"applications\mkvtoolnix\mkvinfo.exe")<>-1 : mkvinfo.s=Chr(34)+here.s+"applications\mkvtoolnix\mkvinfo.exe"+Chr(34) : EndIf
@@ -3001,7 +3012,7 @@ If windows=#True
   
 EndIf
 
-If ffmpeg.s="" :   MessageRequester("FFmpeg", "No FFmpeg found on path. Please install it. Quitting...", #PB_MessageRequester_Ok) : End:  EndIf
+;If ffmpeg.s="" :   MessageRequester("FFmpeg", "No FFmpeg found on path. Please install it. Quitting...", #PB_MessageRequester_Ok) : End:  EndIf
 If mencoder.s="" : MessageRequester("Mencoder ", "No Mencoder found on path. Please install it. Quitting...", #PB_MessageRequester_Ok) :  End : EndIf
 If x264.s="" :     MessageRequester("X264", "No X264 found on path. Please install it", #PB_MessageRequester_Ok) :  EndIf
 If mplayer.s="" :  MessageRequester("Mplayer", "No Mplayer found on path. Please install it. Otherwise will be impossibile to preview video or analyze DVD", #PB_MessageRequester_Ok) : EndIf
@@ -3294,15 +3305,16 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 2667
-; FirstLine = 2641
+; CursorPosition = 2678
+; FirstLine = 2650
 ; Folding = ------
 ; EnableXP
 ; EnableUser
 ; UseIcon = ___logo.ico
-; Executable = AutoMen_beta3.exe
+; Executable = AutoMen_beta3
 ; DisableDebugger
 ; CompileSourceDirectory
-; EnableCompileCount = 661
-; EnableBuildCount = 1575
+; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
+; EnableCompileCount = 679
+; EnableBuildCount = 1577
 ; EnableExeConstant

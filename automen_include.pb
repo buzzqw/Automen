@@ -445,7 +445,7 @@ Procedure Open_Window_0()
     ;GadgetToolTip(#play,"Press this button for playing input file")
     
     
-    
+    GadgetToolTip(#makereport,"Encoding doesn't work ? Use the Make Report and post on forum/mail me the Report. Without Report i cannot help")
     GadgetToolTip(#encodewith,"Select decoder/encoder. Every encoder has pro and cons and can encode with different codecs")
     GadgetToolTip(#videolenght,"Lenght of movie (in minutes)")
     GadgetToolTip(#basicfile,"Summary information about file to encode")
@@ -491,8 +491,8 @@ Procedure Open_Window_0()
     GadgetToolTip(#denoise,"Set denoise level")
     GadgetToolTip(#resizer,"Set resizer to use")
     GadgetToolTip(#shutdown,"Force shutdown of pc at end of encoding")
-    GadgetToolTip(#noodml,"Force no use of Open DML AVI type")
-    GadgetToolTip(#ffourcc,"Force DIVX CC")
+    GadgetToolTip(#noodml,"Force no use of Open DML AVI type (only for Mencoder)")
+    GadgetToolTip(#ffourcc,"Force DIVX CC (only with Mencoder)")
     GadgetToolTip(#audiocodec,"This is the codec audio to apply")
     GadgetToolTip(#audibit,"Bitrate of audio")
     GadgetToolTip(#sampling,"Sampling of audio. Do attention")
@@ -538,8 +538,8 @@ EndProcedure
 ; EnableBuildCount = 10
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 448
-; FirstLine = 436
+; CursorPosition = 494
+; FirstLine = 481
 ; Folding = --
 ; DisableDebugger
 ; CompileSourceDirectory

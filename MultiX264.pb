@@ -2855,17 +2855,17 @@ End
 ; EnableCompileCount = 1574
 ; EnableBuildCount = 174
 ; EnableExeConstant
-; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 735
+; IDE Options = PureBasic 4.60 Beta 4 (Linux - x86)
+; CursorPosition = 713
 ; FirstLine = 700
 ; Folding = ------
 ; EnableXP
 ; EnableUser
 ; UseIcon = ___logo.ico
-; Executable = MultiX264.exe
+; Executable = MultiX264
 ; DisableDebugger
 ; CompileSourceDirectory
 ; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
-; EnableCompileCount = 1029
-; EnableBuildCount = 1593
+; EnableCompileCount = 1031
+; EnableBuildCount = 1594
 ; EnableExeConstant
