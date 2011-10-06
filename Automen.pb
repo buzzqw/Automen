@@ -3029,8 +3029,7 @@ If flac.s<>"" : AddGadgetItem(#audiocodec,-1,"FLAC Audio") : EndIf
 If mencoder.s<>"" : AddGadgetItem(#encodewith,-1,"Mencoder for Encoding") : EndIf
 If ffmpeg.s<>"" : AddGadgetItem(#encodewith,-1,"Use ffmpeg as encoder") : EndIf
 
-If linux=#True
-  
+If linux=#True  
   If x264.s<>""
     CreateFile(987,here.s+".x264check")
     WriteString(987,"x264 --fullhelp | grep support >"+Chr(34)+here.s+".x264supp"+Chr(34))
@@ -3305,16 +3304,16 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 2678
-; FirstLine = 2650
+; CursorPosition = 3031
+; FirstLine = 3004
 ; Folding = ------
 ; EnableXP
 ; EnableUser
 ; UseIcon = ___logo.ico
-; Executable = AutoMen_beta3
+; Executable = AutoMen.exe
 ; DisableDebugger
 ; CompileSourceDirectory
 ; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
-; EnableCompileCount = 679
-; EnableBuildCount = 1577
+; EnableCompileCount = 680
+; EnableBuildCount = 1578
 ; EnableExeConstant
