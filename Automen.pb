@@ -10,8 +10,6 @@ Global linux,windows
 Global mencoder.s,mplayer.s,x264.s,ffmpeg.s,mkvmerge.s,mp4box.s,lame.s,oggenc.s,faac.s,mkvinfo.s,flac.s,faad.s,aften.s,neroaacenc.s
 Global fileaudio.s,eac3to.s,mkvextract.s,mkvinfo.s
 
-;Declare start()
-
 Procedure checkencoder()
   
   If GetGadgetText(#encodewith)="Mencoder for Encoding" Or GetGadgetText(#encodewith)="Use ffmpeg as encoder"
@@ -25,7 +23,6 @@ Procedure checkencoder()
     AddGadgetItem(#pass,-1,"1 pass")
     AddGadgetItem(#pass,-1,"2 pass")
     AddGadgetItem(#pass,-1,"CRF 1 pass")
-    
     
     If GetGadgetText(#encodewith)="Use ffmpeg as encoder"
       AddGadgetItem(#videocodec,-1,"WMV")
@@ -1378,26 +1375,44 @@ Procedure Dimb()
       Next aa
     EndIf
     
-    If GetGadgetText(#audiocodec)="FLAC Audio"
-      abit.l=384
-      If FindString(GetGadgetText(#audiotrack),"kb/s",0)
-        For aa=1 To CountString(GetGadgetText(#audiotrack),",")+1
-          mess.s=StringField(GetGadgetText(#audiotrack),aa,",")
-          If FindString(mess.s,"kb/s",0)
-            abit.l=Val(ReplaceString(mess.s,"kb/s",""))
-          EndIf
-        Next aa
-      EndIf
-    EndIf
-    
     bitrate1.f=((Dimb.f-framecount.l*24-abit.l*1000*tsec.l*0.128)/((tsec.l*0.128)/1024)/1000)/1024
+  EndIf
+  
+  
+  If GetGadgetText(#audiocodec)="AAC Audio" And neroaacenc.s<>""
+    If ValF(GetGadgetText(#audibit))<=0.05 : abitrate.f=15 : EndIf
+    If ValF(GetGadgetText(#audibit))>=0.10 : abitrate.f=24 : EndIf
+    If ValF(GetGadgetText(#audibit))>=0.15 : abitrate.f=32 : EndIf
+    If ValF(GetGadgetText(#audibit))>=0.25 : abitrate.f=64 : EndIf
+    If ValF(GetGadgetText(#audibit))>=0.35 : abitrate.f=100 : EndIf
+    If ValF(GetGadgetText(#audibit))>=0.45 : abitrate.f=144 : EndIf
+    If ValF(GetGadgetText(#audibit))>=0.55 : abitrate.f=196 : EndIf
+    If ValF(GetGadgetText(#audibit))>=0.65 : abitrate.f=248 : EndIf
+    If ValF(GetGadgetText(#audibit))>=0.75 : abitrate.f=300 : EndIf
+    If ValF(GetGadgetText(#audibit))>=0.85 : abitrate.f=350 : EndIf
+    If ValF(GetGadgetText(#audibit))>=0.95 : abitrate.f=400 : EndIf
+    If ValF(GetGadgetText(#audibit))>0.95 : abitrate.f=425 : EndIf    
+    If GetGadgetText(#channels)="Original" : abitrate.f=abitrate.f*1.7 : EndIf    
+    bitrate1.f=((Dimb.f-framecount.l*24-abitrate.f*1000*tsec.l*0.128)/((tsec.l*0.128)/1024)/1000)/1024    
+  EndIf
+  
+  
+  If GetGadgetText(#audioenc)="OGG Audio"
+    abitrate.f=32+Val(GetGadgetText(#audibit))*28
+    If GetGadgetText(#channels)="Original" : abitrate.f=abitrate.f*1.7 : EndIf
+    bitrate1.f=((Dimb.f-framecount.l*24-abitrate.f*1000*tsec.l*0.128)/((tsec.l*0.128)/1024)/1000)/1024
+  EndIf
+  
+  If GetGadgetText(#audioenc)="FLAC Audio"
+    abitrate.f=1600
+    If GetGadgetText(#channels)="Original" : abitrate.f=abitrate.f*1.7 : EndIf
+    bitrate1.f=((Dimb.f-framecount.l*24-abitrate.f*1000*tsec.l*0.128)/((tsec.l*0.128)/1024)/1000)/1024
   EndIf
   
   
   If GetGadgetText(#audiocodec)="No Audio" Or GetGadgetText(#audiotrack)="none"
     bitrate1.f=((Dimb.f-framecount.l*24)/((tsec.l*0.128)/1024)/1000)/1024
-  EndIf
-  
+  EndIf  
   
   SetGadgetText(#videokbits,StrF(bitrate1.f,0))
   
@@ -1582,7 +1597,7 @@ Procedure muxh264()
   
   AddGadgetItem(#queue,-1,mux.s)
   
-  If GetGadgetText(#audiotrack)<>"none"    
+  If GetGadgetText(#audiotrack)<>"none"
     mux.s="copy "+Chr(34)+fileaudio.s+Chr(34)+" "+Chr(34)+Mid(GetGadgetText(#outputstring),0,Len(GetGadgetText(#outputstring))-4)+GetExtensionPart(fileaudio.s)+Chr(34)
     AddGadgetItem(#queue,-1,mux.s)
   EndIf
@@ -2681,7 +2696,7 @@ Procedure checkmedia()
   If actop.l=0 And acbottom.l=0 And acleft.l=0 And acright.l=0
     MessageRequester("AutoCrop", "Please check autocrop value", #PB_MessageRequester_Ok )
   EndIf
-    
+  
   SetGadgetText(#bottomcrop,Str(acbottom.l))
   SetGadgetText(#leftcrop,Str(acleft.l))
   SetGadgetText(#rightcrop,Str(acright.l))
@@ -3029,7 +3044,7 @@ If flac.s<>"" : AddGadgetItem(#audiocodec,-1,"FLAC Audio") : EndIf
 If mencoder.s<>"" : AddGadgetItem(#encodewith,-1,"Mencoder for Encoding") : EndIf
 If ffmpeg.s<>"" : AddGadgetItem(#encodewith,-1,"Use ffmpeg as encoder") : EndIf
 
-If linux=#True  
+If linux=#True
   If x264.s<>""
     CreateFile(987,here.s+".x264check")
     WriteString(987,"x264 --fullhelp | grep support >"+Chr(34)+here.s+".x264supp"+Chr(34))
@@ -3304,8 +3319,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 3031
-; FirstLine = 3004
+; CursorPosition = 1414
+; FirstLine = 1373
 ; Folding = ------
 ; EnableXP
 ; EnableUser
