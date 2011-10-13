@@ -1758,8 +1758,8 @@ Procedure audioffmpeg()
         filetoanalyze.s=Chr(34)+workpath.s+"automen_audio.dts"+Chr(34)
       EndIf
       If FindString(GetGadgetText(#audiotrack),"TRUEHD",0)
-        encostring.s=encostring.s+aid.s+":"+Chr(34)+workpath.s+"automen_audio.dts"+Chr(34)
-        filetoanalyze.s=Chr(34)+workpath.s+"automen_audio.dts"+Chr(34)
+        encostring.s=encostring.s+aid.s+":"+Chr(34)+workpath.s+"automen_audio.ac3"+Chr(34)
+        filetoanalyze.s=Chr(34)+workpath.s+"automen_audio.ac3"+Chr(34)
       EndIf
       If FindString(GetGadgetText(#audiotrack),"FLAC",0)
         encostring.s=encostring.s+aid.s+":"+Chr(34)+workpath.s+"automen_audio.flac"+Chr(34)
@@ -3320,8 +3320,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1801
-; FirstLine = 1761
+; CursorPosition = 1769
+; FirstLine = 1731
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -3330,6 +3330,6 @@ End
 ; DisableDebugger
 ; CompileSourceDirectory
 ; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
-; EnableCompileCount = 685
+; EnableCompileCount = 688
 ; EnableBuildCount = 1578
 ; EnableExeConstant
