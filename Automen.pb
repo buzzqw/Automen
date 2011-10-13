@@ -447,8 +447,7 @@ Procedure x264mencoderpipe()
   
   If GetGadgetText(#mdeint)="Progressive" And GetGadgetText(#denoise)="NONE" And GetGadgetState(#allowresize)=0
     mencoderbat.s=mencoder.s+" "
-  EndIf
-  
+  EndIf  
   
   If GetGadgetText(#mdeint)="FILM NTSC (29.97->23.976)"  Or GetGadgetText(#mdeint)="Telecine" Or GetGadgetText(#mdeint)="Mixed Prog/Telecine"
     mencoderbat.s=mencoderbat.s+" -ofps 24000/1001 "
@@ -720,7 +719,6 @@ Procedure mencoder()
   AddGadgetItem(#queue,-1,mencoderbat.s)
   
 EndProcedure
-
 
 
 Procedure ffmpeg()
@@ -1206,7 +1204,6 @@ Procedure  x264avs()
 EndProcedure
 
 
-
 Procedure start()
   
   If GetGadgetText(#encodewith)="Mencoder for Encoding" : mencoder() : EndIf
@@ -1349,8 +1346,7 @@ Procedure parseprofile()
     Wend
     CloseFile(888)
   EndIf
-  
-  
+    
   
 EndProcedure
 
@@ -1421,8 +1417,7 @@ Procedure Dimb()
     GadgetToolTip(#videokbits,"This is the bitrate video. You can manually edit it. AutoMen will use this value")
   EndIf
    
-  
-  
+    
 EndProcedure
 
 Procedure preview()
@@ -1445,8 +1440,7 @@ Procedure preview()
       aid.s="-demuxer lavf -aid "+Str(GetGadgetState(#audiotrack))+" "
     EndIf
   EndIf
-  
-  
+    
   
   If LCase(GetExtensionPart(inputfile.s))="mkv"
     If mkvinfo.s<>""
@@ -1469,8 +1463,7 @@ Procedure preview()
   CreateFile(987,here.s+"mplayerpreview.bat")
   WriteString(987,mplayer.s+" "+aid.s+" -vf "+vcrop.s+",scale="+GetGadgetText(#width)+":"+GetGadgetText(#height)+" -aspect "+GetGadgetText(#arcombo)+" "+Chr(34)+inputfile.s+Chr(34))
   CloseFile(987)
-  
-  
+    
   If GetGadgetText(#arcombo)="NaN" : MessageRequester("Automen","Check AR value!. Quit preview") : ProcedureReturn 0 : EndIf
   
   RunProgram(mplayer.s," "+aid.s+" -vf "+vcrop.s+",scale="+GetGadgetText(#width)+":"+GetGadgetText(#height)+" -aspect "+GetGadgetText(#arcombo)+" "+Chr(34)+inputfile.s+Chr(34),here.s)
@@ -1718,7 +1711,6 @@ Procedure eac3toaudio()
 EndProcedure
 
 
-
 Procedure audioffmpeg()
   
   
@@ -1765,6 +1757,10 @@ Procedure audioffmpeg()
         encostring.s=encostring.s+aid.s+":"+Chr(34)+workpath.s+"automen_audio.dts"+Chr(34)
         filetoanalyze.s=Chr(34)+workpath.s+"automen_audio.dts"+Chr(34)
       EndIf
+      If FindString(GetGadgetText(#audiotrack),"TRUEHD",0)
+        encostring.s=encostring.s+aid.s+":"+Chr(34)+workpath.s+"automen_audio.dts"+Chr(34)
+        filetoanalyze.s=Chr(34)+workpath.s+"automen_audio.dts"+Chr(34)
+      EndIf
       If FindString(GetGadgetText(#audiotrack),"FLAC",0)
         encostring.s=encostring.s+aid.s+":"+Chr(34)+workpath.s+"automen_audio.flac"+Chr(34)
         filetoanalyze.s=Chr(34)+workpath.s+"automen_audio.flac"+Chr(34)
@@ -1796,7 +1792,7 @@ Procedure audioffmpeg()
   
   If GetGadgetText(#audiocodec)="Copy Audio"
     AddGadgetItem(#queue,-1,encostring.s)
-    fileaudio.s=filetoanalyze.s
+    fileaudio.s=ReplaceString(filetoanalyze.s,Chr(34),"")
     encostring.s=""
   EndIf
   
@@ -3324,8 +3320,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1401
-; FirstLine = 1366
+; CursorPosition = 1801
+; FirstLine = 1761
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -3334,6 +3330,6 @@ End
 ; DisableDebugger
 ; CompileSourceDirectory
 ; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
-; EnableCompileCount = 681
+; EnableCompileCount = 685
 ; EnableBuildCount = 1578
 ; EnableExeConstant
