@@ -101,8 +101,7 @@ Procedure checkaudio()
     SetGadgetText(#text51,"kbit/s")
     SetGadgetState(#channel,1)
     
-    GadgetToolTip(#audibit,"Bitrate of audio")
-    
+    GadgetToolTip(#audibit,"Bitrate of audio")    
     
   EndIf
   
@@ -1363,7 +1362,6 @@ Procedure Dimb()
   Dimb.f=Val(GetGadgetText(#cds))*1024*1024
   bitrate1.f=((Dimb.f-framecount.l*24-Val(GetGadgetText(#audibit))*1000*tsec.l*0.128)/((tsec.l*0.128)/1024)/1000)/1024
   
-  
   If GetGadgetText(#audiocodec)="Copy Audio"
     abit.l=384
     If FindString(GetGadgetText(#audiotrack),"kb/s",0)
@@ -1378,7 +1376,6 @@ Procedure Dimb()
     bitrate1.f=((Dimb.f-framecount.l*24-abit.l*1000*tsec.l*0.128)/((tsec.l*0.128)/1024)/1000)/1024
   EndIf
   
-  
   If GetGadgetText(#audiocodec)="AAC Audio" And neroaacenc.s<>""
     If ValF(GetGadgetText(#audibit))<=0.05 : abitrate.f=15 : EndIf
     If ValF(GetGadgetText(#audibit))>=0.10 : abitrate.f=24 : EndIf
@@ -1391,32 +1388,40 @@ Procedure Dimb()
     If ValF(GetGadgetText(#audibit))>=0.75 : abitrate.f=300 : EndIf
     If ValF(GetGadgetText(#audibit))>=0.85 : abitrate.f=350 : EndIf
     If ValF(GetGadgetText(#audibit))>=0.95 : abitrate.f=400 : EndIf
-    If ValF(GetGadgetText(#audibit))>0.95 : abitrate.f=425 : EndIf    
-    If GetGadgetText(#channels)="Original" : abitrate.f=abitrate.f*1.7 : EndIf    
-    bitrate1.f=((Dimb.f-framecount.l*24-abitrate.f*1000*tsec.l*0.128)/((tsec.l*0.128)/1024)/1000)/1024    
+    If ValF(GetGadgetText(#audibit))>0.95 : abitrate.f=425 : EndIf
+    If GetGadgetText(#channel)="Original" : abitrate.f=abitrate.f*1.7 : EndIf
+    bitrate1.f=((Dimb.f-framecount.l*24-abitrate.f*1000*tsec.l*0.128)/((tsec.l*0.128)/1024)/1000)/1024
   EndIf
   
-  
-  If GetGadgetText(#audioenc)="OGG Audio"
+  If GetGadgetText(#audiocodec)="OGG Audio"
     abitrate.f=32+Val(GetGadgetText(#audibit))*28
-    If GetGadgetText(#channels)="Original" : abitrate.f=abitrate.f*1.7 : EndIf
+    If GetGadgetText(#channel)="Original" : abitrate.f=abitrate.f*1.7 : EndIf
     bitrate1.f=((Dimb.f-framecount.l*24-abitrate.f*1000*tsec.l*0.128)/((tsec.l*0.128)/1024)/1000)/1024
   EndIf
   
-  If GetGadgetText(#audioenc)="FLAC Audio"
-    abitrate.f=1600
-    If GetGadgetText(#channels)="Original" : abitrate.f=abitrate.f*1.7 : EndIf
+  If GetGadgetText(#audiocodec)="FLAC Audio"
+    abitrate.f=1400
+    If GetGadgetText(#channel)="Original" : abitrate.f=abitrate.f*1.7 : EndIf
     bitrate1.f=((Dimb.f-framecount.l*24-abitrate.f*1000*tsec.l*0.128)/((tsec.l*0.128)/1024)/1000)/1024
   EndIf
-  
   
   If GetGadgetText(#audiocodec)="No Audio" Or GetGadgetText(#audiotrack)="none"
     bitrate1.f=((Dimb.f-framecount.l*24)/((tsec.l*0.128)/1024)/1000)/1024
-  EndIf  
+  EndIf
   
   SetGadgetText(#videokbits,StrF(bitrate1.f,0))
   
-  If bitrate1.f>10000 : SetGadgetColor(#videokbits,#PB_Gadget_BackColor,$0000FF) : EndIf
+  If bitrate1.f>=10000
+    SetGadgetColor(#videokbits,#PB_Gadget_BackColor,$0000FF)
+    GadgetToolTip(#videokbits,"Are you sure you want to use a bitrate so high ?")
+  EndIf
+  
+  If bitrate1.f<10000
+    SetGadgetColor(#videokbits,#PB_Gadget_BackColor,$0000FF)
+    GadgetToolTip(#videokbits,"This is the bitrate video. You can manually edit it. AutoMen will use this value")
+  EndIf
+   
+  
   
 EndProcedure
 
@@ -3319,8 +3324,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1414
-; FirstLine = 1373
+; CursorPosition = 1401
+; FirstLine = 1366
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -3329,6 +3334,6 @@ End
 ; DisableDebugger
 ; CompileSourceDirectory
 ; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
-; EnableCompileCount = 680
+; EnableCompileCount = 681
 ; EnableBuildCount = 1578
 ; EnableExeConstant

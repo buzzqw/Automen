@@ -1,13 +1,8 @@
 
 ; PureBasic Visual Designer v3.95 build 1485 (PB4Code)
 
-
-
-
 Global ver.s
 
-ver.s="v7.0";+Str(#pb_editor_buildcount)+"."+Str(#pb_editor_compilecount)
-;
 Enumeration
   #Window_0
 EndEnumeration
@@ -142,9 +137,8 @@ UseJPEGImageDecoder()
 
 Global Image0,FontID1,comboheight.l
 
-CompilerIf #PB_Compiler_OS = #PB_OS_Linux :  comboheight.l=25 : CompilerEndIf
-CompilerIf #PB_Compiler_OS = #PB_OS_Windows : comboheight.l=20 : CompilerEndIf
-
+CompilerIf #PB_Compiler_OS = #PB_OS_Linux :  comboheight.l=25 : ver.s="v7.0": CompilerEndIf
+CompilerIf #PB_Compiler_OS = #PB_OS_Windows : comboheight.l=20 : ver.s="v7."+Str(#pb_editor_compilecount)+"."+Str(#pb_editor_buildcount): CompilerEndIf
 
 Image0 = CatchImage(#paypal, ?Image0)
 
@@ -538,8 +532,8 @@ EndProcedure
 ; EnableBuildCount = 10
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 494
-; FirstLine = 481
+; CursorPosition = 140
+; FirstLine = 108
 ; Folding = --
 ; DisableDebugger
 ; CompileSourceDirectory
