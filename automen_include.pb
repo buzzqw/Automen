@@ -117,6 +117,7 @@ Enumeration
   #text51
   #makereport
   #buttonaddtoqueue
+  #nocrop
   #statusbar
   
   #clean
@@ -406,10 +407,11 @@ Procedure Open_Window_0()
       SetGadgetState(#encodewith,0)
       
       
+      CheckBoxGadget(#nocrop,18,105,195,20,"Don't do automatic crop on input file")
       CheckBoxGadget(#noodml,18,130,185,20,"Don't use ODML")
-      CheckBoxGadget(#multithread,248,130,185,20,"Don't use multithread encoding")
-            
       CheckBoxGadget(#clean,18,155,225,20,"Clean temp file at end of encoding")
+      
+      CheckBoxGadget(#multithread,248,130,185,20,"Don't use multithread encoding")
       CheckBoxGadget(#ffourcc,248,155,185,20,"FourCC DIVX for XviD encoding")      
       
       CheckBoxGadget(#shutdown,18,180,185,20,"Shutdown at end of encoding")
@@ -438,7 +440,7 @@ Procedure Open_Window_0()
     
     ;GadgetToolTip(#play,"Press this button for playing input file")
     
-    
+    GadgetToolTip(#nocrop,"This option can be very usefull on file when autocrop is very slow. Usually TS or HD files. If you don't need autocrop.. use this option for a quicker analysis")
     GadgetToolTip(#makereport,"Encoding doesn't work ? Use the Make Report and post on forum/mail me the Report. Without Report i cannot help")
     GadgetToolTip(#encodewith,"Select decoder/encoder. Every encoder has pro and cons and can encode with different codecs")
     GadgetToolTip(#videolenght,"Lenght of movie (in minutes)")
@@ -532,8 +534,8 @@ EndProcedure
 ; EnableBuildCount = 10
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 140
-; FirstLine = 108
+; CursorPosition = 409
+; FirstLine = 407
 ; Folding = --
 ; DisableDebugger
 ; CompileSourceDirectory

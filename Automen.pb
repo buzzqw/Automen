@@ -1652,10 +1652,10 @@ Procedure eac3toaudio()
     If FindString(GetGadgetText(#audiotrack),"1.0",0) :   down.s=" " : EndIf
     
     If GetGadgetText(#mp3mode)="abr"
-      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": stdout.wav "+down.s+resampleaudio.s+normalize.s+"| "+lame.s+" - -h --abr "+GetGadgetText(#audibit)+" "+Chr(34)+workpath.s+"automen_audio.mp3"+Chr(34)
+      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": stdout.wav "+down.s+resampleaudio.s+"| "+lame.s+" - -h --abr "+GetGadgetText(#audibit)+" "+Chr(34)+workpath.s+"automen_audio.mp3"+Chr(34)
     EndIf
     If GetGadgetText(#mp3mode)="cbr"
-      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": stdout.wav "+down.s+resampleaudio.s+normalize.s+"| "+lame.s+" - -h --cbr -b "+GetGadgetText(#audibit)+" "+Chr(34)+workpath.s+"automen_audio.mp3"+Chr(34)
+      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": stdout.wav "+down.s+resampleaudio.s+"| "+lame.s+" - -h --cbr -b "+GetGadgetText(#audibit)+" "+Chr(34)+workpath.s+"automen_audio.mp3"+Chr(34)
     EndIf
     fileaudio.s=workpath.s+"automen_audio.mp3"
   EndIf
@@ -1731,7 +1731,7 @@ Procedure audioffmpeg()
     If FindString(GetGadgetText(#audiotrack),"ac3",0) : filetoanalyze.s=workpath.s+"automen_audio.ac3" : encostring.s=encostring.s+"-y "+Chr(34)+workpath.s+"automen_audio.ac3"+Chr(34) : EndIf
     If FindString(GetGadgetText(#audiotrack),"dca",0) :filetoanalyze.s=workpath.s+"automen_audio.dts" : encostring.s=encostring.s+"-y "+Chr(34)+workpath.s+"automen_audio.dts"+Chr(34) : EndIf
     If FindString(GetGadgetText(#audiotrack),"dts-hd",0) :filetoanalyze.s=workpath.s+"automen_audio.dts" : encostring.s=encostring.s+"-y "+Chr(34)+workpath.s+"automen_audio.dts"+Chr(34) : EndIf
-    If FindString(GetGadgetText(#audiotrack),"truehd",0) :filetoanalyze.s=workpath.s+"automen_audio.dts" : encostring.s=encostring.s+"-y "+Chr(34)+workpath.s+"automen_audio.dts"+Chr(34) : EndIf
+    If FindString(GetGadgetText(#audiotrack),"truehd",0) :filetoanalyze.s=workpath.s+"automen_audio.ac3" : encostring.s=encostring.s+"-y "+Chr(34)+workpath.s+"automen_audio.ac3"+Chr(34) : EndIf
     If FindString(GetGadgetText(#audiotrack),"flac",0) : filetoanalyze.s=workpath.s+"automen_audio.flac" :encostring.s=encostring.s+"-y "+Chr(34)+workpath.s+"automen_audio.flac"+Chr(34) : EndIf
     If FindString(GetGadgetText(#audiotrack),"mp2",0) : filetoanalyze.s=workpath.s+"automen_audio.mp2" :encostring.s=encostring.s+"-y "+Chr(34)+workpath.s+"automen_audio.mp2"+Chr(34) : EndIf
     If FindString(GetGadgetText(#audiotrack),"mp3",0) : filetoanalyze.s=workpath.s+"automen_audio.mp3" :encostring.s=encostring.s+"-y "+Chr(34)+workpath.s+"automen_audio.mp3"+Chr(34) : EndIf
@@ -1937,6 +1937,8 @@ Procedure autocrop()
     MessageRequester("AutoMen","No mplayer found"+Chr(13)+Chr(13)+"Please download/install mplayer")
     ProcedureReturn
   EndIf
+  
+  If inputfile.s="" : MessageRequester("Automen","No input file selected!") : ProcedureReturn : EndIf
   
   acbottom.l=0
   acleft.l=0
@@ -2440,15 +2442,19 @@ Procedure checkmedia()
   
   CreateFile(987,here.s+"analyze.bat")
   
+  crop.s=""
+   
   If linux=#True
-    WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" -vf select='not(mod(n\,100))',cropdetect -an -y deleteme.avi 2>ffmpeg.log")
+    If GetGadgetState(#nocrop)=0 : crop.s="-vf select='not(mod(n\,100))',cropdetect" : EndIf
+    WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" "+crop.s+" -an -y deleteme.avi 2>ffmpeg.log")
     CloseFile(987)
     RunProgram("chmod","+x "+Chr(34)+here.s+"analyze.bat"+Chr(34),here.s,#PB_Program_Wait)
     RunProgram("xterm","-e "+Chr(34)+here.s+"analyze.bat"+Chr(34),here.s,#PB_Program_Wait)
   EndIf
   
   If windows=#True
-    WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" -vf select=not(mod(n\,100)),cropdetect -an -y deleteme.avi 2>ffmpeg.log")
+    If GetGadgetState(#nocrop)=0 : crop.s="-vf select=not(mod(n\,100)),cropdetect" : EndIf
+    WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" "+crop.s+" -an -y deleteme.avi 2>ffmpeg.log")
     CloseFile(987)
     RunProgram(here.s+"analyze.bat","",here.s,#PB_Program_Wait)
   EndIf
@@ -3320,16 +3326,16 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 1769
-; FirstLine = 1731
+; CursorPosition = 2429
+; FirstLine = 2407
 ; Folding = ------
 ; EnableXP
 ; EnableUser
 ; UseIcon = ___logo.ico
-; Executable = AutoMen.exe
+; Executable = AutoMen_x64
 ; DisableDebugger
 ; CompileSourceDirectory
 ; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
-; EnableCompileCount = 688
-; EnableBuildCount = 1578
+; EnableCompileCount = 703
+; EnableBuildCount = 1583
 ; EnableExeConstant
