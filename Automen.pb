@@ -3749,7 +3749,7 @@ End
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 (Windows - x86)
 ; CursorPosition = 2610
-; FirstLine = 2583
+; FirstLine = 2700
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -3757,6 +3757,6 @@ End
 ; Executable = AutoMen.exe
 ; CompileSourceDirectory
 ; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
-; EnableCompileCount = 712
-; EnableBuildCount = 1584
+; EnableCompileCount = 713
+; EnableBuildCount = 1585
 ; EnableExeConstant
