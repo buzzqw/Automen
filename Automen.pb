@@ -101,7 +101,7 @@ Procedure checkaudio()
     SetGadgetText(#text51,"kbit/s")
     SetGadgetState(#channel,1)
     
-    GadgetToolTip(#audibit,"Bitrate of audio")    
+    GadgetToolTip(#audibit,"Bitrate of audio")
     
   EndIf
   
@@ -447,7 +447,7 @@ Procedure x264mencoderpipe()
   
   If GetGadgetText(#mdeint)="Progressive" And GetGadgetText(#denoise)="NONE" And GetGadgetState(#allowresize)=0
     mencoderbat.s=mencoder.s+" "
-  EndIf  
+  EndIf
   
   If GetGadgetText(#mdeint)="FILM NTSC (29.97->23.976)"  Or GetGadgetText(#mdeint)="Telecine" Or GetGadgetText(#mdeint)="Mixed Prog/Telecine"
     mencoderbat.s=mencoderbat.s+" -ofps 24000/1001 "
@@ -468,7 +468,7 @@ Procedure x264mencoderpipe()
       sub.s=sub.s+" -subfont-autoscale 3 -subfont-text-scale 5 "
     EndIf
     If GetGadgetText(#subs)="" Or GetGadgetText(#subs)="none"
-      subs.s=" -sid 9999 "
+      subs.s=" -slang none "
     EndIf
   EndIf
   
@@ -661,7 +661,7 @@ Procedure mencoder()
       sub.s=sub.s+" -subfont-autoscale 3 -subfont-text-scale 5 "
     EndIf
     If GetGadgetText(#subs)="" Or GetGadgetText(#subs)="none"
-      subs.s=" -sid 9999 "
+      subs.s=" -slang none "
     EndIf
   EndIf
   
@@ -1346,7 +1346,7 @@ Procedure parseprofile()
     Wend
     CloseFile(888)
   EndIf
-    
+  
   
 EndProcedure
 
@@ -1416,8 +1416,8 @@ Procedure Dimb()
     SetGadgetColor(#videokbits,#PB_Gadget_BackColor,$0000FF)
     GadgetToolTip(#videokbits,"This is the bitrate video. You can manually edit it. AutoMen will use this value")
   EndIf
-   
-    
+  
+  
 EndProcedure
 
 Procedure preview()
@@ -1440,7 +1440,7 @@ Procedure preview()
       aid.s="-demuxer lavf -aid "+Str(GetGadgetState(#audiotrack))+" "
     EndIf
   EndIf
-    
+  
   
   If LCase(GetExtensionPart(inputfile.s))="mkv"
     If mkvinfo.s<>""
@@ -1463,7 +1463,7 @@ Procedure preview()
   CreateFile(987,here.s+"mplayerpreview.bat")
   WriteString(987,mplayer.s+" "+aid.s+" -vf "+vcrop.s+",scale="+GetGadgetText(#width)+":"+GetGadgetText(#height)+" -aspect "+GetGadgetText(#arcombo)+" "+Chr(34)+inputfile.s+Chr(34))
   CloseFile(987)
-    
+  
   If GetGadgetText(#arcombo)="NaN" : MessageRequester("Automen","Check AR value!. Quit preview") : ProcedureReturn 0 : EndIf
   
   RunProgram(mplayer.s," "+aid.s+" -vf "+vcrop.s+",scale="+GetGadgetText(#width)+":"+GetGadgetText(#height)+" -aspect "+GetGadgetText(#arcombo)+" "+Chr(34)+inputfile.s+Chr(34),here.s)
@@ -2284,7 +2284,6 @@ Procedure checkifo()
   
 EndProcedure
 
-
 Procedure mkvinfo()
   
   
@@ -2338,7 +2337,6 @@ Procedure mkvinfo()
   
   
 EndProcedure
-
 
 Procedure eac3toanalyzeaudio()
   
@@ -2443,7 +2441,427 @@ Procedure checkmedia()
   CreateFile(987,here.s+"analyze.bat")
   
   crop.s=""
-   
+  
+  DeleteFile(here.s+"mplayer.log")
+  DeleteFile(here.s+"mplayer.bat")
+  DeleteFile(here.s+"automen.log")
+  CreateFile(987,here.s+"mplayer.bat")
+  
+  
+  If linux=#True
+    WriteString(987,mplayer.s+" -speed 100 -vo null -vf cropdetect=24:2 -nosound -frames 500 -identify "+Chr(34)+checkfile.s+Chr(34)+" > mplayer.log")
+    CloseFile(987)
+    RunProgram("chmod","+x "+Chr(34)+here.s+"mplayer.bat"+Chr(34),here.s,#PB_Program_Wait)
+    RunProgram("xterm","-e "+Chr(34)+here.s+"mplayer.bat"+Chr(34),here.s,#PB_Program_Wait)
+  EndIf
+  
+  
+  If windows=#True
+    WriteString(987,mplayer.s+" -speed 100 -vo null -vf cropdetect=24:2 -nosound -frames 500 -identify "+Chr(34)+checkfile.s+Chr(34)+" 1>mplayer.log 2>automen.log")
+    CloseFile(987)
+    RunProgram(here.s+"mplayer.bat","",here.s,#PB_Program_Wait)
+  EndIf
+  
+  
+  fh=OpenFile(#PB_Any,here.s+"mplayer.log")
+  While Eof(fh)=0
+    mess.s=ReadString(fh)
+    
+    If FindString(mess,"ID_VIDEO_WIDTH",0)
+      twidth.l=Val(StringField(mess.s,2,"="))
+    EndIf
+    If FindString(mess,"ID_VIDEO_HEIGHT",0)
+      theight.l=Val(StringField(mess.s,2,"="))
+    EndIf
+    If FindString(mess,"ID_START_TIME",0) And Val(Trim(StringField(mess.s,2,"=")))>0
+      tsec.l=Val(Trim(StringField(mess.s,2,"=")))
+    EndIf
+    If FindString(mess,"ID_LENGTH",0) And Val(Trim(StringField(mess.s,2,"=")))>0
+      tsec.l=Val(Trim(StringField(mess.s,2,"=")))
+    EndIf
+    If FindString(mess,"ID_VIDEO_FPS",0)
+      framerate.f=ValF(Trim(StringField(mess.s,2,"=")))
+    EndIf
+    If FindString(mess.s,"-vf crop=",0)
+      vcrop.s=StringField(mess.s,2,"=")
+      vcrop.s=StringField(vcrop.s,1,")")
+      Debug("crop="+vcrop.s)
+    EndIf
+    
+    If FindString(mess,"VDec: vo config request",0)
+      ;VDec: vo config request - 720 x 480
+      twidth.l=Val(Trim(Mid(mess.s,FindString(mess.s,"-",0)+1,FindString(mess.s,"x",0)-FindString(mess.s,"-",0)-2)))
+      theight.l=Val(Trim(Mid(mess.s,FindString(mess.s,"x",0)+1,FindString(mess.s,"(",0)-FindString(mess.s,"x",0)-2)))
+    EndIf
+    If FindString(mess.s,"Movie-Aspect is",0)
+      ar.s=StringField(mess.s,2,"=")
+      ar.s=Trim(Mid(mess.s,FindString(mess.s," ",16),FindString(mess.s,":",0)-16))
+    EndIf
+    If FindString(mess.s,"ID_VIDEO_ASPECT",0)
+      ar.s=StringField(mess.s,2,"=")
+    EndIf
+    
+    If FindString(mess,"ID_AUDIO_ID",0) And GetExtensionPart(inputfile.s)<>"mkv"
+      AddGadgetItem(#audiotrack,-1,mess.s)
+    EndIf
+    
+    
+    If FindString(mess,"subtitles",0) And GetExtensionPart(inputfile.s)="mkv" And FindString(mess,"S_TEXT",0)
+      mess.s=ReplaceString(mess.s,"[mkv]","")
+      mess.s=ReplaceString(mess.s,"subtitles","")
+      mess.s=ReplaceString(mess.s,"(","")
+      mess.s=ReplaceString(mess.s,"),","")
+      mess.s=ReplaceString(mess.s,")","")
+      mess.s=ReplaceString(mess.s,"S_TEXT","")
+      mess.s=ReplaceString(mess.s,"/UTF8","")
+      mess.s=ReplaceString(mess.s,"/SSA","")
+      mess.s=ReplaceString(mess.s,"S_VOBSUB","")
+      mess.s=ReplaceString(mess.s,"Track ID ","")
+      mess.s=StringField(mess.s,2,":")
+      AddGadgetItem(#subs,-1,Trim(mess.s))
+    EndIf
+    
+    If FindString(mess.s,"ID_VIDEO_FORMAT",0) Or FindString(mess.s,"ID_VIDEO_CODEC",0)
+      
+      If FindString(mess,"MPEG",0)
+        videocodec.s="mpeg2"
+      EndIf
+      If FindString(mess,"MPG2",0)
+        videocodec.s="mpeg2"
+      EndIf
+      If FindString(mess,"WVC1",0)
+        videocodec.s="vc1"
+      EndIf
+      If FindString(mess,"VC-1",0)
+        videocodec.s="vc1"
+      EndIf
+      If FindString(mess,"XVID",0)
+        videocodec.s="xvid"
+      EndIf
+      If FindString(LCase(mess.s),"divx",0)
+        videocodec.s="divx"
+      EndIf
+      If FindString(mess,"AVC",0)
+        videocodec.s="h264"
+      EndIf
+      If FindString(mess,"avc1",0)
+        videocodec.s="h264"
+      EndIf
+      If FindString(mess,"h264",0)
+        videocodec.s="h264"
+      EndIf
+      If FindString(mess,"lagarith",0)
+        videocodec.s="lagarith"
+      EndIf
+      If FindString(mess,"mjpeg",0)
+        videocodec.s="mjpeg"
+      EndIf
+      If FindString(mess,"ffvp6f",0)
+        videocodec.s="FFmpeg VP6 Flash"
+      EndIf
+      
+      If FindString(mess,"ffvc1",0)
+        videocodec.s="vc1"
+      EndIf
+    EndIf
+    
+    If FindString(mess,"VIDEO:  MPEG2",0)
+      videocodec.s="mpeg2"
+    EndIf
+    
+  Wend
+  
+  CloseFile(fh)
+  
+  framecount.l=tsec.l*framerate.f
+  
+  
+  CreateFile(987,here.s+"ffmpeganalysis.bat")
+  If linux=#True
+    WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" -an -y deleteme.avi 2>ffmpeganalysis.txt")
+  EndIf
+  If windows=#True
+    WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" -an -y deleteme.avi 2>ffmpeganalysis.txt")
+  EndIf
+  CloseFile(987)
+  If windows=#True
+    RunProgram(here.s+"ffmpeganalysis.bat","",here.s,#PB_Program_Wait)
+  EndIf
+  If linux=#True
+    RunProgram("chmod","+x "+Chr(34)+here.s+"ffmpeganalysis.bat"+Chr(34),here.s,#PB_Program_Wait)
+    RunProgram("xterm","-e "+Chr(34)+here.s+"ffmpeganalysis.bat"+Chr(34),here.s,#PB_Program_Wait)
+  EndIf
+  fh=ReadFile(#PB_Any,here.s+"ffmpeganalysis.txt")
+  While Eof(fh)=0
+    mess.s=ReadString(fh)
+    If FindString(mess.s,"Audio: ",0) And FindString(mess.s,"Stream",0)
+      AddGadgetItem(#audiotrack,-1,Trim(mess.s))
+    EndIf
+  Wend
+  
+  ;audio check
+  
+  If linux=#True
+    Select LCase(GetExtensionPart(inputfile.s))
+    Case "mkv"
+      If mkvinfo.s<>""
+        mkvinfo()
+      EndIf
+    EndSelect
+  EndIf  
+  
+  If windows=#True
+    Select LCase(GetExtensionPart(inputfile.s))
+    Case "evo","vob","mpeg","mpg","ts","m2t","m2ts"
+      If eac3to.s<>""
+        eac3toanalyzeaudio()
+      EndIf      ; don't warry about missing eac3to, just use ffmpeg
+    Case "mkv"
+      If eac3to.s<>""
+        eac3toanalyzeaudio()
+      EndIf
+      If eac3to.s="" And mkvinfo.s<>""
+        mkvinfo()
+      EndIf   ; no Default since it's already detected by ffmpeg
+    EndSelect
+  EndIf
+  
+  
+  If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="d2v"
+    fh = ReadFile(#PB_Any,GetGadgetText(#inputstring))
+    While Eof(fh) = #False
+      line.s = ReadString(fh)
+      If FindString(line.s,"Aspect_Ratio=",1)
+        start=FindString(line.s,"Aspect_Ratio=",1)
+        len=Len(line.s)
+        ar.s=Mid(line.s,start+13,len-start)
+      EndIf
+      If FindString(line.s,"Picture_Size=",1)
+        twidth.l=Val(Mid(StringField(line.s,1,"x"),14,4))
+        theight.l=Val(StringField(line.s,2,"x"))
+      EndIf
+    Wend
+    If ar.s="16:9" : ar.s="1.7778" :  SetGadgetText(#arcombo,"1.7778") : EndIf
+    If ar.s="4:3" :  ar.s="1.3334" : SetGadgetText(#arcombo,"1.3334") : EndIf
+    If ar.s="1:1" :  ar.s="1" : SetGadgetText(#arcombo,"1") : EndIf
+    videocodec.s="mpeg2"
+  EndIf
+  
+  
+  If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="dgi"
+    fh = ReadFile(#PB_Any,GetGadgetText(#inputstring))
+    While Eof(fh) = #False
+      line.s = ReadString(fh)
+      If FindString(line.s,"SIZ ",0)
+        twidth.l=Val(Trim(StringField(StringField(line.s,1,"x"),2," ")))
+        theight.l=Val(Trim(StringField(StringField(line.s,2,"x"),2," ")))
+      EndIf
+      If FindString(line.s,"CODED ",0)
+        framecount.l=Val(Trim(StringField(line.s,2," ")))
+      EndIf
+      If FindString(line.s,"%",0) And FindString(line.s,"FILM",0)
+        perffilm.f=ValF(StringField(line.s,1,"%"))
+        If perffilm.f>97
+          result=MessageRequester("AutoMen","The dgi report a "+StrF(perffilm.f,2)+" of film"+Chr(10)+"Would activate IVTC deinterlace?",#PB_MessageRequester_YesNo)
+          If result=#PB_MessageRequester_Yes : SetGadgetText(#mdeint,"FILM NTSC (29.97->23.976)") : EndIf
+        EndIf
+      EndIf
+    Wend
+    CloseFile(fh)
+    videocodec.s="h264"
+  EndIf
+  
+  
+  If GetExtensionPart(LCase(GetGadgetText(#inputstring)))="dga"
+    fh = ReadFile(#PB_Any,GetGadgetText(#inputstring))
+    While Eof(fh) = #False
+      line.s = ReadString(fh)
+      If FindString(line.s,"SIZ ",0)
+        twidth.l=Val(Trim(StringField(StringField(line.s,1,"x"),2," ")))
+        theight.l=Val(Trim(StringField(StringField(line.s,2,"x"),2," ")))
+      EndIf
+      If FindString(line.s,"FPS ",0)
+        framerate.f=ValF(Trim(StringField(StringField(line.s,1,"/"),2," ")))/ValF(Trim(StringField(StringField(line.s,2,"/"),2," ")))
+      EndIf
+      If FindString(line.s,"CODED ",0)
+        framecount.l=Val(Trim(StringField(line.s,2," ")))
+      EndIf
+      If FindString(line.s,"%",0) And FindString(line.s,"FILM",0)
+        perffilm.f=ValF(StringField(line.s,1,"%"))
+        If perffilm.f>97
+          result=MessageRequester("AutoMen","The dga report a "+StrF(perffilm.f,2)+" of film"+Chr(10)+"Would activate IVTC deinterlace?",#PB_MessageRequester_YesNo)
+          If result=#PB_MessageRequester_Yes : SetGadgetText(#mdeint,"FILM NTSC (29.97->23.976)") : EndIf
+        EndIf
+      EndIf
+    Wend
+    CloseFile(fh)
+    videocodec.s="h264"
+  EndIf
+  
+  
+  If CountGadgetItems(#audiotrack)>1 : SetGadgetState(#audiotrack,1) : EndIf
+  If CountGadgetItems(#audiotrack)<=1 : SetGadgetState(#audiotrack,0) : EndIf
+  If tsec.l<5 : tsec.l=framecount.l/framerate.f : EndIf
+  
+  If tsec.l > 1 : SetGadgetText(#videolenght,StrF(tsec.l/60,3)) : EndIf
+  
+  SetGadgetText(#arcombo,ar.s)
+  If GetGadgetText(#arcombo)="" : SetGadgetText(#arcombo,StrF(twidth.l/theight.l,4)) : EndIf
+    
+  actop.l=theight.l-Val(StringField(vcrop.s,2,":"))-Val(StringField(vcrop.s,4,":"))
+  acleft.l=Val(StringField(vcrop.s,3,":"))
+  acright.l=twidth.l-acleft.l-Val(StringField(vcrop.s,1,":"))
+  acbottom.l=theight.l-(Val(StringField(vcrop.s,2,":"))+actop.l)
+  Debug(" -cropleft "+Str(acleft.l)+" -croptop "+Str(actop.l)+" -cropright "+Str(acright.l)+" -cropbottom "+Str(acbottom.l)+" " )
+  
+  SetGadgetText(#bottomcrop,"")
+  SetGadgetText(#leftcrop,"")
+  SetGadgetText(#rightcrop,"")
+  SetGadgetText(#topcrop,"")
+  
+  If actop.l>145 Or acbottom.l>145 Or acleft.l>145 Or acright.l>145
+    
+    If actop.l=theight.l Or acright.l=twidth.l
+      actop.l=0
+      acright.l=0
+    EndIf
+    
+    MessageRequester("AutoCrop", "Please check autocrop value", #PB_MessageRequester_Ok )
+  EndIf
+  
+  If actop.l=0 And acbottom.l=0 And acleft.l=0 And acright.l=0
+    MessageRequester("AutoCrop", "Please check autocrop value", #PB_MessageRequester_Ok )
+  EndIf
+  
+  SetGadgetText(#bottomcrop,Str(acbottom.l))
+  SetGadgetText(#leftcrop,Str(acleft.l))
+  SetGadgetText(#rightcrop,Str(acright.l))
+  SetGadgetText(#topcrop,Str(actop.l))
+  
+  If ar.s="" : ar.s=StrF(twidth.l/theight.l,4) : EndIf
+  
+  Debug("twidth.l="+Str(twidth.l))
+  Debug("theight.l="+Str(theight.l))
+  Debug("framerate.f="+StrF(framerate.f))
+  Debug("framecount.l="+Str(tsec.l*framerate.f))
+  Debug("tsec.l="+Str(tsec.l))
+  Debug("ar.s"=ar.s)
+  
+  If framecount.l>100 : SetGadgetText(#framecountf,Str(framecount.l)) : EndIf
+  If framecount.l<100 : framecount.l=9999 : SetGadgetText(#framecountf,Str(framecount.l)) : MessageRequester("AutoMen","Unable to detect numbers of frames (added 9999 as fake value). Please check the bitrate!") : EndIf
+  
+  SetGadgetText(#widthf,Str(twidth.l))
+  SetGadgetText(#heightf,Str(theight.l))
+  SetGadgetText(#framecountf,Str(framecount.l))
+  SetGadgetText(#frameratef,StrF(framerate.f,3))
+  
+  messinfo.s="Input File: "+GetFilePart(inputfile.s)+Chr(10)
+  messinfo.s=messinfo.s+"Video Codec: "+videocodec.s+Chr(10)
+  messinfo.s=messinfo.s+"Width: "+Str(twidth.l)+"; "
+  messinfo.s=messinfo.s+"Heigh: "+Str(theight.l)+Chr(10)
+  messinfo.s=messinfo.s+"Framerate: "+StrF(framerate.f,3)+" fps"+Chr(10)
+  messinfo.s=messinfo.s+"Framecount: "+Str(framecount.l)+Chr(10)
+  messinfo.s=messinfo.s+"Duration(sec): "+Str(tsec.l)+Chr(10)
+  messinfo.s=messinfo.s+"Aspect Ratio: "+ar.s
+  
+  SetGadgetText(#basicfile,messinfo.s)
+  
+  If framerate.f=59.940 Or framerate.f=29.97
+    result=MessageRequester("AutoMen","Possible Telecine pattern found."+Chr(13)+Chr(13)+"Allow IVTC ? FILM NTSC (29.97->23.976)",#PB_MessageRequester_YesNo)
+    If result=#PB_MessageRequester_Yes : SetGadgetText(#mdeint,"FILM NTSC (29.97->23.976)") : EndIf
+  EndIf
+  
+  dimb()
+  
+  silentresize()
+  
+  
+EndProcedure
+
+Procedure checkmediaffmpeg()
+  
+  ClearGadgetItems(#audiotrack)
+  
+  AddGadgetItem(#audiotrack,-1,"none")
+  
+  SetGadgetText(#bottomcrop,"")
+  SetGadgetText(#topcrop,"")
+  SetGadgetText(#leftcrop,"")
+  SetGadgetText(#rightcrop,"")
+  
+  twidth.l=0
+  theight.l=0
+  tsec.l=0
+  ar.s=""
+  videocodec.s=""
+  checkfile.s=inputfile.s
+  
+  DeleteFile(here.s+"mplayer.log")
+  DeleteFile(here.s+"mplayer.bat")
+  DeleteFile(here.s+"automen.log")
+  
+  If windows=#True
+    
+    If LCase(GetExtensionPart(inputfile.s))="avs" Or LCase(GetExtensionPart(inputfile.s))="d2v" Or LCase(GetExtensionPart(inputfile.s))="dgm" Or LCase(GetExtensionPart(inputfile.s))="dgv" Or LCase(GetExtensionPart(inputfile.s))="dga" Or LCase(GetExtensionPart(inputfile.s))="dgi"
+      CreateFile(987,workpath.s+"automen.avs")
+      
+      If ExamineDirectory(0,here+"applications\filters\","*.dll")
+        Repeat
+          type=NextDirectoryEntry(0)
+          If type=1 ; File
+            a$=LCase(DirectoryEntryName(0))
+            If FindString(a$,"soundout",0)=0
+              If FindString(a$,"yadif",0)=0
+                WriteStringN(987,"LoadPlugin("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+              EndIf
+            EndIf
+            If FindString(LCase(a$),"yadif",0)<>0
+              WriteStringN(987,"LoadCPlugin("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+            EndIf
+          EndIf
+        Until type=0
+      EndIf
+      
+      If ExamineDirectory(0,here+"applications\filters\","*.avsi")
+        Repeat
+          type=NextDirectoryEntry(0)
+          If type=1 ; File
+            a$=DirectoryEntryName(0)
+            WriteStringN(987,"Import("+Chr(34)+here+"applications\filters\"+a$+Chr(34)+")")
+          EndIf
+        Until type=0
+      EndIf
+      
+      Select LCase(GetExtensionPart(inputfile.s))
+      Case "avs"
+        WriteStringN(987,"Import("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "d2v"
+        WriteStringN(987,"Mpeg2Source("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dgm","dgv"
+        WriteStringN(987,"DGSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dga"
+        WriteStringN(987,"AVCSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      Case "dgi"
+        WriteStringN(987,"DGSource("+Chr(34)+inputfile.s+Chr(34)+")")
+      EndSelect
+      
+      CloseFile(987)
+      checkfile.s=workpath.s+"automen.avs"
+      
+    EndIf
+    
+  EndIf
+  
+  CreateFile(987,here.s+"analyze.bat")
+  
+  crop.s=""
+  
+  DeleteFile(here.s+"mplayer.log")
+  DeleteFile(here.s+"mplayer.bat")
+  DeleteFile(here.s+"automen.log")
+  CreateFile(987,here.s+"mplayer.bat")
+  
+  
   If linux=#True
     If GetGadgetState(#nocrop)=0 : crop.s="-vf select='not(mod(n\,100))',cropdetect" : EndIf
     WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" "+crop.s+" -an -y deleteme.avi 2>ffmpeg.log")
@@ -2451,7 +2869,6 @@ Procedure checkmedia()
     RunProgram("chmod","+x "+Chr(34)+here.s+"analyze.bat"+Chr(34),here.s,#PB_Program_Wait)
     RunProgram("xterm","-e "+Chr(34)+here.s+"analyze.bat"+Chr(34),here.s,#PB_Program_Wait)
   EndIf
-  
   If windows=#True
     If GetGadgetState(#nocrop)=0 : crop.s="-vf select=not(mod(n\,100)),cropdetect" : EndIf
     WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" "+crop.s+" -an -y deleteme.avi 2>ffmpeg.log")
@@ -2749,6 +3166,33 @@ Procedure checkmedia()
   
 EndProcedure
 
+
+Procedure checkextension()
+  
+  If GetGadgetText(#outputstring)=""
+    If GetGadgetText(#container)="MKV": SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".mkv") : EndIf
+    If GetGadgetText(#container)="AVI": SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".avi") : EndIf
+    If GetGadgetText(#container)="H264": SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".h264") : EndIf
+    If GetGadgetText(#container)="MP4" : SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".mp4") : EndIf
+    If GetGadgetText(#container)="WMV" : SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".wmv") : EndIf
+    outputfile.s=GetGadgetText(#outputstring)
+  EndIf
+  
+  If GetGadgetText(#outputstring)<>""
+    outputfile.s=GetGadgetText(#outputstring)
+    If GetGadgetText(#container)="MKV": SetGadgetText(#outputstring,Mid(outputfile.s,0,Len(GetGadgetText(#outputstring))-1-Len(GetExtensionPart(GetGadgetText(#outputstring))))+".mkv") : EndIf
+    If GetGadgetText(#container)="H264": SetGadgetText(#outputstring,Mid(outputfile.s,0,Len(GetGadgetText(#outputstring))-1-Len(GetExtensionPart(GetGadgetText(#outputstring))))+".h264") : EndIf
+    If GetGadgetText(#container)="AVI": SetGadgetText(#outputstring,Mid(outputfile.s,0,Len(GetGadgetText(#outputstring))-1-Len(GetExtensionPart(GetGadgetText(#outputstring))))+".avi") : EndIf
+    If GetGadgetText(#container)="MP4" : SetGadgetText(#outputstring,Mid(outputfile.s,0,Len(GetGadgetText(#outputstring))-1-Len(GetExtensionPart(GetGadgetText(#outputstring))))+".mp4") : EndIf
+    If GetGadgetText(#container)="WMV" : SetGadgetText(#outputstring,Mid(outputfile.s,0,Len(GetGadgetText(#outputstring))-1-Len(GetExtensionPart(GetGadgetText(#outputstring))))+".wmv") : EndIf
+    outputfile.s=GetGadgetText(#outputstring)
+  EndIf
+  
+  
+EndProcedure
+
+
+
 Procedure openinputfile()
   
   extsubs.s=""
@@ -2793,30 +3237,6 @@ Procedure openinputfile()
   
 EndProcedure
 
-
-Procedure checkextension()
-  
-  If GetGadgetText(#outputstring)=""
-    If GetGadgetText(#container)="MKV": SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".mkv") : EndIf
-    If GetGadgetText(#container)="AVI": SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".avi") : EndIf
-    If GetGadgetText(#container)="H264": SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".h264") : EndIf
-    If GetGadgetText(#container)="MP4" : SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".mp4") : EndIf
-    If GetGadgetText(#container)="WMV" : SetGadgetText(#outputstring,GetPathPart(inputfile.s)+"automen_"+Mid(GetFilePart(inputfile.s),0,Len(GetFilePart(inputfile.s))-1-Len(GetExtensionPart(inputfile)))+".wmv") : EndIf
-    outputfile.s=GetGadgetText(#outputstring)
-  EndIf
-  
-  If GetGadgetText(#outputstring)<>""
-    outputfile.s=GetGadgetText(#outputstring)
-    If GetGadgetText(#container)="MKV": SetGadgetText(#outputstring,Mid(outputfile.s,0,Len(GetGadgetText(#outputstring))-1-Len(GetExtensionPart(GetGadgetText(#outputstring))))+".mkv") : EndIf
-    If GetGadgetText(#container)="H264": SetGadgetText(#outputstring,Mid(outputfile.s,0,Len(GetGadgetText(#outputstring))-1-Len(GetExtensionPart(GetGadgetText(#outputstring))))+".h264") : EndIf
-    If GetGadgetText(#container)="AVI": SetGadgetText(#outputstring,Mid(outputfile.s,0,Len(GetGadgetText(#outputstring))-1-Len(GetExtensionPart(GetGadgetText(#outputstring))))+".avi") : EndIf
-    If GetGadgetText(#container)="MP4" : SetGadgetText(#outputstring,Mid(outputfile.s,0,Len(GetGadgetText(#outputstring))-1-Len(GetExtensionPart(GetGadgetText(#outputstring))))+".mp4") : EndIf
-    If GetGadgetText(#container)="WMV" : SetGadgetText(#outputstring,Mid(outputfile.s,0,Len(GetGadgetText(#outputstring))-1-Len(GetExtensionPart(GetGadgetText(#outputstring))))+".wmv") : EndIf
-    outputfile.s=GetGadgetText(#outputstring)
-  EndIf
-  
-  
-EndProcedure
 
 Procedure makereport()
   
@@ -3305,6 +3725,8 @@ Repeat ; Start of the event loop
     ElseIf GadgetID = #buttonaddtoqueue
       AddGadgetItem(#queue,-1,GetGadgetText(#addedtoqueue))
       
+      
+      
     EndIf
     
   EndIf
@@ -3325,17 +3747,16 @@ End
 ; EnableCompileCount = 1574
 ; EnableBuildCount = 174
 ; EnableExeConstant
-; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 2429
-; FirstLine = 2407
+; IDE Options = PureBasic 4.60 (Windows - x86)
+; CursorPosition = 2610
+; FirstLine = 2583
 ; Folding = ------
 ; EnableXP
 ; EnableUser
 ; UseIcon = ___logo.ico
-; Executable = AutoMen_x64
-; DisableDebugger
+; Executable = AutoMen.exe
 ; CompileSourceDirectory
 ; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
-; EnableCompileCount = 703
-; EnableBuildCount = 1583
+; EnableCompileCount = 712
+; EnableBuildCount = 1584
 ; EnableExeConstant
