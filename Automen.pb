@@ -13,6 +13,7 @@ Global fileaudio.s,eac3to.s,mkvextract.s,mkvinfo.s
 Procedure checkencoder()
   
   If GetGadgetText(#encodewith)="Mencoder for Encoding" Or GetGadgetText(#encodewith)="Use ffmpeg as encoder"
+    
     ClearGadgetItems(#videocodec)
     ClearGadgetItems(#pass)
     
@@ -1206,15 +1207,24 @@ EndProcedure
 
 Procedure start()
   
-  If GetGadgetText(#encodewith)="Mencoder for Encoding" : mencoder() : EndIf
-  
-  If GetGadgetText(#encodewith)="Use AviSynth (only for X264)" : x264avs() : EndIf
-  
-  If GetGadgetText(#encodewith)="Use X264 as demuxer and encoder" : x264lavf() : EndIf
-  
-  If GetGadgetText(#encodewith)="Use ffmpeg as encoder" : ffmpeg() : EndIf
-  
-  If GetGadgetText(#encodewith)="Pipe X264 with mencoder" : x264mencoderpipe() : EndIf
+  Select GetGadgetText(#encodewith)
+    
+  Case "Mencoder for Encoding"
+    mencoder()
+    
+  Case "Use AviSynth (only for X264)"
+    x264avs()
+    
+  Case "Use X264 as demuxer and encoder"
+    x264lavf()
+    
+  Case "Use ffmpeg as encoder"
+    ffmpeg()
+    
+  Case "Pipe X264 with mencoder"
+    x264mencoderpipe()
+    
+  EndSelect
   
 EndProcedure
 
@@ -1642,9 +1652,18 @@ Procedure eac3toaudio()
   
   aid.s=Trim(StringField(GetGadgetText(#audiotrack),1,":"))
   
+  audiotoencode.s=inputfile.s
+  
   If GetFilePart(inputfile.s)="film.vob"
     aid.s=Str(Val(Trim(StringField(StringField(GetGadgetText(#audiotrack),1,"f"),2,":")))+2)
     inputfile.s=workpath.s+"film.vob"
+  EndIf
+  
+  If FindString(GetGadgetText(#audiotrack),"aac",0)  ; eac3to miss aac decoder
+    AddGadgetItem(#queue,-1,eac3to.s+" "+Chr(34)+audiotoencode.s+Chr(34)+" "+aid.s+": "+Chr(34)+workpath.s+"automen_audio.aac"+Chr(34))
+    AddGadgetItem(#queue,-1,ffmpeg.s+" -i "+Chr(34)+workpath.s+"automen_audio.aac"+Chr(34)+" -f wav -y "+Chr(34)+workpath.s+"automen_audio.wav"+Chr(34))
+    audiotoencode.s=workpath.s+"automen_audio.wav"
+    aid.s="1"
   EndIf
   
   If GetGadgetText(#audiocodec)="MP3 Audio"
@@ -1652,37 +1671,37 @@ Procedure eac3toaudio()
     If FindString(GetGadgetText(#audiotrack),"1.0",0) :   down.s=" " : EndIf
     
     If GetGadgetText(#mp3mode)="abr"
-      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": stdout.wav "+down.s+resampleaudio.s+"| "+lame.s+" - -h --abr "+GetGadgetText(#audibit)+" "+Chr(34)+workpath.s+"automen_audio.mp3"+Chr(34)
+      encostring.s=eac3to.s+" "+Chr(34)+audiotoencode.s+Chr(34)+" "+aid.s+": stdout.wav "+down.s+resampleaudio.s+"| "+lame.s+" - -h --abr "+GetGadgetText(#audibit)+" "+Chr(34)+workpath.s+"automen_audio.mp3"+Chr(34)
     EndIf
     If GetGadgetText(#mp3mode)="cbr"
-      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": stdout.wav "+down.s+resampleaudio.s+"| "+lame.s+" - -h --cbr -b "+GetGadgetText(#audibit)+" "+Chr(34)+workpath.s+"automen_audio.mp3"+Chr(34)
+      encostring.s=eac3to.s+" "+Chr(34)+audiotoencode.s+Chr(34)+" "+aid.s+": stdout.wav "+down.s+resampleaudio.s+"| "+lame.s+" - -h --cbr -b "+GetGadgetText(#audibit)+" "+Chr(34)+workpath.s+"automen_audio.mp3"+Chr(34)
     EndIf
     fileaudio.s=workpath.s+"automen_audio.mp3"
   EndIf
   
   If GetGadgetText(#audiocodec)="OGG Audio"
-    encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": stdout.wav "+resampleaudio.s+normalize.s+down.s+"| "+oggenc.s+" - -q "+GetGadgetText(#audibit)+" -o "+Chr(34)+workpath.s+"automen_audio.ogg"+Chr(34)
+    encostring.s=eac3to.s+" "+Chr(34)+audiotoencode.s+Chr(34)+" "+aid.s+": stdout.wav "+resampleaudio.s+normalize.s+down.s+"| "+oggenc.s+" - -q "+GetGadgetText(#audibit)+" -o "+Chr(34)+workpath.s+"automen_audio.ogg"+Chr(34)
     fileaudio.s=workpath.s+"automen_audio.ogg"
   EndIf
   
   If GetGadgetText(#audiocodec)="AAC Audio"
     If neroaacenc.s<>""
-      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": stdout.wav "+resampleaudio.s+normalize.s+down.s+"| "+neroaacenc.s+" -if - -q "+GetGadgetText(#audibit)+" -ignorelength -of "+Chr(34)+workpath.s+"automen_audio.mp4"+Chr(34)
+      encostring.s=eac3to.s+" "+Chr(34)+audiotoencode.s+Chr(34)+" "+aid.s+": stdout.wav "+resampleaudio.s+normalize.s+down.s+"| "+neroaacenc.s+" -if - -q "+GetGadgetText(#audibit)+" -ignorelength -of "+Chr(34)+workpath.s+"automen_audio.mp4"+Chr(34)
     EndIf
     fileaudio.s=workpath.s+"automen_audio.mp4"
   EndIf
   
   If GetGadgetText(#audiocodec)="FLAC Audio"
-    encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": "+Chr(34)+workpath.s+"automen_audio.flac"+Chr(34)+resampleaudio.s+normalize.s+down.s
+    encostring.s=eac3to.s+" "+Chr(34)+audiotoencode.s+Chr(34)+" "+aid.s+": "+Chr(34)+workpath.s+"automen_audio.flac"+Chr(34)+resampleaudio.s+normalize.s+down.s
     fileaudio.s=workpath.s+"automen_audio.flac"
   EndIf
   
   If GetGadgetText(#audiocodec)="AC3 Audio"
     If aften.s=""
-      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": "+Chr(34)+workpath.s+"automen_audio.ac3"+Chr(34)+resampleaudio.s+normalize.s+down.s
+      encostring.s=eac3to.s+" "+Chr(34)+audiotoencode.s+Chr(34)+" "+aid.s+": "+Chr(34)+workpath.s+"automen_audio.ac3"+Chr(34)+resampleaudio.s+normalize.s+down.s
     EndIf
     If aften.s<>""
-      encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": stdout.wav "+down.s+resampleaudio.s+normalize.s+"| "+aften.s+" - -b "+GetGadgetText(#audibit)+" "+Chr(34)+workpath.s+"automen_audio.ac3"+Chr(34)
+      encostring.s=eac3to.s+" "+Chr(34)+audiotoencode.s+Chr(34)+" "+aid.s+": stdout.wav "+down.s+resampleaudio.s+normalize.s+"| "+aften.s+" - -b "+GetGadgetText(#audibit)+" "+Chr(34)+workpath.s+"automen_audio.ac3"+Chr(34)
     EndIf
     fileaudio.s=workpath.s+"automen_audio.ac3"
   EndIf
@@ -1702,7 +1721,7 @@ Procedure eac3toaudio()
     If FindString(extaudio.s,"pcm,",0 ): extaudio.s="pcm" : EndIf
     If FindString(extaudio.s,"vorbis,",0) : extaudio.s="ogg" : EndIf
     
-    encostring.s=eac3to.s+" "+Chr(34)+inputfile.s+Chr(34)+" "+aid.s+": "+Chr(34)+workpath.s+"automen_audio."+extaudio.s+Chr(34)
+    encostring.s=eac3to.s+" "+Chr(34)+audiotoencode.s+Chr(34)+" "+aid.s+": "+Chr(34)+workpath.s+"automen_audio."+extaudio.s+Chr(34)
     fileaudio.s=workpath.s+"automen_audio."+extaudio.s
   EndIf
   
@@ -2741,10 +2760,10 @@ Procedure checkmedia()
   
   If tsec.l<5 Or framerate.f<10
     MessageRequester("Automen","There are some problem with framerate ("+StrF(framerate.f,3)+" fps)"+" or duration ("+Str(tsec.l)+" sec.)"+Chr(13)+"Added 9999 frames for duration as fake value. Please check the bitrate!")
-    framecount.l=9999 
+    framecount.l=9999
     SetGadgetText(#framecountf,Str(framecount.l))
   EndIf
-    
+  
   If framecount.l>100 : SetGadgetText(#framecountf,Str(framecount.l)) : EndIf
   
   SetGadgetText(#widthf,Str(twidth.l))
@@ -3745,8 +3764,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 (Windows - x86)
-; CursorPosition = 2573
-; FirstLine = 2546
+; CursorPosition = 1662
+; FirstLine = 1640
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -3754,7 +3773,7 @@ End
 ; Executable = AutoMen.exe
 ; DisableDebugger
 ; CompileSourceDirectory
-; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
-; EnableCompileCount = 721
-; EnableBuildCount = 1587
+; Compiler = PureBasic 4.60 (Windows - x86)
+; EnableCompileCount = 730
+; EnableBuildCount = 1588
 ; EnableExeConstant

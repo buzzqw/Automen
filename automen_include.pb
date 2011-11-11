@@ -144,21 +144,21 @@ CompilerIf #PB_Compiler_OS = #PB_OS_Windows : comboheight.l=20 : ver.s="v7."+Str
 Image0 = CatchImage(#paypal, ?Image0)
 
 CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-If LoadFont(1,GetCurrentDirectory()+"DejaVuSansMono.ttf", 8)
-  SetGadgetFont(#PB_Default,FontID(1))
+  If LoadFont(1,GetCurrentDirectory()+"DejaVuSansMono.ttf", 8)
+    SetGadgetFont(#PB_Default,FontID(1))
   Else
-  LoadFont(1,"Arial", 8)
-  SetGadgetFont(#PB_Default,FontID(1))
-EndIf
+    LoadFont(1,"Arial", 8)
+    SetGadgetFont(#PB_Default,FontID(1))
+  EndIf
 CompilerEndIf
 
-CompilerIf #PB_Compiler_OS = #PB_OS_Linux 
+CompilerIf #PB_Compiler_OS = #PB_OS_Linux
   If LoadFont(1,"DejaVuSansCondensed", 8)
-   SetGadgetFont(#PB_Default,FontID(1))
-Else
-  LoadFont(1,"Arial", 7)
-  SetGadgetFont(#PB_Default,FontID(1))
-EndIf
+    SetGadgetFont(#PB_Default,FontID(1))
+  Else
+    LoadFont(1,"Arial", 7)
+    SetGadgetFont(#PB_Default,FontID(1))
+  EndIf
 CompilerEndIf
 
 
@@ -218,13 +218,13 @@ Procedure Open_Window_0()
       AddGadgetItem(#videocodec,-1,"Mpeg4")
       AddGadgetItem(#videocodec,-1,"X264")
       SetGadgetState(#videocodec,0)
-            
-      ComboBoxGadget(#container,385,25,60,comboheight.l)      
+      
+      ComboBoxGadget(#container,385,25,60,comboheight.l)
       SetGadgetState(#container,0)
-                  
+      
       TextGadget(#PB_Any,245,53,60,20,"Pass to do")
       ComboBoxGadget(#pass, 315, 50,130,comboheight )
-            
+      
       TextGadget(#PB_Any,245,81,60,20,"Preset")
       TrackBarGadget(#speedquality,308,75,140,17,1,10,#PB_TrackBar_Ticks)
       StringGadget(#speedqualitytext,245,95,200,comboheight,"",#PB_String_ReadOnly|#PB_Text_Center)
@@ -239,9 +239,7 @@ Procedure Open_Window_0()
       StringGadget(#cds,375,170,40,comboheight,"700",#PB_String_Numeric)
       TextGadget(#PB_Any,420,173,20,comboheight,"MB")
       
-      
-      
-      
+     
       ;-panel video
       AddGadgetItem(#Panel_0, -1, "Video")
       
@@ -253,7 +251,6 @@ Procedure Open_Window_0()
       
       TextGadget(#PB_Any, 163, 25, 60, 20, " DAR:" ,#PB_Text_Center)
       StringGadget(#dar, 223, 25, 60, comboheight ,"",#PB_String_ReadOnly)
-      
       
       ButtonGadget(#autocrop, 318, 25, 120, comboheight, " Do AutoCrop",#PB_Button_Left)
       
@@ -270,7 +267,6 @@ Procedure Open_Window_0()
       AddGadgetItem(#mdeint,-1,"Change FPS to 29.97")
       SetGadgetState(#mdeint,0)
       
-      
       TextGadget(#PB_Any, 242,75, 85, 20, "Aspect Ratio")
       ComboBoxGadget(#arcombo, 318, 75, 120, comboheight,#PB_ComboBox_Editable)
       AddGadgetItem(#arcombo,-1,"1")
@@ -282,8 +278,6 @@ Procedure Open_Window_0()
       CheckBoxGadget(#anamorphic, 318, 100,115,20,"Anamorphic Resiz.")
       CheckBoxGadget(#itu, 318, 120,120,20,"Follow ITU Resizing")
       SetGadgetState(#itu,0)
-      
-      
       
       TextGadget(#PB_Any, 18, 53, 75, 20, "Top Crop ---->")
       StringGadget(#topcrop, 95, 53, 60, comboheight, "")
@@ -323,7 +317,6 @@ Procedure Open_Window_0()
       ComboBoxGadget(#subs, 247, 90, 175,comboheight)
       ButtonGadget(#extsub,425,90,20,20,"...")
       
-      
       TextGadget(#text50, 18, 58, 70, 20, "Audio Bitrate:")
       ComboBoxGadget(#audibit, 98, 55, 70, comboheight,#PB_ComboBox_Editable)
       AddGadgetItem(#audibit,-1,"320")
@@ -359,10 +352,8 @@ Procedure Open_Window_0()
       AddGadgetItem(#mp3mode,-1,"abr")
       SetGadgetState(#mp3mode,0)
       
-      
       CheckBoxGadget(#audionormalize, 248, 33, 150, 20, "Normalize Audio Track")
       SetGadgetState(#audionormalize,1)
-      
       
       TextGadget(#PB_Any, 15, 188, 70, 20, "Audio track:")
       ComboBoxGadget(#audiotrack, 85, 183, 363, comboheight)
@@ -412,11 +403,10 @@ Procedure Open_Window_0()
       CheckBoxGadget(#clean,18,155,225,20,"Clean temp file at end of encoding")
       
       CheckBoxGadget(#multithread,248,130,185,20,"Don't use multithread encoding")
-      CheckBoxGadget(#ffourcc,248,155,185,20,"FourCC DIVX for XviD encoding")      
+      CheckBoxGadget(#ffourcc,248,155,185,20,"FourCC DIVX for XviD encoding")
       
       CheckBoxGadget(#shutdown,18,180,185,20,"Shutdown at end of encoding")
       ButtonGadget(#makereport,248,180,185,comboheight,"Make Report (needed for support)")
-      
       
       ;-queue
       AddGadgetItem(#Panel_0, -1, "Queue")
@@ -433,10 +423,7 @@ Procedure Open_Window_0()
       AddGadgetItem(#addedtoqueue,-1,"Edit Me...")
       SetGadgetState(#addedtoqueue,0)
       
-      
     CloseGadgetList()
-    
-    
     
     ;GadgetToolTip(#play,"Press this button for playing input file")
     
@@ -451,11 +438,11 @@ Procedure Open_Window_0()
     GadgetToolTip(#multithread,"Check this button for disabling multithread encoding. Useful when mencoder crash unexpectly (only for mencoder and ffmpeg)")
     GadgetToolTip(#subs,"This subs will be burnt in video. Option avaiable only when encoding with Mencoder")
     GadgetToolTip(#speedquality,"Select the quality/speed trade-off. Left for faster encoding. Right for slower encoding")
-    GadgetToolTip(#framecountf,"This is the number of frames detected by Mplayer. Feel free to change it if wrong")
-    GadgetToolTip(#frameratef,"This is the frame rate (fps) detected by Mplayer. Feel free To change it If wrong")
-    GadgetToolTip(#widthf,"This is the WIDTH detected by Mplayer. Feel free To change it If wrong")
-    GadgetToolTip(#heightf,"This is the HEIGHT detected by Mplayer. Feel free To change it If wrong")
-    GadgetToolTip(#play,"Press this button for playing input file")
+    GadgetToolTip(#framecountf,"This is the number of frames detected by Mplayer. Feel free to change it if wrong (otherwise bitrate will be wrong)")
+    GadgetToolTip(#frameratef,"This is the frame rate (fps) detected by Mplayer. Feel free to change it if wrong")
+    GadgetToolTip(#widthf,"This is the WIDTH detected by Mplayer. Feel free to change it if wrong")
+    GadgetToolTip(#heightf,"This is the HEIGHT detected by Mplayer. Feel free to change it if wrong")
+    GadgetToolTip(#play,"Press this button for playing input file (as is, without resize)")
     GadgetToolTip(#encode,"Click here for start encoding!")
     GadgetToolTip(#preview,"Click here for a preview resized")
     GadgetToolTip(#open,"Click here for selecting input file")
@@ -523,6 +510,8 @@ Procedure.l RoundByX(base.f, factor.l, bool_roundup.l)
   ElseIf bool_roundup = #False : ProcedureReturn Round((base / factor),0) * factor
 EndIf
 EndProcedure
+
+
 ; IDE Options = PureBasic 4.41 (Windows - x86)
 ; CursorPosition = 4
 ; FirstLine = 4
@@ -533,9 +522,9 @@ EndProcedure
 ; EnableCompileCount = 61
 ; EnableBuildCount = 10
 ; EnableExeConstant
-; IDE Options = PureBasic 4.60 Beta 4 (Windows - x86)
-; CursorPosition = 409
-; FirstLine = 407
+; IDE Options = PureBasic 4.60 (Windows - x86)
+; CursorPosition = 440
+; FirstLine = 437
 ; Folding = --
 ; DisableDebugger
 ; CompileSourceDirectory
