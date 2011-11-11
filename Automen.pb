@@ -2568,10 +2568,10 @@ Procedure checkmedia()
   
   CreateFile(987,here.s+"ffmpeganalysis.bat")
   If linux=#True
-    WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" -an -y deleteme.avi 2>ffmpeganalysis.txt")
+    WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" 2>ffmpeganalysis.txt")
   EndIf
   If windows=#True
-    WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" -an -y deleteme.avi 2>ffmpeganalysis.txt")
+    WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" 2>ffmpeganalysis.txt")
   EndIf
   CloseFile(987)
   If windows=#True
@@ -3745,8 +3745,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 (Windows - x86)
-; CursorPosition = 2764
-; FirstLine = 2708
+; CursorPosition = 2573
+; FirstLine = 2546
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -3755,6 +3755,6 @@ End
 ; DisableDebugger
 ; CompileSourceDirectory
 ; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
-; EnableCompileCount = 718
-; EnableBuildCount = 1586
+; EnableCompileCount = 721
+; EnableBuildCount = 1587
 ; EnableExeConstant
