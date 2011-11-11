@@ -2380,6 +2380,7 @@ Procedure checkmedia()
   tsec.l=0
   ar.s=""
   videocodec.s=""
+  crop.s=""
   checkfile.s=inputfile.s
   
   DeleteFile(here.s+"mplayer.log")
@@ -2438,15 +2439,7 @@ Procedure checkmedia()
     
   EndIf
   
-  CreateFile(987,here.s+"analyze.bat")
-  
-  crop.s=""
-  
-  DeleteFile(here.s+"mplayer.log")
-  DeleteFile(here.s+"mplayer.bat")
-  DeleteFile(here.s+"automen.log")
   CreateFile(987,here.s+"mplayer.bat")
-  
   
   If linux=#True
     WriteString(987,mplayer.s+" -speed 100 -vo null -vf cropdetect=24:2 -nosound -frames 500 -identify "+Chr(34)+checkfile.s+Chr(34)+" > mplayer.log")
@@ -2455,13 +2448,11 @@ Procedure checkmedia()
     RunProgram("xterm","-e "+Chr(34)+here.s+"mplayer.bat"+Chr(34),here.s,#PB_Program_Wait)
   EndIf
   
-  
   If windows=#True
     WriteString(987,mplayer.s+" -speed 100 -vo null -vf cropdetect=24:2 -nosound -frames 500 -identify "+Chr(34)+checkfile.s+Chr(34)+" 1>mplayer.log 2>automen.log")
     CloseFile(987)
     RunProgram(here.s+"mplayer.bat","",here.s,#PB_Program_Wait)
   EndIf
-  
   
   fh=OpenFile(#PB_Any,here.s+"mplayer.log")
   While Eof(fh)=0
@@ -2575,7 +2566,6 @@ Procedure checkmedia()
   
   framecount.l=tsec.l*framerate.f
   
-  
   CreateFile(987,here.s+"ffmpeganalysis.bat")
   If linux=#True
     WriteString(987,ffmpeg.s+" -i "+Chr(34)+checkfile.s+Chr(34)+" -an -y deleteme.avi 2>ffmpeganalysis.txt")
@@ -2608,7 +2598,7 @@ Procedure checkmedia()
         mkvinfo()
       EndIf
     EndSelect
-  EndIf  
+  EndIf
   
   If windows=#True
     Select LCase(GetExtensionPart(inputfile.s))
@@ -2707,7 +2697,7 @@ Procedure checkmedia()
   
   SetGadgetText(#arcombo,ar.s)
   If GetGadgetText(#arcombo)="" : SetGadgetText(#arcombo,StrF(twidth.l/theight.l,4)) : EndIf
-    
+  
   actop.l=theight.l-Val(StringField(vcrop.s,2,":"))-Val(StringField(vcrop.s,4,":"))
   acleft.l=Val(StringField(vcrop.s,3,":"))
   acright.l=twidth.l-acleft.l-Val(StringField(vcrop.s,1,":"))
@@ -2747,8 +2737,15 @@ Procedure checkmedia()
   Debug("tsec.l="+Str(tsec.l))
   Debug("ar.s"=ar.s)
   
+  framecount.l=tsec.l*framerate.f
+  
+  If tsec.l<5 Or framerate.f<10
+    MessageRequester("Automen","There are some problem with framerate ("+StrF(framerate.f,3)+" fps)"+" or duration ("+Str(tsec.l)+" sec.)"+Chr(13)+"Added 9999 frames for duration as fake value. Please check the bitrate!")
+    framecount.l=9999 
+    SetGadgetText(#framecountf,Str(framecount.l))
+  EndIf
+    
   If framecount.l>100 : SetGadgetText(#framecountf,Str(framecount.l)) : EndIf
-  If framecount.l<100 : framecount.l=9999 : SetGadgetText(#framecountf,Str(framecount.l)) : MessageRequester("AutoMen","Unable to detect numbers of frames (added 9999 as fake value). Please check the bitrate!") : EndIf
   
   SetGadgetText(#widthf,Str(twidth.l))
   SetGadgetText(#heightf,Str(theight.l))
@@ -3748,15 +3745,16 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 (Windows - x86)
-; CursorPosition = 2610
-; FirstLine = 2700
+; CursorPosition = 2764
+; FirstLine = 2708
 ; Folding = ------
 ; EnableXP
 ; EnableUser
 ; UseIcon = ___logo.ico
 ; Executable = AutoMen.exe
+; DisableDebugger
 ; CompileSourceDirectory
 ; Compiler = PureBasic 4.60 Beta 4 (Windows - x86)
-; EnableCompileCount = 713
-; EnableBuildCount = 1585
+; EnableCompileCount = 718
+; EnableBuildCount = 1586
 ; EnableExeConstant
