@@ -522,12 +522,13 @@ EndProcedure
 ; EnableCompileCount = 61
 ; EnableBuildCount = 10
 ; EnableExeConstant
-; IDE Options = PureBasic 4.60 (Windows - x86)
+; IDE Options = PureBasic 4.60 RC 2 (Linux - x64)
 ; CursorPosition = 440
 ; FirstLine = 437
 ; Folding = --
 ; DisableDebugger
 ; CompileSourceDirectory
+; Compiler = PureBasic 4.60 RC 2 (Linux - x64)
 ; EnableCompileCount = 0
 ; EnableBuildCount = 0
 ; EnableExeConstant

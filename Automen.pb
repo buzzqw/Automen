@@ -2340,6 +2340,7 @@ Procedure mkvinfo()
         mkv(Val(Trim(StringField(line.s,2,":"))))\trackid.l = Val(Trim(StringField(line.s,2,":")))
       EndIf
       If FindString(line.s,"Codec ID",0) And FindString(line.s,"V_",0)=0 : mkv(aa)\mediatype.s = Trim(StringField(line.s,2,":")) : EndIf
+      If FindString(line.s,"ID codec",0) And FindString(line.s,"V_",0)=0 : mkv(aa)\mediatype.s = Trim(StringField(line.s,2,":")) : EndIf
       If FindString(line.s," Language:",0) : mkv(aa)\tag.s = UCase(Trim(StringField(line.s,2,":"))) : EndIf
       If FindString(line.s,"Channels:",0) : mkv(aa)\tag.s = mkv(aa)\tag.s+", "+Trim(StringField(line.s,2,":"))+" channels" : EndIf
       If FindString(line.s,"Sampling frequency:",0) : mkv(aa)\tag.s = mkv(aa)\tag.s+", "+Trim(StringField(line.s,2,":"))+" hz" : EndIf
@@ -3763,17 +3764,17 @@ End
 ; EnableCompileCount = 1574
 ; EnableBuildCount = 174
 ; EnableExeConstant
-; IDE Options = PureBasic 4.60 (Windows - x86)
-; CursorPosition = 1662
-; FirstLine = 1640
+; IDE Options = PureBasic 4.60 RC 2 (Linux - x86)
+; CursorPosition = 2335
+; FirstLine = 2324
 ; Folding = ------
 ; EnableXP
 ; EnableUser
 ; UseIcon = ___logo.ico
-; Executable = AutoMen.exe
+; Executable = AutoMen_x86
 ; DisableDebugger
 ; CompileSourceDirectory
-; Compiler = PureBasic 4.60 (Windows - x86)
-; EnableCompileCount = 730
-; EnableBuildCount = 1588
+; Compiler = PureBasic 4.60 RC 2 (Linux - x86)
+; EnableCompileCount = 739
+; EnableBuildCount = 1592
 ; EnableExeConstant
