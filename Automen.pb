@@ -1738,12 +1738,26 @@ Procedure audioffmpeg()
     encostring.s=ffmpeg.s+" -i "+Chr(34)+inputfile.s+Chr(34)+" -vn -acodec copy "
     
     mess.s=GetGadgetText(#audiotrack)
-    aid.s=StringField(mess.s,2,"#")
-    aid.s=StringField(aid.s,1,":")
-    aid.s=StringField(aid.s,2,".")
-    If FindString(aid.s,"[",0) : aid.s=StringField(aid.s,1,"[") : EndIf
-    If FindString(aid.s,"(",0) : aid.s=StringField(aid.s,1,"(") : EndIf
-    If FindString(GetGadgetText(#audiotrack),"audio stream",0) :  aid.s = Str(GetGadgetState(#audiotrack)) : EndIf
+    ;aid.s=StringField(mess.s,2,"#")
+    ;aid.s=StringField(aid.s,1,":")
+    ;aid.s=StringField(aid.s,2,".")
+    ;If FindString(aid.s,"[",0) : aid.s=StringField(aid.s,1,"[") : EndIf
+    ;If FindString(aid.s,"(",0) : aid.s=StringField(aid.s,1,"(") : EndIf
+    ;If FindString(GetGadgetText(#audiotrack),"audio stream",0) :  aid.s = Str(GetGadgetState(#audiotrack)) : EndIf
+    
+    If FindString(mess.s,"#0:1",1) : aid.s="1" : EndIf
+    If FindString(mess.s,"#0:2",1) : aid.s="2" : EndIf
+    If FindString(mess.s,"#0:3",1) : aid.s="3" : EndIf
+    If FindString(mess.s,"#0:4",1) : aid.s="4" : EndIf
+    If FindString(mess.s,"#0:5",1) : aid.s="5" : EndIf
+    If FindString(mess.s,"#0:6",1) : aid.s="6" : EndIf
+    If FindString(mess.s,"#0:7",1) : aid.s="7" : EndIf
+    If FindString(mess.s,"#0:8",1) : aid.s="8" : EndIf
+    If FindString(mess.s,"#0:9",1) : aid.s="9" : EndIf
+    If FindString(mess.s,"#0:10",1) : aid.s="10" : EndIf
+    If FindString(mess.s,"#0:11",1) : aid.s="11" : EndIf
+    
+    
     
     encostring.s=encostring.s+" -map ["+aid.s+":0] "
     
@@ -1786,7 +1800,7 @@ Procedure audioffmpeg()
       EndIf
       If FindString(GetGadgetText(#audiotrack),"L2",0)
         encostring.s=encostring.s+aid.s+":"+Chr(34)+workpath.s+"automen_audio.mp2"+Chr(34)
-        filetoanalyze.s=Chr(34)+workpath.s+"automen_audio.mp2"+Chr(34)
+         filetoanalyze.s=Chr(34)+workpath.s+"automen_audio.mp2"+Chr(34)
       EndIf
       If FindString(GetGadgetText(#audiotrack),"L3",0)
         encostring.s=encostring.s+aid.s+":"+Chr(34)+workpath.s+"automen_audio.mp3"+Chr(34)
@@ -1829,11 +1843,18 @@ Procedure audioffmpeg()
         encostring.s=ffmpeg.s+" -i "+Chr(34)+inputfile.s+Chr(34)+" -vn "
         If GetGadgetState(#audiotrack)>1
           mess.s=GetGadgetText(#audiotrack)
-          aid.s=StringField(mess.s,2,"#")
-          aid.s=StringField(aid.s,1,":")
-          aid.s=StringField(aid.s,2,".")
-          If FindString(aid.s,"[",0) : aid.s=StringField(aid.s,1,"[") : EndIf
-          If FindString(aid.s,"(",0) : aid.s=StringField(aid.s,1,"(") : EndIf
+          If FindString(mess.s,"#0:1",1) : aid.s="1" : EndIf
+          If FindString(mess.s,"#0:2",1) : aid.s="2" : EndIf
+          If FindString(mess.s,"#0:3",1) : aid.s="3" : EndIf
+          If FindString(mess.s,"#0:4",1) : aid.s="4" : EndIf
+          If FindString(mess.s,"#0:5",1) : aid.s="5" : EndIf
+          If FindString(mess.s,"#0:6",1) : aid.s="6" : EndIf
+          If FindString(mess.s,"#0:7",1) : aid.s="7" : EndIf
+          If FindString(mess.s,"#0:8",1) : aid.s="8" : EndIf
+          If FindString(mess.s,"#0:9",1) : aid.s="9" : EndIf
+          If FindString(mess.s,"#0:10",1) : aid.s="10" : EndIf
+          If FindString(mess.s,"#0:11",1) : aid.s="11" : EndIf
+          
           If FindString(GetGadgetText(#audiotrack),"audio stream",0) :  aid.s = Str(GetGadgetState(#audiotrack)) : EndIf
           encostring.s=encostring.s+" -map ["+aid.s+":0]"
         EndIf
@@ -1843,11 +1864,18 @@ Procedure audioffmpeg()
       encostring.s=ffmpeg.s+" -i "+Chr(34)+inputfile.s+Chr(34)+" -vn "
       If GetGadgetState(#audiotrack)>1
         mess.s=GetGadgetText(#audiotrack)
-        aid.s=StringField(mess.s,2,"#")
-        aid.s=StringField(aid.s,1,":")
-        aid.s=StringField(aid.s,2,".")
-        If FindString(aid.s,"[",0) : aid.s=StringField(aid.s,1,"[") : EndIf
-        If FindString(aid.s,"(",0) : aid.s=StringField(aid.s,1,"(") : EndIf
+        If FindString(mess.s,"#0:1",1) : aid.s="1" : EndIf
+        If FindString(mess.s,"#0:2",1) : aid.s="2" : EndIf
+        If FindString(mess.s,"#0:3",1) : aid.s="3" : EndIf
+        If FindString(mess.s,"#0:4",1) : aid.s="4" : EndIf
+        If FindString(mess.s,"#0:5",1) : aid.s="5" : EndIf
+        If FindString(mess.s,"#0:6",1) : aid.s="6" : EndIf
+        If FindString(mess.s,"#0:7",1) : aid.s="7" : EndIf
+        If FindString(mess.s,"#0:8",1) : aid.s="8" : EndIf
+        If FindString(mess.s,"#0:9",1) : aid.s="9" : EndIf
+        If FindString(mess.s,"#0:10",1) : aid.s="10" : EndIf
+        If FindString(mess.s,"#0:11",1) : aid.s="11" : EndIf
+        
         If FindString(GetGadgetText(#audiotrack),"audio stream",0) :  aid.s = Str(GetGadgetState(#audiotrack)) : EndIf
         encostring.s=encostring.s+" -map ["+aid.s+":0]"
       EndIf
@@ -2512,9 +2540,9 @@ Procedure checkmedia()
       ar.s=StringField(mess.s,2,"=")
     EndIf
     
-    If FindString(mess,"ID_AUDIO_ID",0) And GetExtensionPart(inputfile.s)<>"mkv"
-      AddGadgetItem(#audiotrack,-1,mess.s)
-    EndIf
+    ;If FindString(mess,"ID_AUDIO_ID",0) And GetExtensionPart(inputfile.s)<>"mkv"
+    ;  AddGadgetItem(#audiotrack,-1,mess.s)
+    ;EndIf
     
     
     If FindString(mess,"subtitles",0) And GetExtensionPart(inputfile.s)="mkv" And FindString(mess,"S_TEXT",0)
@@ -2608,6 +2636,8 @@ Procedure checkmedia()
       AddGadgetItem(#audiotrack,-1,Trim(mess.s))
     EndIf
   Wend
+  
+  CloseFile(fh)
   
   ;audio check
   
@@ -3764,17 +3794,17 @@ End
 ; EnableCompileCount = 1574
 ; EnableBuildCount = 174
 ; EnableExeConstant
-; IDE Options = PureBasic 4.60 RC 2 (Linux - x86)
-; CursorPosition = 2335
-; FirstLine = 2324
+; IDE Options = PureBasic 4.60 (Windows - x86)
+; CursorPosition = 2629
+; FirstLine = 2594
 ; Folding = ------
 ; EnableXP
 ; EnableUser
 ; UseIcon = ___logo.ico
-; Executable = AutoMen_x86
+; Executable = AutoMen_64bit
 ; DisableDebugger
 ; CompileSourceDirectory
-; Compiler = PureBasic 4.60 RC 2 (Linux - x86)
-; EnableCompileCount = 739
-; EnableBuildCount = 1592
+; Compiler = PureBasic 4.60 (Windows - x86)
+; EnableCompileCount = 748
+; EnableBuildCount = 1594
 ; EnableExeConstant
