@@ -95,6 +95,7 @@ Procedure checkaudio()
     SetGadgetState(#audibit,6)
     
     ClearGadgetItems(#channel)
+    AddGadgetItem(#channel,-1,"Original")
     AddGadgetItem(#channel,-1,"2")
     AddGadgetItem(#channel,-1,"1")
     
@@ -1759,7 +1760,7 @@ Procedure audioffmpeg()
     
     
     
-    encostring.s=encostring.s+" -map ["+aid.s+":0] "
+    encostring.s=encostring.s+" -map 0:"+aid.s+" "
     
     If FindString(GetGadgetText(#audiotrack),"ac3",0) : filetoanalyze.s=workpath.s+"automen_audio.ac3" : encostring.s=encostring.s+"-y "+Chr(34)+workpath.s+"automen_audio.ac3"+Chr(34) : EndIf
     If FindString(GetGadgetText(#audiotrack),"dca",0) :filetoanalyze.s=workpath.s+"automen_audio.dts" : encostring.s=encostring.s+"-y "+Chr(34)+workpath.s+"automen_audio.dts"+Chr(34) : EndIf
@@ -1856,7 +1857,7 @@ Procedure audioffmpeg()
           If FindString(mess.s,"#0:11",1) : aid.s="11" : EndIf
           
           If FindString(GetGadgetText(#audiotrack),"audio stream",0) :  aid.s = Str(GetGadgetState(#audiotrack)) : EndIf
-          encostring.s=encostring.s+" -map ["+aid.s+":0]"
+          encostring.s=encostring.s+" -map 0:"+aid.s+" "
         EndIf
       EndIf
       
@@ -1877,7 +1878,7 @@ Procedure audioffmpeg()
         If FindString(mess.s,"#0:11",1) : aid.s="11" : EndIf
         
         If FindString(GetGadgetText(#audiotrack),"audio stream",0) :  aid.s = Str(GetGadgetState(#audiotrack)) : EndIf
-        encostring.s=encostring.s+" -map ["+aid.s+":0]"
+        encostring.s=encostring.s+" -map 0:"+aid.s+" "
       EndIf
     EndSelect
     
@@ -3795,8 +3796,8 @@ End
 ; EnableBuildCount = 174
 ; EnableExeConstant
 ; IDE Options = PureBasic 4.60 (Windows - x86)
-; CursorPosition = 2629
-; FirstLine = 2594
+; CursorPosition = 1794
+; FirstLine = 1759
 ; Folding = ------
 ; EnableXP
 ; EnableUser
@@ -3805,6 +3806,6 @@ End
 ; DisableDebugger
 ; CompileSourceDirectory
 ; Compiler = PureBasic 4.60 (Windows - x86)
-; EnableCompileCount = 748
+; EnableCompileCount = 755
 ; EnableBuildCount = 1594
 ; EnableExeConstant
